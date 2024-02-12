@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, exc
 import requests
@@ -8,13 +8,25 @@ Base = declarative_base()
 
 # Define your Availability class here as before
 
-class availability(Base):
+class Availability(Base):
     __tablename__ = 'availability'
     number = Column(Integer, primary_key=True)
     last_update = Column(DateTime, nullable=False)
     available_bikes = Column(Integer)
     available_bike_stands = Column(Integer)
     status = Column(String(128))
+
+class Station(Base):
+    __tablename__ = 'station'
+    number = Column(Integer, primary_key=True)
+    address = Column(String(128))
+    banking = Column(Integer)
+    bike_stands = Column(Integer)
+    name = Column(String(128))
+    position_lat = Column(Float)
+    position_lng = Column(Float)
+
+
 # Connect to the MySQL database
 # Format: mysql+pymysql://<username>:<password>@<host>/<dbname>
 engine = create_engine('mysql+pymysql://root:@localhost:3306/bike_test')
@@ -34,11 +46,11 @@ def get_station_data(contract_name, api_key):
         print(f"Error fetching data from API: {e}")
         return None
 
-def insert_data(data):
+def insert_availability(data):
     try:
         for station in data:
             # Handling existing station data
-            existing_station = session.query(availability).filter_by(number=station['number']).first()
+            existing_station = session.query(Availability).filter_by(number=station['number']).first()
             if existing_station:
                 # Update existing record
                 existing_station.last_update = datetime.datetime.fromtimestamp(station['last_update'] / 1e3)
@@ -47,7 +59,7 @@ def insert_data(data):
                 existing_station.status = station['status']
             else:
                 # Insert new record
-                new_station = availability(
+                new_station = Availability(
                     number=station['number'],
                     last_update=datetime.datetime.fromtimestamp(station['last_update'] / 1e3),
                     available_bikes=station['available_bikes'],
@@ -64,9 +76,32 @@ def insert_data(data):
         session.rollback()  # Roll back the changes on error
 
 
+def insert_stations(data):
+    try:
+        for station in data:
+            # Check if the station already exists to avoid duplicates
+            existing_station = session.query(Station).filter_by(number=station['number']).first()
+            if not existing_station:
+                new_station = Station(
+                    number=station['number'],
+                    address=station['address'],
+                    banking=1 if station['banking'] else 0,
+                    bike_stands=station['bike_stands'],
+                    name=station['name'],
+                    position_lat=station['position']['lat'],
+                    position_lng=station['position']['lng']
+                )
+                session.add(new_station)
+        session.commit()
+    except Exception as e:
+        print(f"Error inserting data into database: {e}")
+        session.rollback()  # Ensure the session is rolled back on error
+
+
 contract_name = "dublin"
 api_key = "7e205fdc326671c53ea2ffa938113d65068803f3"
 data = get_station_data(contract_name, api_key)
 
 if data:
-    insert_data(data)
+    insert_availability(data)
+    insert_stations(data)
