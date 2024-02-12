@@ -29,6 +29,7 @@ class Station(Base):
 
 # Connect to the MySQL database
 # Format: mysql+pymysql://<username>:<password>@<host>/<dbname>
+# Replace <username>, <password>, <host>, and <dbname> with the Amazon Database Credentials
 engine = create_engine('mysql+pymysql://root:@localhost:3306/bike_test')
 
 Base.metadata.bind = engine
