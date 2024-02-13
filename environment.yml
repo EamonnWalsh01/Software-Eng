@@ -31,8 +31,6 @@ dependencies:
   - typing_extensions=4.9.0=py311haa95532_1
   - tzdata=2023d=h04d1e81_0
   - urllib3=2.1.0=py311haa95532_0
-  - vc=14.2=h21ff451_1
-  - vs2015_runtime=14.27.29016=h5e58377_2
   - werkzeug=2.3.8=py311haa95532_0
   - wheel=0.41.2=py311haa95532_0
   - xz=5.4.5=h8cc25b3_0
