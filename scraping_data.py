@@ -4,10 +4,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 import requests
 import datetime
+import configparser
 
 Base = declarative_base()
-
-# Define your Availability class here as before
+config = configparser.ConfigParser()
+config.read('config.ini')
+db_config = config['database']
+api_config = config['api']
 
 class Availability(Base):
     __tablename__ = 'availability'
@@ -29,45 +32,24 @@ class Station(Base):
 
 
 # Connect to the MySQL database
-# Format: mysql+pymysql://<username>:<password>@<host>/<dbname>
-# Replace <username>, <password>, <host>, and <dbname> with the Amazon Database Credentials
-engine = create_engine('mysql+pymysql://root:@localhost:3306/bike_test')
+engine = create_engine(f"mysql+pymysql://{db_config['username']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['dbname']}")
+
 
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-def get_station_data(contract_name, api_key):
+def get_station_data():
     try:
-        url = f"https://api.jcdecaux.com/vls/v1/stations?contract={contract_name}&apiKey={api_key}"
+        url = f"https://api.jcdecaux.com/vls/v1/stations?contract={api_config['contract_name']}&apiKey={api_config['api_key']}"
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError if the response status is 4XX/5XX
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from API: {e}")
         return None
-"""
-def insert_availability(data):
-    try:
-        for station in data:
-            # Insert new record
-            new_station = Availability(
-                number=station['number'],
-                last_update=datetime.datetime.fromtimestamp(station['last_update'] / 1e3),
-                available_bikes=station['available_bikes'],
-                available_bike_stands=station['available_bike_stands'],
-                status=station['status']
-            )
-            session.add(new_station)
-        session.commit()
-    except exc.SQLAlchemyError as e:
-        print(f"Database error: {e}")
-        session.rollback()  # Roll back the changes on error
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        session.rollback()  # Roll back the changes on error
-"""
+
 
 def insert_availability(data):
     for station in data:
@@ -114,9 +96,8 @@ def insert_stations(data):
         session.rollback()  # Ensure the session is rolled back on error
 
 
-contract_name = "dublin"
-api_key = "7e205fdc326671c53ea2ffa938113d65068803f3"
-data = get_station_data(contract_name, api_key)
+# Get the data from the API
+data = get_station_data()
 
 if data:
     insert_availability(data)
