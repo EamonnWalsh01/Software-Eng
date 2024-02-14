@@ -58,7 +58,8 @@ def insert_availability(data):
         last_update_datetime = datetime.datetime.fromtimestamp(station['last_update'] / 1000)
         
         # Attempt to insert new data
-        try:
+        #try:
+        if True:
             new_availability = Availability(
                 number=station['number'],
                 last_update=last_update_datetime,
@@ -68,11 +69,12 @@ def insert_availability(data):
             )
             session.add(new_availability)
             session.commit()
-        except IntegrityError:
-            # This block is reached if the insert operation fails due to an IntegrityError, which
-            # in this case likely means the primary key already exists. Roll back the session.
-            session.rollback()
-            print(f"Record for station number {station['number']} at {last_update_datetime} already exists. Skipping insert.")
+        # except IntegrityError:
+        #     # This block is reached if the insert operation fails due to an IntegrityError, which
+        #     # in this case likely means the primary key already exists. Roll back the session.
+        #     session.rollback()
+
+        #     print(f"Record for station number {station['number']} at {last_update_datetime} already exists. Skipping insert.")
 
 
 def insert_stations(data):
