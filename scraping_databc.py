@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 import requests
 import datetime
 import configparser
+import time
 
 Base = declarative_base()
 config = configparser.ConfigParser()
@@ -98,7 +99,9 @@ def insert_stations(data):
 
 # Get the data from the API
 data = get_station_data()
+while True:
+    if data:
+        insert_availability(data)
+        insert_stations(data)
+    time.sleep(300)
 
-if data:
-    insert_availability(data)
-    insert_stations(data)
