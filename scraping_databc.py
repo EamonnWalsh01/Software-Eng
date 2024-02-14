@@ -100,8 +100,8 @@ def insert_stations(data):
 
 
 # Get the data from the API
-data = get_station_data()
 while True:
+    data = get_station_data()
     if data:
         insert_availability(data)
         insert_stations(data)
