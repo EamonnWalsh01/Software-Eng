@@ -15,7 +15,7 @@ api_config = config['api']
 class Availability(Base):
     __tablename__ = 'availability'
     number = Column(Integer, primary_key=True)
-    last_update = Column(DateTime, nullable=False)
+    last_update = Column(DateTime, primary_key=True, nullable=False)
     available_bikes = Column(Integer)
     available_bike_stands = Column(Integer)
     status = Column(String(128))
