@@ -6,7 +6,7 @@
     <title>FindYoBike</title>
     <link rel="stylesheet" href="styles.css" type="text/css">
      <script src = "anis.js"></script>
-     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1WBS8VMyodSfCkeyXY7ufsxJ5N-NrDRg&callback=initMap&libraries=places" type="text/javascript"></script>
+     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9vCFkY-NEMrBdQIgTBixpjMB0ZPCsxQ8&callback=console.debug&libraries=maps,marker&v=beta"></script>
 
 </head>
 <body>
@@ -23,10 +23,12 @@
       
     </div>
 </div>
-<img id = "MAPPING"src = "map.png">
-<gmp-map center="40.12150192260742,-100.45039367675781" zoom="4" map-id="DEMO_MAP_ID">
-    <gmp-advanced-marker position="40.12150192260742,-100.45039367675781" title="My location"></gmp-advanced-marker>
-  </gmp-map>
+
+<div id = mapper>
+    <gmp-map center="53.35121536254883,-6.260958194732666" zoom="14" map-id="DEMO_MAP_ID">
+        <gmp-advanced-marker position="53.35121536254883,-6.260958194732666" title="My location"></gmp-advanced-marker>
+      </gmp-map>
+</div>
 
 
 </body>

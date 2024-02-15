@@ -1,0 +1,18 @@
+/* Always set the map height explicitly to define the size of the div
+ * element that contains the map. */
+ gmp-map {
+    height: 100%;
+  }
+  
+  /* Optional: Makes the sample page fill the window. */
+
+  #mapper {
+    height: 75%;
+    margin: 0;
+    padding: 0;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
