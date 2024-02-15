@@ -2,6 +2,10 @@
     position: sticky;
     
     height:450px;
+    -webkit-mask-image: url(1707989745450-Standard.png);
+    mask-image: url(1707989745450-Standard.png);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
     
     
 }
@@ -13,7 +17,9 @@
     z-index:-1;
     width: 100%;
     transition: transform 0.2s;
+    
 }
+
 #FindYoBike{
     padding-left:35%;
     padding-top: 20%;
