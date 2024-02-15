@@ -2,10 +2,11 @@
     position: sticky;
     
     height:450px;
-    -webkit-mask-image: url(1707989745450-Standard.png);
-    mask-image: url(1707989745450-Standard.png);
+    -webkit-mask-image: url(output-onlinepngtools.png);
+    mask-image: url(output-onlinepngtools.png);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
+    background-image: "WhatsApp Image 2024-02-08 at 09.26.57_92d8b37e.jpg";
     
     
 }
@@ -13,7 +14,8 @@
     position: absolute;
     top:0;
     left:0;
-    background-color: blue;
+    /* background-color: blue; */
+    background-image: url("WhatsApp Image 2024-02-08 at 09.26.57_92d8b37e.jpg");
     z-index:-1;
     width: 100%;
     transition: transform 0.2s;
