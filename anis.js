@@ -5,9 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update the current slider value (each time you drag the slider handle)
     slider.oninput = function() {
         var rotation = this.value;
-        image.style.transform = 'rotate(' + rotation +  'deg)';
+        image.style.transform = 'rotate(' + rotation + 'deg)';
     }
-    
 });
 var myStyles =[
     [
@@ -173,18 +172,3 @@ var myStyles =[
         // Additional styles here
     }
 ];
-MapStyleOptions myStyles = MapStyleOptions.loadRawResourceStyle(this.context, R.raw.my_map_style);
-map.setMapStyle(myStyles);
-function initMap() {
-    var location = {lat: 53.3255500793457, lng: -6.32316255569458};
-    var map = new google.maps.Map(document.getElementById('mapholder'), {
-        zoom: 14,
-        center: location,
-        styles: myStyles // Apply your style array here
-    });
-    var marker = new google.maps.Marker({
-        position: location,
-        map: map,
-        title: 'My location'
-    });
-}
