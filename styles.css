@@ -21,7 +21,10 @@
     transition: transform 0.2s;
     
 }
-
+#mapper {
+    height: 400px; /* Adjust as needed */
+    width: 100%;
+}
 #FindYoBike{
     padding-left:35%;
     padding-top: 20%;
