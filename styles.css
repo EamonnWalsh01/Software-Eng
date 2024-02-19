@@ -1,68 +1,82 @@
-#box{
+/* General Styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Box containing the bike image */
+#box {
     position: relative;
-    
-    height:450px;
+    height: 450px;
     -webkit-mask-image: url(output-onlinepngtools.png);
     mask-image: url(output-onlinepngtools.png);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    /* background-image: "WhatsApp Image 2024-02-08 at 09.26.57_92d8b37e.jpg"; */
-    
-    
 }
-#bikeimg{
+
+/* Bike image styles */
+#bikeimg {
     position: absolute;
-    top:0;
-    left:0;
-    background-image: url("WhatsApp Image 2024-02-08 at 09.26.57_92d8b37e.jpg"); 
-    background-size:200px;
+    top: 0;
+    left: 0;
+    background-image: url("WhatsApp Image 2024-02-08 at 09.26.57_92d8b37e.jpg");
+    background-size: 200px;
     z-index: -1;
     width: 95%;
     transition: transform 0.2s;
-    
 }
+
+/* Mapper div styles */
 #mapper {
-    height: 400px; /* Adjust as needed */
+    height: 400px;
     width: 100%;
 }
-#FindYoBike{
-    padding-left:35%;
+
+/* Title styles */
+#FindYoBike {
+    padding-left: 35%;
     padding-top: 20%;
     font-family: 'Courier New', Courier, monospace;
 }
-#inputbar{
+
+/* Input bar styles */
+#inputbar {
     width: 37%;
-    margin-left:35%;
+    margin-left: 35%;
     border-radius: .5rem;
     box-shadow: 10px;
 }
-#MAPPING{
-    width: 100%;
-    z-index: 1;
+
+/* Slider container */
+.slidecontainer {
+    width: 100%; /* Full-width */
 }
+
+/* Slider styles */
 .slider {
-    -webkit-appearance: none;  /* Override default CSS styles */
+    -webkit-appearance: none; /* Override default CSS styles */
     appearance: none;
     width: 100%; /* Full-width */
     height: 25px; /* Specified height */
     background: #d3d3d3; /* Grey background */
     outline: none; /* Remove outline */
     opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-    transition: opacity .2s;
-  }
-  /* Mouse-over effects */
+    transition: opacity .2s; /* 0.2 seconds transition on hover */
+}
+
 .slider:hover {
     opacity: 1; /* Fully shown on mouse-over */
-  }
-  
-  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-  .slider::-webkit-slider-thumb {
+}
+
+.slider::-webkit-slider-thumb {
     -webkit-appearance: none; /* Override default look */
     appearance: none;
     width: 25px; /* Set a specific slider handle width */
     height: 25px; /* Slider handle height */
     background: #000000; /* Green background */
     cursor: pointer; /* Cursor on hover */
-  }
-  
+}
+#DEMO_MAP_ID{
+    height:100%;
+}
