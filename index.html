@@ -9,7 +9,7 @@
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9vCFkY-NEMrBdQIgTBixpjMB0ZPCsxQ8&callback=initMap&libraries=&v=weekly"></script>
 </head>
 <body>
-    <div class="autovid">
+    <div class="autovid" id = "vid">
         <video
             id="trailer"
             src="official_trailer.mp4"
@@ -19,12 +19,23 @@
             muted
         ></video>   
     </div>
+    <div class="autovid" id = "image">
+        <img src="wolfripcover.jpg" alt=""> 
+    </div>
+    
 <div id="box">
     <img id="bikeimg" src="output-onlinepngtools.png" alt="Bike Image">
     <h1 id="FindYoBike">Find Yo bike</h1>
 </div>
 <input type="text" id="inputbar" placeholder="Search Location">
 <button id = "randomiser">want to gamble?????</button> 
+<div class="theme-switch-wrapper">
+    <label class="theme-switch" for="checkbox">
+        <input type="checkbox" id="checkbox" />
+        <div class="slider round"></div>
+    </label>
+</div>
+
 <div class="slidecontainer">
     <h3>Feeling risky?</h3>
     <input type="range" min="1" max="720" value="360" class="slider" id="myRange">

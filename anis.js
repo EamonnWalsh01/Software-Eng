@@ -53,3 +53,30 @@ function initMap() {
     ]
   });
 }
+const toggleSwitch = document.querySelector('#checkbox');
+const videoContent = document.getElementById('vid');
+const imageContent = document.getElementById('image');
+
+// Function to toggle video and image
+function toggleContent(isChecked) {
+    if (isChecked) {
+      imageContent.style.display = "block"; // Show video for dark mode
+        videoContent.style.display = "none"; // Hide image
+    } else {
+      imageContent.style.display = "none"; // Hide video
+      videoContent.style.display = "block"; // Show image for light mode
+    }
+}
+
+// Check if there's a saved theme preference and set the content accordingly
+const currentTheme = localStorage.getItem('theme');
+if (currentTheme) {
+    toggleSwitch.checked = currentTheme === 'dark-mode';
+    toggleContent(toggleSwitch.checked);
+}
+
+// Event listener for the toggle switch
+toggleSwitch.addEventListener('change', function() {
+    toggleContent(this.checked);
+    localStorage.setItem('theme', this.checked ? 'dark-mode' : 'light-mode');
+});
