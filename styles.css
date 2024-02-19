@@ -31,6 +31,7 @@ body, html {
 #mapper {
     height: 400px;
     width: 100%;
+    
 }
 
 /* Title styles */
@@ -80,3 +81,4 @@ body, html {
 #DEMO_MAP_ID{
     height:100%;
 }
+

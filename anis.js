@@ -3,7 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // Get both elements by their IDs
   var bikeImage = document.getElementById("bikeimg");
   var mapperImage = document.getElementById("mapper");
-
+  const myButton = document.getElementById('randomiser');
+  myButton.addEventListener('click', function() {
+    // Define what happens when the button is clicked.
+    
+    const randomNumber = Math.floor(Math.random() * (360 + 1));
+    bikeImage.style.transform = 'rotate(' + randomNumber + 'deg)';
+      mapperImage.style.transform = 'rotate(' + randomNumber + 'deg)';
+});
   // Update the current slider value (each time you drag the slider handle)
   slider.oninput = function() {
       var rotation = this.value;
