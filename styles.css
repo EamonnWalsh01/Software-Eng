@@ -31,7 +31,6 @@ body, html {
 #mapper {
     height: 400px;
     width: 100%;
-    transition: transform 0.2s;
 }
 
 /* Title styles */
@@ -81,4 +80,12 @@ body, html {
 #DEMO_MAP_ID{
     height:100%;
 }
-
+.autovid {
+    width: 100%;
+    position: absolute;
+}
+#trailer {
+    width: 100%;
+    -webkit-mask-image: linear-gradient(black, transparent);
+    mask-image: linear-gradient(black, transparent);
+}
