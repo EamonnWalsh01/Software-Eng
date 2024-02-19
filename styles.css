@@ -31,7 +31,7 @@ body, html {
 #mapper {
     height: 400px;
     width: 100%;
-    
+    transition: transform 0.2s;
 }
 
 /* Title styles */
