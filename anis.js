@@ -1,13 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var slider = document.getElementById("myRange");
-    var image = document.getElementById("bikeimg");
+  var slider = document.getElementById("myRange");
+  // Get both elements by their IDs
+  var bikeImage = document.getElementById("bikeimg");
+  var mapperImage = document.getElementById("mapper");
 
-    // Update the current slider value (each time you drag the slider handle)
-    slider.oninput = function() {
-        var rotation = this.value;
-        image.style.transform = 'rotate(' + rotation + 'deg)';
-    }
+  // Update the current slider value (each time you drag the slider handle)
+  slider.oninput = function() {
+      var rotation = this.value;
+      // Apply rotation to both elements
+      bikeImage.style.transform = 'rotate(' + rotation + 'deg)';
+      mapperImage.style.transform = 'rotate(' + rotation + 'deg)';
+  }
 });
+
 var myStyles =[
     [
         {
