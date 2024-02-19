@@ -163,3 +163,6 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
 }
+#wolfimage{
+    width:100%;
+}
