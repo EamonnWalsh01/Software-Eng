@@ -31,6 +31,8 @@ body, html {
 #mapper {
     height: 400px;
     width: 100%;
+    transition: transform 0.2s;
+    z-index: 1;
 }
 
 /* Title styles */
@@ -83,6 +85,7 @@ body, html {
 .autovid {
     width: 100%;
     position: absolute;
+    z-index: -1;
 }
 #trailer {
     width: 100%;
