@@ -5,10 +5,11 @@ import json
 api_key = 'ca224502e7a2a285e6b4bf2e73ddf465'
 
 # Location for which you want the weather data (e.g., "London,uk")
-location = 'Dublin,ireland'
+longitude = 53.35179289261352
+latitude =-6.261408882271609
 
-# Build the URL for the API request
-url = f'http://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}'
+# Build the URL for the API request using coordinates
+url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}'
 
 # Make the GET request to the OpenWeatherMap API
 response = requests.get(url)
