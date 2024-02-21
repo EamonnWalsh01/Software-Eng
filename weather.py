@@ -49,7 +49,7 @@ class Weather(Base):
     lon = Column(Float, primary_key=True, nullable=False)
     lat = Column(Float, primary_key=True, nullable=False)
     datetime = Column(DateTime, primary_key=True, nullable=False)
-    weatherid = Column(Integer)
+    weatherid = Column(Integer, nullable=False)
     weather_brief = Column(String(128))
     weather_desc=Column(String(128))
     temp=Column(Float)
@@ -153,6 +153,7 @@ def insert_weather(data):
     except IntegrityError:
         # This block is reached if the insert operation fails due to an IntegrityError, which
         # in this case likely means the primary key already exists. Roll back the session.
+        print("Error")
         session.rollback()
 
 
