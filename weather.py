@@ -16,7 +16,7 @@ db_config = config['database']
 api_config=config['weather_api']
 
 # # Your API key 
-# api_key = 'ca224502e7a2a285e6b4bf2e73ddf465'
+api_key = 'ca224502e7a2a285e6b4bf2e73ddf465'
 
 # # Location for which you want the weather data (e.g., "London,uk")
 # longitude = 53.35179289261352
@@ -78,7 +78,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 def get_weather_data(latitude, longitude):
-    url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_config['api_key']}'
+    url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}'
 
     # Make the GET request to the OpenWeatherMap API
     response = requests.get(url)
