@@ -126,7 +126,7 @@ def insert_weather(data):
             new_weather = Weather(
                 lon = data["coord"]["lon"],
                 lat = data["coord"]["lat"],
-                datetime = datetime.datetime.fromtimestamp(data["dt"] / 1000),
+                datetime = datetime.datetime.fromtimestamp(data["dt"]),
                 weatherid = data["weather"][0]["id"],
                 weather_brief = data["weather"][0]["main"],
                 weather_desc=data["weather"][0]["description"],
