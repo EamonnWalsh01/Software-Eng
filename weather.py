@@ -97,7 +97,7 @@ def insert_weather(data):
     # Attempt to insert new data
     try:
     #if True:
-        if data["rain"]["1h"]:
+        if 'rain' in data:
             new_weather = Weather(
                 lon = data["coord"]["lon"],
                 lat = data["coord"]["lat"],
