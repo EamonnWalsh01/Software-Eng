@@ -97,31 +97,57 @@ def insert_weather(data):
     # Attempt to insert new data
     try:
     #if True:
-        new_weather = Weather(
-            lon = data["coord"]["lon"],
-            lat = data["coord"]["lat"],
-            datetime = datetime.datetime.fromtimestamp(data["dt"] / 1000),
-            weatherid = data["weather"][0]["id"],
-            weather_brief = data["weather"][0]["main"],
-            weather_desc=data["weather"][0]["description"],
-            temp=data["main"]["temp"],
-            feels_like=data["main"]["feels_like"],
-            temp_min=data["main"]["temp_min"],
-            temp_max=data["main"]["temp_max"],
-            pressure=data["main"]["pressure"],
-            humidity=data["main"]["humidity"],
-            sea_level=data["main"]["sea_level"],
-            grnd_level=data["main"]["grnd_level"],
-            visibility=data["visibility"],
-            wind_speed=data["wind"]["speed"],
-            wind_direction_degs=data["wind"]["deg"],
-            wind_gust=data["wind"]["gust"],
-            rain_1h=data["rain"]["1h"],
-            clouds=data["clouds"]["all"],
-            sunrise=data["sys"]["sunrise"],
-            sunset=data["sys"]["sunset"]
+        if data["rain"]["1h"]:
+            new_weather = Weather(
+                lon = data["coord"]["lon"],
+                lat = data["coord"]["lat"],
+                datetime = datetime.datetime.fromtimestamp(data["dt"] / 1000),
+                weatherid = data["weather"][0]["id"],
+                weather_brief = data["weather"][0]["main"],
+                weather_desc=data["weather"][0]["description"],
+                temp=data["main"]["temp"],
+                feels_like=data["main"]["feels_like"],
+                temp_min=data["main"]["temp_min"],
+                temp_max=data["main"]["temp_max"],
+                pressure=data["main"]["pressure"],
+                humidity=data["main"]["humidity"],
+                sea_level=data["main"]["sea_level"],
+                grnd_level=data["main"]["grnd_level"],
+                visibility=data["visibility"],
+                wind_speed=data["wind"]["speed"],
+                wind_direction_degs=data["wind"]["deg"],
+                wind_gust=data["wind"]["gust"],
+                rain_1h=data["rain"]["1h"],
+                clouds=data["clouds"]["all"],
+                sunrise=data["sys"]["sunrise"],
+                sunset=data["sys"]["sunset"]
+            )
+        else:
+            new_weather = Weather(
+                lon = data["coord"]["lon"],
+                lat = data["coord"]["lat"],
+                datetime = datetime.datetime.fromtimestamp(data["dt"] / 1000),
+                weatherid = data["weather"][0]["id"],
+                weather_brief = data["weather"][0]["main"],
+                weather_desc=data["weather"][0]["description"],
+                temp=data["main"]["temp"],
+                feels_like=data["main"]["feels_like"],
+                temp_min=data["main"]["temp_min"],
+                temp_max=data["main"]["temp_max"],
+                pressure=data["main"]["pressure"],
+                humidity=data["main"]["humidity"],
+                sea_level=data["main"]["sea_level"],
+                grnd_level=data["main"]["grnd_level"],
+                visibility=data["visibility"],
+                wind_speed=data["wind"]["speed"],
+                wind_direction_degs=data["wind"]["deg"],
+                wind_gust=data["wind"]["gust"],
+                rain_1h=0,
+                clouds=data["clouds"]["all"],
+                sunrise=data["sys"]["sunrise"],
+                sunset=data["sys"]["sunset"]
             
-        )
+             )
         session.add(new_weather)
         session.commit()
     except IntegrityError:
