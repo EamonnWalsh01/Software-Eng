@@ -5,7 +5,7 @@ import json
 api_key = 'ca224502e7a2a285e6b4bf2e73ddf465'
 
 # Location for which you want the weather data (e.g., "London,uk")
-location = 'Dublin,ireland'
+location = 'Dublin, Ireland'
 
 # Build the URL for the API request
 url = f'http://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}'
