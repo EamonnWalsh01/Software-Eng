@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-import sqlalchemy
+from sqlalchemy import create_engine, text
 import configparser
 
 app = Flask(__name__, static_url_path='')
@@ -7,15 +7,17 @@ app = Flask(__name__, static_url_path='')
 config = configparser.ConfigParser()
 config.read('configbc.ini')
 db_config = config['database']
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{db_config['username']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['dbname']}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = sqlalchemy(app)
 
-@app.route('/stations')
+
+DATABASE_URI =  f"mysql+pymysql://{db_config['username']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['dbname']}"
+
+engine = create_engine(DATABASE_URI)
+
+@app.route('/station')
 def get_stations():
-    sql = 'SELECT * FROM stations'
-    result = db.engine.execute(sql)
-    stations = [dict(row) for row in result]
+    with engine.connect() as connection:
+        result = connection.execute(text("SELECT * FROM station"))
+        stations = [{column: value for column, value in row.items()} for row in result]
     return jsonify(stations)
 
 
