@@ -24,7 +24,6 @@ function initMap() {
   var map = new google.maps.Map(document.getElementById('DEMO_MAP_ID'), {
     center: {lat: -34.397, lng: 150.644},
     zoom: 8,
-    // Apply grayscale style
     styles: [
       {
         featureType: "all",
@@ -35,24 +34,19 @@ function initMap() {
         ]
       }
     ]
-  });
-}
-function initMap() {
-  var map = new google.maps.Map(document.getElementById('DEMO_MAP_ID'), {
-    center: {lat: -34.397, lng: 150.644},
-    zoom: 8,
-    styles: [
-      {
-        featureType: "all",
-        elementType: "all",
-        stylers: [
-          { saturation: -100 },
-          { lightness: 50 }
-        ]
-      }
-    ]
-  });
-}
+  })
+  var markerPosition = {lat: -34.397, lng: 150.644};
+
+  // Create a marker and set its position
+  var marker = new google.maps.Marker({
+    position: markerPosition,
+    map: map,
+    title: 'Hello World!'
+  });};
+
+ 
+
+
 const toggleSwitch = document.querySelector('#checkbox');
 const videoContent = document.getElementById('vid');
 const imageContent = document.getElementById('image');
