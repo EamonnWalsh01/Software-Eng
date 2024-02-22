@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stations Map</title>
+    <style>
+        /* Set the size of the map */
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9vCFkY-NEMrBdQIgTBixpjMB0ZPCsxQ8&callback=initMap&libraries=&v=weekly" async></script>
+    <script>
+        let map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 8,
+            });
+
+            fetch('/stations')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(station => {
+                        new google.maps.Marker({
+                            position: { lat: station.position_lat, lng: station.position_lng },
+                            map: map,
+                            title: station.name
+                        });
+                    });
+                });
+        }
+    </script>
+</head>
+<body>
+    <div id="map"></div>
+</body>
+</html>

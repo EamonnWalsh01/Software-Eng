@@ -13,17 +13,18 @@ DATABASE_URI =  f"mysql+pymysql://{db_config['username']}:{db_config['password']
 
 engine = create_engine(DATABASE_URI)
 
-@app.route('/station')
+@app.route('/stations')
 def get_stations():
     with engine.connect() as connection:
-        result = connection.execute(text("SELECT * FROM station"))
-        stations = [{column: value for column, value in row.items()} for row in result]
-    return jsonify(stations)
+        result = connection.execute(text("SELECT number, address, banking, bike_stands, name, position_lat, position_lng FROM station"))
+        # Ensure proper conversion of row objects to dictionaries
+        stations_list = [dict(row) for row in result.mappings()]
+    return jsonify(stations_list)
 
 
 @app.route('/')
-def root():
-    return app.send_static_file('index.html')
+def index():
+    return app.send_static_file('map.html')
 
 if __name__=="__main__":
     app.run(debug=True, host="0.0.0.0",port=8080)
