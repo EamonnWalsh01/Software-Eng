@@ -1,33 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stations Map</title>
-    <style>
-        /* Set the size of the map */
-        #map {
-            height: 400px;
-            width: 100%;
-        }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap" async></script>
-
-    
+    <title>Map with Search Box</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap" async defer></script>
     <script>
-        let map;
-    
         function initMap() {
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 53, lng: -8 },
-                zoom: 8,
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 53.3498, lng: -6.2603 },
+                zoom: 13,
             });
-
-            const input = document.getElementById("searchBox");
+            const input = document.getElementById("pac-input");
             const searchBox = new google.maps.places.SearchBox(input);
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
             // Bias the SearchBox results towards current map's viewport.
             map.addListener("bounds_changed", function() {
                 searchBox.setBounds(map.getBounds());
-                console.log("HELLO")
             });
 
             searchBox.addListener("places_changed", function() {
@@ -49,8 +37,7 @@
                 });
                 map.fitBounds(bounds);
             });
-    
-            // Fetch station data and create markers
+
             fetch('/stations')
                 .then(response => response.json())
                 .then(data => {
@@ -115,14 +102,11 @@
                     });
                 });
         }
-
     </script>
-    
 </head>
 <body>
-    <input id="searchBox" type="text" placeholder="Enter a location">
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
     <div id="sidebar" style="width: 300px; height: 100%; float: right; overflow: auto;"></div>
-    <div id="map" style="width: calc(100% - 300px); height: 100%; float: left;"></div>
-
+    <div id="map" style="height:400px; width:100%;"></div>
 </body>
 </html>
