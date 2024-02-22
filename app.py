@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-import sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
 import configparser
 
 app = Flask(__name__, static_url_path='')
@@ -9,7 +9,7 @@ config.read('configbc.ini')
 db_config = config['database']
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{db_config['username']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['dbname']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = sqlalchemy(app)
+db = SQLAlchemy(app)
 
 @app.route('/stations')
 def get_stations():
