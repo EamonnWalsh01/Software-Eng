@@ -13,10 +13,10 @@ DATABASE_URI =  f"mysql+pymysql://{db_config['username']}:{db_config['password']
 
 engine = create_engine(DATABASE_URI)
 
-@app.route('/stations')
+@app.route('/station')
 def get_stations():
     with engine.connect() as connection:
-        result = connection.execute(text("SELECT * FROM stations"))
+        result = connection.execute(text("SELECT * FROM station"))
         stations = [dict(row) for row in result]
     return jsonify(stations)
 
