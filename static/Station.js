@@ -103,6 +103,7 @@ function fetchNearestStations(lat, lng) {
         .then(response => response.json())
         .then(stations => {
             const sidebar = document.getElementById("sidebar");
+            sidebar.style.display = 'block';
             sidebar.innerHTML = ''; // Clear previous results
             stations.forEach(station => {
                 const element = document.createElement("div");

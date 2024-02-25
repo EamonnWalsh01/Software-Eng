@@ -1,11 +1,32 @@
-#map{
-    height:100%; width:100%;}
-#sidebar{
-    width: 300px; height: 100%; float: right; overflow: auto;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
-#mapbox{bottom:0;
-    height:800px;
-background-color: red;}
+
+#mapbox {
+    position: relative; 
+    height: 100%;
+    background-color: #f5f5f5; 
+}
+
+#map {
+    height: 100%; 
+    width: 100%; 
+}
+
+#sidebar {
+    position: absolute; 
+    top: 0;
+    left: 0; 
+    width: 300px; 
+    height: 100%; 
+    overflow-y: auto; 
+    background-color: rgba(255, 255, 255, 0.9); 
+    
+    display: none; 
+    z-index: 5;
+}
 .controls {
     position: absolute;
     top: 10px;
@@ -27,5 +48,5 @@ background-color: red;}
 }
 
 .controls:focus {
-    border-color: #4d90fe;
+    border-color: #defe4d;
 }
