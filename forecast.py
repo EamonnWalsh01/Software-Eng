@@ -65,31 +65,56 @@ def insert_forecast(data):
         currenttime=datetime.datetime.now()
 
         try:
-            new_forecast=Forecast(
-               datetime = currenttime,
-               lon = data["city"]["coord"]["lon"],
-               lat = data["city"]["coord"]["lat"],
-               forecastedtime=datetime.datetime.fromtimestamp(fc["dt"]),
-               temp=fc["main"]["temp"],
-               feels_like=fc["main"]["feels_like"],
-               temp_min=fc["main"]["temp_min"],
-               temp_max=fc["main"]["temp_max"],
-               pressure=fc["main"]["pressure"],
-               sea_level=fc["main"]["sea_level"],
-               grnd_level=fc["main"]["grnd_level"],
-               humidity=fc["main"]["humidity"],
-               weatherid=fc["weather"][0]["id"],
-               weather_brief=fc["weather"][0]["main"],
-               weather_desc=fc["weather"][0]["description"],
-               clouds=fc["clouds"]["all"],
-               wind_speed=fc["wind"]["speed"],
-               wind_direction_degs=fc["wind"]["deg"],
-               wind_gust=fc["wind"]["gust"],
-               visibility=fc["visibility"],
-               probability_of_rain=fc["pop"],
-               rain_3h=["rain"]["3h"]
-            )
-            
+            if 'rain' in fc:
+                new_forecast=Forecast(
+                    datetime = currenttime,
+                    lon = data["city"]["coord"]["lon"],
+                    lat = data["city"]["coord"]["lat"],
+                    forecastedtime=datetime.datetime.fromtimestamp(fc["dt"]),
+                    temp=fc["main"]["temp"],
+                    feels_like=fc["main"]["feels_like"],
+                    temp_min=fc["main"]["temp_min"],
+                    temp_max=fc["main"]["temp_max"],
+                    pressure=fc["main"]["pressure"],
+                    sea_level=fc["main"]["sea_level"],
+                    grnd_level=fc["main"]["grnd_level"],
+                    humidity=fc["main"]["humidity"],
+                    weatherid=fc["weather"][0]["id"],
+                    weather_brief=fc["weather"][0]["main"],
+                    weather_desc=fc["weather"][0]["description"],
+                    clouds=fc["clouds"]["all"],
+                    wind_speed=fc["wind"]["speed"],
+                    wind_direction_degs=fc["wind"]["deg"],
+                    wind_gust=fc["wind"]["gust"],
+                    visibility=fc["visibility"],
+                    probability_of_rain=fc["pop"],
+                    rain_3h=fc["rain"]["3h"]
+                )
+            else:
+                new_forecast=Forecast(
+                    datetime = currenttime,
+                    lon = data["city"]["coord"]["lon"],
+                    lat = data["city"]["coord"]["lat"],
+                    forecastedtime=datetime.datetime.fromtimestamp(fc["dt"]),
+                    temp=fc["main"]["temp"],
+                    feels_like=fc["main"]["feels_like"],
+                    temp_min=fc["main"]["temp_min"],
+                    temp_max=fc["main"]["temp_max"],
+                    pressure=fc["main"]["pressure"],
+                    sea_level=fc["main"]["sea_level"],
+                    grnd_level=fc["main"]["grnd_level"],
+                    humidity=fc["main"]["humidity"],
+                    weatherid=fc["weather"][0]["id"],
+                    weather_brief=fc["weather"][0]["main"],
+                    weather_desc=fc["weather"][0]["description"],
+                    clouds=fc["clouds"]["all"],
+                    wind_speed=fc["wind"]["speed"],
+                    wind_direction_degs=fc["wind"]["deg"],
+                    wind_gust=fc["wind"]["gust"],
+                    visibility=fc["visibility"],
+                    probability_of_rain=fc["pop"],
+                    rain_3h=0
+                )
             session.add(new_forecast)
             session.commit()
 
