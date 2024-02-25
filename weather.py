@@ -15,7 +15,7 @@ config.read('configbc.ini')
 db_config = config['database']
 api_config=config['weather_api']
 
-# # Your API key 
+# API key 
 api_key = 'ca224502e7a2a285e6b4bf2e73ddf465'
 
 class Weather(Base):

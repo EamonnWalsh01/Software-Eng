@@ -6,6 +6,7 @@ import requests
 import datetime
 import configparser
 import time
+import json
 
 Base = declarative_base()
 config = configparser.ConfigParser()
@@ -45,7 +46,7 @@ def get_station_data():
     try:
         url = f"https://api.jcdecaux.com/vls/v1/stations?contract={api_config['contract_name']}&apiKey={api_config['api_key']}"
         response = requests.get(url)
-        response.raise_for_status()  # Raises an HTTPError if the response status is 4XX/5XX
+        response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from API: {e}")
