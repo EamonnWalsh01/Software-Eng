@@ -17,6 +17,7 @@ function initMap() {
     mapTypeControl: false,
     fullscreenControl: false
     });
+    let currentInfowindow = null;
     const input = document.getElementById("pac-input");
     const searchBox = new google.maps.places.SearchBox(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -48,13 +49,13 @@ function initMap() {
         sidebar.style.display = 'block';
         anime({
         targets: '#sidebar',
-        translateX: [-300, 0], 
+        translateX: [-300, 20], 
         easing: 'easeOutQuad', 
         duration: 500 
     });
     anime({
         targets: '#pac-input',
-        translateX: [300], 
+        translateX: [350], 
         easing: 'easeOutQuad', 
         duration: 500 
     })
@@ -100,10 +101,15 @@ function initMap() {
                                     <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
                                 </div>
                             `;
+                            if (currentInfowindow) {
+                                console.log("hello");
+                                currentInfowindow.close();
+                            }
                             let infowindow = new google.maps.InfoWindow({
                                 content: content
                             });
                             infowindow.open(map, marker);
+                            currentInfowindow = infowindow;
                         });
                 });
             });
@@ -117,11 +123,20 @@ function fetchNearestStations(lat, lng) {
         .then(stations => {
             const sidebar = document.getElementById("sidebar");
             
-            sidebar.innerHTML = '';
+            
             stations.forEach(station => {
                 const element = document.createElement("div");
                 element.className = 'station-info';
-                element.textContent = `Name: ${station.name}, Bikes Available: ${station.available_bikes}`;
+
+                const nameElement = document.createElement("div");
+                nameElement.className = 'station-name';
+                nameElement.textContent = `Name: ${station.name}`;
+                element.appendChild(nameElement);
+
+                const bikesElement = document.createElement("div");
+                bikesElement.className = 'available-bikes';
+                bikesElement.textContent = `Bikes Available: ${station.available_bikes}`;
+                element.appendChild(bikesElement);
                 sidebar.appendChild(element);
             });
         });
