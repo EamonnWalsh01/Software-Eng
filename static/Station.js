@@ -104,6 +104,12 @@ function fetchNearestStations(lat, lng) {
         .then(stations => {
             const sidebar = document.getElementById("sidebar");
             sidebar.style.display = 'block';
+            anime({
+        targets: '#sidebar',
+        translateX: [-300, 0], // Assuming the sidebar moves in from the left (-300px to 0)
+        easing: 'easeOutQuad', // Adjust easing as needed
+        duration: 500 // Adjust duration as needed
+    });
             sidebar.innerHTML = ''; // Clear previous results
             stations.forEach(station => {
                 const element = document.createElement("div");
