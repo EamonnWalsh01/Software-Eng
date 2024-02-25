@@ -112,6 +112,7 @@ function initMap() {
                             currentInfowindow = infowindow;
                         });
                 });
+                
             });
         });
 }
@@ -137,6 +138,7 @@ function fetchNearestStations(lat, lng) {
                 bikesElement.className = 'available-bikes';
                 bikesElement.textContent = `Bikes Available: ${station.available_bikes}`;
                 element.appendChild(bikesElement);
+                
                 sidebar.appendChild(element);
             });
         });
