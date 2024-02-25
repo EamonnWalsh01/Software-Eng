@@ -43,8 +43,15 @@ function initMap() {
             // Fetch and display the nearest stations
             fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
         });
-        map.fitBounds(bounds);
         
+        map.fitBounds(bounds);
+        sidebar.style.display = 'block';
+        anime({
+        targets: '#sidebar',
+        translateX: [-300, 0], // Assuming the sidebar moves in from the left (-300px to 0)
+        easing: 'easeOutQuad', // Adjust easing as needed
+        duration: 500 // Adjust duration as needed
+    });
     });
 
     fetch('/stations')
@@ -103,14 +110,8 @@ function fetchNearestStations(lat, lng) {
         .then(response => response.json())
         .then(stations => {
             const sidebar = document.getElementById("sidebar");
-            sidebar.style.display = 'block';
-            anime({
-        targets: '#sidebar',
-        translateX: [-300, 0], // Assuming the sidebar moves in from the left (-300px to 0)
-        easing: 'easeOutQuad', // Adjust easing as needed
-        duration: 500 // Adjust duration as needed
-    });
-            sidebar.innerHTML = ''; // Clear previous results
+            
+            sidebar.innerHTML = '';
             stations.forEach(station => {
                 const element = document.createElement("div");
                 element.textContent = `Name: ${station.name}, Bikes Available: ${station.available_bikes}`;
