@@ -48,10 +48,16 @@ function initMap() {
         sidebar.style.display = 'block';
         anime({
         targets: '#sidebar',
-        translateX: [-300, 0], // Assuming the sidebar moves in from the left (-300px to 0)
-        easing: 'easeOutQuad', // Adjust easing as needed
-        duration: 500 // Adjust duration as needed
+        translateX: [-300, 0], 
+        easing: 'easeOutQuad', 
+        duration: 500 
     });
+    anime({
+        targets: '#pac-input',
+        translateX: [300], 
+        easing: 'easeOutQuad', 
+        duration: 500 
+    })
     });
 
     fetch('/stations')
@@ -114,6 +120,7 @@ function fetchNearestStations(lat, lng) {
             sidebar.innerHTML = '';
             stations.forEach(station => {
                 const element = document.createElement("div");
+                element.className = 'station-info';
                 element.textContent = `Name: ${station.name}, Bikes Available: ${station.available_bikes}`;
                 sidebar.appendChild(element);
             });

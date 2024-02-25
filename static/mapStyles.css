@@ -50,3 +50,10 @@ html, body {
 .controls:focus {
     border-color: #defe4d;
 }
+.station-info {
+    background-color: #f0f0f0;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
