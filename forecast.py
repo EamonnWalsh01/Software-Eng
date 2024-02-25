@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 import requests
-import datetime
+import datetime 
 import configparser
 import time
 import json
@@ -62,14 +62,14 @@ def get_forecast_data(latitude, longitude):
     
 def insert_forecast(data):
     for fc in data["list"]:
-        currenttime=datetime.now()
+        currenttime=datetime.datetime.now()
 
         try:
             new_forecast=Forecast(
                datetime = currenttime,
                lon = data["city"]["coord"]["lon"],
                lat = data["city"]["coord"]["lat"],
-               forecastedtime=fc["dt"],
+               forecastedtime=datetime.datetime.fromtimestamp(fc["dt"]),
                temp=fc["main"]["temp"],
                feels_like=fc["main"]["feels_like"],
                temp_min=fc["main"]["temp_min"],
