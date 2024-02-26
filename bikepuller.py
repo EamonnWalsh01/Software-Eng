@@ -1,4 +1,3 @@
-
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -10,7 +9,6 @@ Base = declarative_base()
 config = configparser.ConfigParser()
 config.read('configbc.ini')
 db_config = config['database']
-api_config = config['api']
 
 class Station(Base):
     __tablename__ = 'station'
@@ -33,8 +31,6 @@ db = session.query(Station).all()
 
 # Serialize the query results to JSON
 stations_data = [{"number": station.number, "address": station.address, "banking": station.banking, "stands":station.bike_stands, "name":station.name, "Latitude":station.position_lat, "Longitude":station.position_lng} for station in db]
-
-
 
 # Write the JSON data to a file
 with open('station_data.json', 'w') as outfile:
