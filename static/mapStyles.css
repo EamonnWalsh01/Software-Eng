@@ -8,6 +8,8 @@ html, body {
     position: relative; 
     height: 100%;
     background-color: #f5f5f5; 
+    -webkit-mask-image: linear-gradient(to bottom, transparent 25%, black 75%);
+    mask-image: linear-gradient(to bottom, transparent 25%, black 75%);
 }
 
 #map {
@@ -89,7 +91,9 @@ html, body {
 }
 #landingDiv{
     background-color: black;
-    position: sticky;
+    height: 2000px;
+    -webkit-mask-image: linear-gradient(to top, transparent 25%, black 75%);
+    mask-image: linear-gradient(to top, transparent 25%, black 75%);
 }
 @keyframes fadeIn {
     from {
@@ -100,7 +104,15 @@ html, body {
     }
   }
 #bikeimg{
+    top: 0;
     width: 100%;
     animation: fadeIn 2s ease-in-out;
+    position: sticky;
 
+
+}
+#outerDiv{
+    height: 2000px;
+    -webkit-mask-image: linear-gradient(black, transparent);
+    mask-image: linear-gradient(black, transparent);
 }
