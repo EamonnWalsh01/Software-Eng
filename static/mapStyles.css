@@ -87,3 +87,20 @@ html, body {
 .sidebarInfoWindow{
     display: none;
 }
+#landingDiv{
+    background-color: black;
+    position: sticky;
+}
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+#bikeimg{
+    width: 100%;
+    animation: fadeIn 2s ease-in-out;
+
+}
