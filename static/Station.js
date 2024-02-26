@@ -22,9 +22,9 @@ function initMap() {
     });
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map); // Associate the DirectionsRenderer with the map
+    directionsRenderer.setMap(map); 
 
-    // Set the start and end points of the route
+   
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
    
@@ -215,7 +215,7 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer, start, 
         {
             origin: start,
             destination: end,
-            travelMode: google.maps.TravelMode.WALKING // Or any other mode: WALKING, BICYCLING, TRANSIT
+            travelMode: google.maps.TravelMode.WALKING 
         },
         (response, status) => {
             if (status === google.maps.DirectionsStatus.OK) {
