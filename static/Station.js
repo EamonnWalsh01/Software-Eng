@@ -108,6 +108,7 @@ function initMap() {
                             let infowindow = new google.maps.InfoWindow({
                                 content: content
                             });
+                            
                             infowindow.open(map, marker);
                             currentInfowindow = infowindow;
                         });
@@ -137,9 +138,31 @@ function fetchNearestStations(lat, lng) {
                 const bikesElement = document.createElement("div");
                 bikesElement.className = 'available-bikes';
                 bikesElement.textContent = `Bikes Available: ${station.available_bikes}`;
+                const infoElement = document.createElement("div");
+                infoElement.className = 'sidebarInfoWindow';
                 element.appendChild(bikesElement);
-                
+                element.appendChild(infoElement);
                 sidebar.appendChild(element);
+                
+                element.addEventListener('click', function() {
+                    fetch(`/availability/${station.number}`)
+                        .then(response => response.json())
+                        .then(availability => {
+                            let content = `
+                                
+                                    
+                                    Available Stands: ${availability.available_bike_stands}
+                                    Status: ${availability.status}
+                                    Last Update: ${new Date(availability.last_update).toLocaleString()}
+                                
+                            `;
+                            
+                            infoElement.textContent = content;
+                            
+                            infoElement.style.display = 'block';
+                        });
+                });
+            })
             });
-        });
+        ;
 }

@@ -84,3 +84,6 @@ html, body {
 .available-bikes {
     margin-top: 5px;
 }
+.sidebarInfoWindow{
+    display: none;
+}
