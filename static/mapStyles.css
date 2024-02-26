@@ -8,8 +8,8 @@ html, body {
     position: relative; 
     height: 100%;
     background-color: #f5f5f5; 
-    -webkit-mask-image: linear-gradient(to bottom, transparent 25%, black 75%);
-    mask-image: linear-gradient(to bottom, transparent 25%, black 75%);
+    /* -webkit-mask-image: linear-gradient(to bottom, transparent 25%, black 75%);
+    mask-image: linear-gradient(to bottom, transparent 25%, black 75%); */
 }
 
 #map {
@@ -90,10 +90,12 @@ html, body {
     display: none;
 }
 #landingDiv{
+    top: 0;
+    position: sticky;
     background-color: black;
     height: 2000px;
-    -webkit-mask-image: linear-gradient(to top, transparent 25%, black 75%);
-    mask-image: linear-gradient(to top, transparent 25%, black 75%);
+    -webkit-mask-image: linear-gradient(to top, transparent 10%, black 90%);
+    mask-image: linear-gradient(to top, transparent 10%, black 90%);
 }
 @keyframes fadeIn {
     from {
@@ -104,15 +106,38 @@ html, body {
     }
   }
 #bikeimg{
-    top: 0;
+   position: fixed;
     width: 100%;
     animation: fadeIn 2s ease-in-out;
-    position: sticky;
+    
 
 
 }
 #outerDiv{
     height: 2000px;
-    -webkit-mask-image: linear-gradient(black, transparent);
-    mask-image: linear-gradient(black, transparent);
+    -webkit-mask-image: linear-gradient(to top, transparent 10%, black 90%);
+    mask-image: linear-gradient(to top, transparent 10%, black 90%);
+    background-color: black;
+}
+#inputbar {
+    top: 0;
+    padding-top:350px;
+    padding-left:350px;
+    position: sticky;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    box-sizing: border-box;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    border: 1px solid transparent;
+    width: 400px;
+    padding: 0 12px;
+    margin-top: 35%;
+    margin-left: 35%;
+    font-size: 14px;
+    line-height: 40px;
+    height: 40px;
+    outline: none;
+    text-overflow: ellipses;
+    border-radius: 5px;
 }
