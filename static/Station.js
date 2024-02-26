@@ -1,4 +1,6 @@
 function initMap() {
+    createDateDropdown();
+            createTimeDropdown();
     const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 53.3498, lng: -6.2603 },
         zoom: 13,
@@ -12,14 +14,24 @@ function initMap() {
         ]
       }
     ],
+    
     streetViewControl: false,
     zoomControl: false,
     mapTypeControl: false,
     fullscreenControl: false
     });
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map); // Associate the DirectionsRenderer with the map
+
+    // Set the start and end points of the route
+    // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
+    // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
+   
+
     let currentInfowindow = null;
-    const input = document.getElementById("pac-input");
-    const searchBox = new google.maps.places.SearchBox(input);
+    let input = document.getElementById("pac-input");
+    let searchBox = new google.maps.places.SearchBox(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
     // Bias the SearchBox results towards current map's viewport.
@@ -29,7 +41,10 @@ function initMap() {
 
     searchBox.addListener("places_changed", function() {
         const places = searchBox.getPlaces();
-
+        const place = places[0];
+        if (!place.geometry) return;
+        start = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+        calculateAndDisplayRoute(directionsService, directionsRenderer, start, end);
         if (places.length === 0) return;
 
         const bounds = new google.maps.LatLngBounds();
@@ -40,8 +55,8 @@ function initMap() {
             } else {
                 bounds.extend(place.geometry.location);
             }
-
-            // Fetch and display the nearest stations
+            
+           
             fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
         });
         
@@ -101,7 +116,7 @@ function initMap() {
                                     <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
                                 </div>
                             `;
-                            if (currentInfowindow) {
+                           if (currentInfowindow) {
                                 console.log("hello");
                                 currentInfowindow.close();
                             }
@@ -111,6 +126,8 @@ function initMap() {
                             
                             infowindow.open(map, marker);
                             currentInfowindow = infowindow;
+                             end = { lat: station.position_lat, lng:station.position_lng };
+                            calculateAndDisplayRoute(directionsService, directionsRenderer, start, end);
                         });
                 });
                 
@@ -165,4 +182,47 @@ function fetchNearestStations(lat, lng) {
             })
             });
         ;
+}
+function createDateDropdown() {
+    const select = document.createElement('select');
+    select.id = 'dateDropdown';
+    for (let day = 1; day <= 31; day++) {
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = day;
+        select.appendChild(option);
+    }
+    document.getElementById('Dropdowns').appendChild(select);
+}
+
+
+function createTimeDropdown() {
+    const select = document.createElement('select');
+    select.id = 'timeDropdown';
+    for (let hour = 0; hour < 24; hour++) {
+        for (let minute = 0; minute < 60; minute += 15) { 
+            const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            const option = document.createElement('option');
+            option.value = timeString;
+            option.textContent = timeString;
+            select.appendChild(option);
+        }
+    }
+    document.getElementById('Dropdowns').appendChild(select);
+}
+function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
+    directionsService.route(
+        {
+            origin: start,
+            destination: end,
+            travelMode: google.maps.TravelMode.WALKING // Or any other mode: WALKING, BICYCLING, TRANSIT
+        },
+        (response, status) => {
+            if (status === google.maps.DirectionsStatus.OK) {
+                directionsRenderer.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        }
+    );
 }

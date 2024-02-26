@@ -141,3 +141,6 @@ html, body {
     text-overflow: ellipses;
     border-radius: 5px;
 }
+#Dropdowns{
+    z-index: 30;
+}
