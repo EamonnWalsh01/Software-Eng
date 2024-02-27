@@ -84,7 +84,7 @@ def current_weather():
     lat = request.args.get('lat', type=float)
     lng = request.args.get('lng', type=float)
 
-    with engine.connect as connection:
+    with engine.connect() as connection:
         query=text("""
             SELECT lon, lat, temp, feels_like, humidity, rain_1h, weather_desc, weather_brief, wind_speed,
                    SQRT(POW(69.1 * (s.position_lat - :lat), 2) +
@@ -96,10 +96,9 @@ def current_weather():
         
         params = {'lat': lat, 'lng': lng}  # Define parameters as a dictionary
 
-        with engine.connect() as connection:
-            result = connection.execute(query, params)  # Pass parameters dictionary as the second argument
-            nearest_weather = [dict(row) for row in result.mappings()]
-            print(nearest_weather)
+        result = connection.execute(query, params)  # Pass parameters dictionary as the second argument
+        nearest_weather = [dict(row) for row in result.mappings()]
+        print(nearest_weather)
         return jsonify(nearest_weather)
         
     
