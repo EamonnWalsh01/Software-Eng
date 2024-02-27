@@ -32,7 +32,6 @@ class Weather(Base):
     temp_max=Column(Float)
     pressure=Column(Integer)
     humidity=Column(Integer)
-    grnd_level=Column(Integer)
     visibility=Column(Integer)
     wind_speed=Column(Float)
     wind_direction_degs=Column(Integer)
@@ -84,7 +83,6 @@ def insert_weather(data):
                 temp_max=data["main"]["temp_max"],
                 pressure=data["main"]["pressure"],
                 humidity=data["main"]["humidity"],
-                grnd_level=data["main"]["grnd_level"],
                 visibility=data["visibility"],
                 wind_speed=data["wind"]["speed"],
                 wind_direction_degs=data["wind"]["deg"],
@@ -108,7 +106,6 @@ def insert_weather(data):
                 temp_max=data["main"]["temp_max"],
                 pressure=data["main"]["pressure"],
                 humidity=data["main"]["humidity"],
-                grnd_level=data["main"]["grnd_level"],
                 visibility=data["visibility"],
                 wind_speed=data["wind"]["speed"],
                 wind_direction_degs=data["wind"]["deg"],
