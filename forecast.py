@@ -50,7 +50,7 @@ Base.metadata.bind=engine
 DBSession=sessionmaker(bind=engine)
 session=DBSession()
 
-def get_forecast_data(latitude, longitude):
+def get_forecast_data(longitude, latitude):
     try:
         url=f"https://api.openweathermap.org/data/2.5/forecast?lat={latitude}&lon={longitude}&cnt=16&appid={api_key}"
         response=requests.get(url)

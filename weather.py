@@ -51,7 +51,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-def get_weather_data(latitude, longitude):
+def get_weather_data(longitude, latitude):
     url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}'
 
     # Make the GET request to the OpenWeatherMap API
