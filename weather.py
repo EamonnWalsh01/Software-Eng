@@ -35,7 +35,6 @@ class Weather(Base):
     visibility=Column(Integer)
     wind_speed=Column(Float)
     wind_direction_degs=Column(Integer)
-    wind_gust=Column(Float)
     rain_1h=Column(Float)
     clouds=Column(Float)
     sunrise=Column(Integer)
@@ -86,7 +85,6 @@ def insert_weather(data):
                 visibility=data["visibility"],
                 wind_speed=data["wind"]["speed"],
                 wind_direction_degs=data["wind"]["deg"],
-                wind_gust=data["wind"]["gust"],
                 rain_1h=data["rain"]["1h"],
                 clouds=data["clouds"]["all"],
                 sunrise=data["sys"]["sunrise"],
@@ -109,7 +107,6 @@ def insert_weather(data):
                 visibility=data["visibility"],
                 wind_speed=data["wind"]["speed"],
                 wind_direction_degs=data["wind"]["deg"],
-                wind_gust=data["wind"]["gust"],
                 rain_1h=0,
                 clouds=data["clouds"]["all"],
                 sunrise=data["sys"]["sunrise"],
