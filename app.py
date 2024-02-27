@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
 import configparser
 
@@ -13,17 +13,103 @@ DATABASE_URI =  f"mysql+pymysql://{db_config['username']}:{db_config['password']
 
 engine = create_engine(DATABASE_URI)
 
-@app.route('/station')
+@app.route('/stations')
 def get_stations():
     with engine.connect() as connection:
-        result = connection.execute(text("SELECT * FROM station"))
-        stations = [{column: value for column, value in row.items()} for row in result]
-    return jsonify(stations)
+        result = connection.execute(text("""
+            SELECT s.number, s.address, s.banking, s.bike_stands, s.name, s.position_lat, s.position_lng, a.available_bikes
+            FROM station s
+            LEFT JOIN (
+                SELECT number, available_bikes, ROW_NUMBER() OVER(PARTITION BY number ORDER BY last_update DESC) AS rn
+                FROM availability
+            ) a ON s.number = a.number AND a.rn = 1
+        """))
+        # Ensure proper conversion of row objects to dictionaries
+        stations_list = [dict(row) for row in result.mappings()]
+    return jsonify(stations_list)
+
+
+@app.route('/availability/<int:number>')
+def get_availability(number):
+    with engine.connect() as connection:
+        query = text("""
+            SELECT * FROM availability 
+            WHERE number = :number 
+            ORDER BY last_update DESC 
+            LIMIT 1
+        """)
+        result = connection.execute(query, {"number": number}).fetchone()
+        if result:
+            availability_data = dict(result._mapping)
+            return jsonify(availability_data)
+        else:
+            return jsonify({"error": "No data found for station number {}".format(number)}), 404
+
+
+
+@app.route('/nearest-stations')
+def nearest_stations():
+    lat = request.args.get('lat', type=float)
+    lng = request.args.get('lng', type=float)
+    
+    # Query to find the 5 nearest stations to the provided lat/lng
+    # This is a simplistic calculation and does not account for Earth's curvature.
+    # For more accuracy, consider using PostGIS with PostgreSQL or a similar spatial extension with your database.
+    query = text("""
+        SELECT s.number, s.name, s.position_lat, s.position_lng, a.available_bikes, a.available_bike_stands, a.last_update,
+               SQRT(POW(69.1 * (s.position_lat - :lat), 2) +
+                    POW(69.1 * (:lng - s.position_lng) * COS(s.position_lat / 57.3), 2)) AS distance
+        FROM station s
+        JOIN (
+            SELECT number, available_bikes, available_bike_stands, last_update,
+                   ROW_NUMBER() OVER(PARTITION BY number ORDER BY last_update DESC) AS rn
+            FROM availability
+        ) a ON s.number = a.number
+        WHERE a.rn = 1
+        ORDER BY distance
+        LIMIT 5;
+    """)
+
+    params = {'lat': lat, 'lng': lng}  # Define parameters as a dictionary
+
+    with engine.connect() as connection:
+        result = connection.execute(query, params)  # Pass parameters dictionary as the second argument
+        nearest_stations = [dict(row) for row in result.mappings()]
+        print(nearest_stations)
+    return jsonify(nearest_stations)
+
+
+@app.route('/weather')
+def current_weather():
+    lat = request.args.get('lat', type=float)
+    lng = request.args.get('lng', type=float)
+
+    with engine.connect() as connection:
+        query=text("""
+            SELECT lon, lat, temp, feels_like, humidity, rain_1h, weather_desc, weather_brief, wind_speed,
+                   SQRT(POW(69.1 * (lat - lat), 2) +
+                    POW(69.1 * (lon - lon) * COS(lat / 57.3), 2)) AS distance
+            FROM weather 
+            ORDER BY datetime, distance DESC 
+            LIMIT 1;      
+                """)
+        
+        params = {'lat': lat, 'lng': lng}  # Define parameters as a dictionary
+
+        result = connection.execute(query, params)  # Pass parameters dictionary as the second argument
+        nearest_weather = [dict(row) for row in result.mappings()]
+        print(nearest_weather)
+        return jsonify(nearest_weather)
+        
+    
+   
+
+    
 
 
 @app.route('/')
-def root():
-    return app.send_static_file('index.html')
+def index():
+    return app.send_static_file('map2.html')
 
 if __name__=="__main__":
     app.run(debug=True, host="0.0.0.0",port=8080)

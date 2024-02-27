@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="mapStyles.css" >
+    <title>Map with Search Box</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="Station.js"></script>
+<script>
+    
+    window.onload = initMap;
+    
+</script>
+</head>
+<body>
+    <div id = "outerDiv">
+    <div id = "landingDiv">
+        <img id="bikeimg" src="output-onlinepngtools.png" alt="Bike Image">
+        <input type="text" id="inputbar" placeholder="Search Location">
+        <div id = "Dropdowns"></div>
+        
+
+
+
+<!-- Time Dropdown -->
+
+
+
+
+
+    </div>
+    </div>
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+    
+    <div id = "mapbox">
+    <div id="sidebar"></div>
+    <div id="map" ></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stations Map</title>
+    <style>
+        /* Set the size of the map */
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap" async></script>
+
+    
+    <script>
+        let map;
+    
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 53, lng: -8 },
+                zoom: 8,
+            });
+
+            const input = document.getElementById("searchBox");
+            const searchBox = new google.maps.places.SearchBox(input);
+
+            // Bias the SearchBox results towards current map's viewport.
+            map.addListener("bounds_changed", function() {
+                searchBox.setBounds(map.getBounds());
+                console.log("HELLO")
+            });
+
+            searchBox.addListener("places_changed", function() {
+                const places = searchBox.getPlaces();
+
+                if (places.length === 0) return;
+
+                const bounds = new google.maps.LatLngBounds();
+                places.forEach(place => {
+                    if (!place.geometry) return;
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+
+                    // Fetch and display the nearest stations
+                    fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
+                });
+                map.fitBounds(bounds);
+            });
+    
+            // Fetch station data and create markers
+            fetch('/stations')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(station => {
+
+                        let color;
+                        if (station.available_bikes === 0) {
+                            color = "red";
+                        } else if (station.available_bikes > 0 && station.available_bikes <= 5) {
+                            color = "yellow";
+                        } else {
+                            color = "green";
+                        }
+
+                        // Creating a colored pin
+                        let pinColor = color;
+                        let pinImage = new google.maps.MarkerImage("http://maps.google.com/mapfiles/ms/icons/" + pinColor + "-dot.png");
+
+                        let marker = new google.maps.Marker({
+                            position: { lat: station.position_lat, lng: station.position_lng },
+                            map: map,
+                            icon: pinImage,
+                            title: station.name
+                        });
+                        
+    
+                        // Add click listener to each marker
+                        marker.addListener('click', function() {
+                            fetch(`/availability/${station.number}`)
+                                .then(response => response.json())
+                                .then(availability => {
+                                    let content = `
+                                        <div>
+                                            <h3>${station.name}</h3>
+                                            <p>Available Bikes: ${availability.available_bikes}</p>
+                                            <p>Available Stands: ${availability.available_bike_stands}</p>
+                                            <p>Status: ${availability.status}</p>
+                                            <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                                        </div>
+                                    `;
+                                    let infowindow = new google.maps.InfoWindow({
+                                        content: content
+                                    });
+                                    infowindow.open(map, marker);
+                                });
+                        });
+                    });
+                });
+        }
+        
+
+        function fetchNearestStations(lat, lng) {
+            fetch(`/nearest-stations?lat=${lat}&lng=${lng}`)
+                .then(response => response.json())
+                .then(stations => {
+                    const sidebar = document.getElementById("sidebar");
+                    sidebar.innerHTML = ''; // Clear previous results
+                    stations.forEach(station => {
+                        const element = document.createElement("div");
+                        element.textContent = `Name: ${station.name}, Bikes Available: ${station.available_bikes}`;
+                        sidebar.appendChild(element);
+                    });
+                });
+        }
+
+    </script>
+    
+</head>
+<body>
+    <input id="searchBox" type="text" placeholder="Enter a location">
+    <div id="sidebar" style="width: 300px; height: 100%; float: right; overflow: auto;"></div>
+    <div id="map" style="width: calc(100% - 300px); height: 100%; float: left;"></div>
+
+</body>
+</html>
