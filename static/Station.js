@@ -1,6 +1,5 @@
 function initMap() {
-    createDateDropdown();
-            createTimeDropdown();
+   
     const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 53.3498, lng: -6.2603 },
         zoom: 13,
@@ -183,33 +182,7 @@ function fetchNearestStations(lat, lng) {
             });
         ;
 }
-function createDateDropdown() {
-    const select = document.createElement('select');
-    select.id = 'dateDropdown';
-    for (let day = 1; day <= 31; day++) {
-        const option = document.createElement('option');
-        option.value = day;
-        option.textContent = day;
-        select.appendChild(option);
-    }
-    document.getElementById('Dropdowns').appendChild(select);
-}
 
-
-function createTimeDropdown() {
-    const select = document.createElement('select');
-    select.id = 'timeDropdown';
-    for (let hour = 0; hour < 24; hour++) {
-        for (let minute = 0; minute < 60; minute += 15) { 
-            const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-            const option = document.createElement('option');
-            option.value = timeString;
-            option.textContent = timeString;
-            select.appendChild(option);
-        }
-    }
-    document.getElementById('Dropdowns').appendChild(select);
-}
 function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
     directionsService.route(
         {

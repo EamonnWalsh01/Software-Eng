@@ -100,12 +100,6 @@ def current_weather():
         nearest_weather = [dict(row) for row in result.mappings()]
         print(nearest_weather)
         return jsonify(nearest_weather)
-        
-    
-   
-
-    
-
 
 @app.route('/')
 def index():

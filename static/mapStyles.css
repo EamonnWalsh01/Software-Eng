@@ -7,7 +7,7 @@ html, body {
 #mapbox {
     position: relative; 
     height: 100%;
-    background-color: #f5f5f5; 
+    background-color: #000000; 
     /* -webkit-mask-image: linear-gradient(to bottom, transparent 25%, black 75%);
     mask-image: linear-gradient(to bottom, transparent 25%, black 75%); */
 }
@@ -23,7 +23,7 @@ html, body {
     left: 0; 
     width: 300px; 
     height: 100%; 
-    overflow-y: auto; 
+    overflow-y: hidden; 
     background-color: rgba(255, 255, 255, 0.295); 
     padding: 20px;
 
