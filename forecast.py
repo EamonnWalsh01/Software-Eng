@@ -135,6 +135,6 @@ while True:
         insert_forecast(data3)
     if data4:    
         insert_forecast(data4)
-    time.sleep(3600)
+    time.sleep(10800)
 
 

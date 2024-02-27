@@ -32,7 +32,6 @@ class Weather(Base):
     temp_max=Column(Float)
     pressure=Column(Integer)
     humidity=Column(Integer)
-    sea_level=Column(Integer)
     grnd_level=Column(Integer)
     visibility=Column(Integer)
     wind_speed=Column(Float)
@@ -85,7 +84,6 @@ def insert_weather(data):
                 temp_max=data["main"]["temp_max"],
                 pressure=data["main"]["pressure"],
                 humidity=data["main"]["humidity"],
-                sea_level=data["main"]["sea_level"],
                 grnd_level=data["main"]["grnd_level"],
                 visibility=data["visibility"],
                 wind_speed=data["wind"]["speed"],
@@ -110,7 +108,6 @@ def insert_weather(data):
                 temp_max=data["main"]["temp_max"],
                 pressure=data["main"]["pressure"],
                 humidity=data["main"]["humidity"],
-                sea_level=data["main"]["sea_level"],
                 grnd_level=data["main"]["grnd_level"],
                 visibility=data["visibility"],
                 wind_speed=data["wind"]["speed"],
@@ -132,16 +129,21 @@ def insert_weather(data):
 
 
 while True:
+    print("Got data")
     data1 = get_weather_data(-6.25064,53.33758)
     data2 = get_weather_data(-6.25064,53.35253)
     data3 = get_weather_data(-6.29023,53.33758)
     data4 = get_weather_data(-6.29023,53.35253)
     if data1:
         insert_weather(data1)
+        print("data added1") 
     if data2:
         insert_weather(data2)
+        print("data added2") 
     if data3:
         insert_weather(data3)
+        print("data added3") 
     if data4:    
         insert_weather(data4)
-    time.sleep(10800)
+        print("data added4") 
+    time.sleep(3600)
