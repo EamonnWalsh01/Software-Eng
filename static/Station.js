@@ -1,6 +1,7 @@
+let start = {}
+let end = {}
 function initMap() {
-    createDateDropdown();
-            createTimeDropdown();
+   
     const map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 53.3498, lng: -6.2603 },
         zoom: 13,
@@ -20,6 +21,7 @@ function initMap() {
     mapTypeControl: false,
     fullscreenControl: false
     });
+    
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
@@ -32,9 +34,29 @@ function initMap() {
     let currentInfowindow = null;
     let input = document.getElementById("pac-input");
     let searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    let weatherBox = document.getElementById("weatherbox");
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
 
-    // Bias the SearchBox results towards current map's viewport.
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    fetch(`/weather?lat=53.3498&lng=-6.2603`)
+    .then(response => response.json()) 
+    .then(data => {
+        // Correctly accessing nested attributes
+       
+        let content = `
+       
+            <h3>Weather Info</h3>
+            <p>Temperature: ${data[0]['temp']}</p>
+            <p>Weather description: ${data[0]['weather_desc']}</p>
+            
+        
+    `;  
+       document.getElementById('weatherInfo').innerHTML = content
+
+    
+
+    });
+    
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
     });
@@ -59,7 +81,7 @@ function initMap() {
            
             fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
         });
-        
+       
         map.fitBounds(bounds);
         sidebar.style.display = 'block';
         anime({
@@ -78,6 +100,7 @@ function initMap() {
 
     fetch('/stations')
         .then(response => response.json())
+        
         .then(data => {
             data.forEach(station => {
 
@@ -133,6 +156,17 @@ function initMap() {
                 
             });
         });
+        weatherBox.addEventListener('click',function(){
+            weatherInfo =  document.getElementById('weatherInfo')
+            
+            if (weatherInfo.style.display=='block'){
+                weatherInfo.style.display = 'None';
+                console.log("hello5");
+            }else{
+                weatherInfo.style.display = 'block';
+                console.log("hello1");
+            }
+        })
 }
 
 
@@ -146,7 +180,7 @@ function fetchNearestStations(lat, lng) {
             stations.forEach(station => {
                 const element = document.createElement("div");
                 element.className = 'station-info';
-
+                console.log(station)
                 const nameElement = document.createElement("div");
                 nameElement.className = 'station-name';
                 nameElement.textContent = `Name: ${station.name}`;
@@ -183,33 +217,7 @@ function fetchNearestStations(lat, lng) {
             });
         ;
 }
-function createDateDropdown() {
-    const select = document.createElement('select');
-    select.id = 'dateDropdown';
-    for (let day = 1; day <= 31; day++) {
-        const option = document.createElement('option');
-        option.value = day;
-        option.textContent = day;
-        select.appendChild(option);
-    }
-    document.getElementById('Dropdowns').appendChild(select);
-}
 
-
-function createTimeDropdown() {
-    const select = document.createElement('select');
-    select.id = 'timeDropdown';
-    for (let hour = 0; hour < 24; hour++) {
-        for (let minute = 0; minute < 60; minute += 15) { 
-            const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-            const option = document.createElement('option');
-            option.value = timeString;
-            option.textContent = timeString;
-            select.appendChild(option);
-        }
-    }
-    document.getElementById('Dropdowns').appendChild(select);
-}
 function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
     directionsService.route(
         {
