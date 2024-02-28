@@ -19,6 +19,7 @@ function initMap() {
     mapTypeControl: false,
     fullscreenControl: false
     });
+    
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
@@ -31,8 +32,29 @@ function initMap() {
     let currentInfowindow = null;
     let input = document.getElementById("pac-input");
     let searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    let weatherBox = document.getElementById("weatherbox");
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
 
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    fetch(`/weather?lat=53.3498&lng=-6.2603`)
+    .then(response => response.json()) 
+    .then(data => {
+        // Correctly accessing nested attributes
+        const temperature = data.main.temperature; // Assuming a nested structure
+        const humidity = data.main.humidity; // Assuming a nested structure
+        let content = `
+        <div>
+            <h3>Weather Info</h3>
+            <p>Temperature: ${data['temp']}</p>
+            <p>Available Stands: ${data['weather_desc']}</p>
+            
+        
+    `;  
+       weatherInfo =  document.getElementById('weatherInfo')
+    weatherInfo.innerHTML = content;
+    
+        console.log(`Temperature: ${temperature}, Humidity: ${humidity}`);
+    });
     // Bias the SearchBox results towards current map's viewport.
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
@@ -58,7 +80,11 @@ function initMap() {
            
             fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
         });
-        
+        weatherBox.addEventListener(function(){
+            weatherInfo =  document.getElementById('weatherimg')
+            weatherInfo.style.display = 'block';
+            console.log("hello")
+        })
         map.fitBounds(bounds);
         sidebar.style.display = 'block';
         anime({
@@ -77,6 +103,7 @@ function initMap() {
 
     fetch('/stations')
         .then(response => response.json())
+        
         .then(data => {
             data.forEach(station => {
 

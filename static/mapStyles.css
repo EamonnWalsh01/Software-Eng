@@ -144,3 +144,14 @@ html, body {
 #Dropdowns{
     z-index: 30;
 }
+#weatherimg{
+    width: 100%;
+}
+#weatherbox{
+    width: 20%;
+    z-index: 100;
+   
+}
+#weatherInfo{
+    display: hidden;
+}
