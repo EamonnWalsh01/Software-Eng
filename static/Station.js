@@ -43,7 +43,7 @@ function initMap() {
     .then(data => {
         // Correctly accessing nested attributes
        
-        let content = `
+        let contentWeather = `
        
             <h3>Weather Info</h3>
             <p>Temperature: ${data[0]['temp']}</p>
@@ -51,7 +51,7 @@ function initMap() {
             
         
     `;  
-       document.getElementById('weatherInfo').innerHTML = content
+       document.getElementById('weatherInfo').innerHTML = contentWeather
 
     
 
@@ -211,7 +211,8 @@ function fetchNearestStations(lat, lng) {
 
                             `;
                             
-                            document.getElementsByClassName('sidebarInfoWindow').innerHTML = content
+                            infoElement.innerHTML = content;
+
                             console.log("bighairypeni")
                             infoElement.style.display = 'block';
                         });
