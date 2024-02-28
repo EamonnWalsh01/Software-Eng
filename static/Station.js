@@ -158,8 +158,14 @@ function initMap() {
         });
         weatherBox.addEventListener('click',function(){
             weatherInfo =  document.getElementById('weatherInfo')
-            weatherInfo.style.display = 'block';
-            console.log("hello")
+            
+            if (weatherInfo.style.display=='block'){
+                weatherInfo.style.display = 'None';
+                console.log("hello5");
+            }else{
+                weatherInfo.style.display = 'block';
+                console.log("hello1");
+            }
         })
 }
 
