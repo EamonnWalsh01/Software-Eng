@@ -200,16 +200,19 @@ function fetchNearestStations(lat, lng) {
                         .then(response => response.json())
                         .then(availability => {
                             let content = `
-                                
-                                    
-                                    Available Stands: ${availability.available_bike_stands}
-                                    Status: ${availability.status}
-                                    Last Update: ${new Date(availability.last_update).toLocaleString()}
-                                
+                           
+       
+                            <h3>Additioinal Info</h3>
+                            <p>Availible Stands: ${availability.available_bike_stands}</p>
+                            <p>Status: ${availability.status}</p>
+                            <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                        
+                    
+
                             `;
                             
-                            infoElement.textContent = content;
-                            
+                            document.getElementsByClassName('sidebarInfoWindow').innerHTML = content
+                            console.log("bighairypeni")
                             infoElement.style.display = 'block';
                         });
                 });
