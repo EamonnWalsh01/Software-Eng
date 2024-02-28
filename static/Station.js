@@ -1,3 +1,5 @@
+let start = {}
+let end = {}
 function initMap() {
    
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -40,22 +42,21 @@ function initMap() {
     .then(response => response.json()) 
     .then(data => {
         // Correctly accessing nested attributes
-        const temperature = data.main.temperature; // Assuming a nested structure
-        const humidity = data.main.humidity; // Assuming a nested structure
+       
         let content = `
-        <div>
+       
             <h3>Weather Info</h3>
-            <p>Temperature: ${data['temp']}</p>
-            <p>Available Stands: ${data['weather_desc']}</p>
+            <p>Temperature: ${data[0]['temp']}</p>
+            <p>Weather description: ${data[0]['weather_desc']}</p>
             
         
     `;  
-       weatherInfo =  document.getElementById('weatherInfo')
-    weatherInfo.innerHTML = content;
+       document.getElementById('weatherInfo').innerHTML = content
+
     
-        console.log(`Temperature: ${temperature}, Humidity: ${humidity}`);
+
     });
-    // Bias the SearchBox results towards current map's viewport.
+    
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
     });
@@ -80,11 +81,7 @@ function initMap() {
            
             fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
         });
-        weatherBox.addEventListener(function(){
-            weatherInfo =  document.getElementById('weatherimg')
-            weatherInfo.style.display = 'block';
-            console.log("hello")
-        })
+       
         map.fitBounds(bounds);
         sidebar.style.display = 'block';
         anime({
@@ -159,6 +156,11 @@ function initMap() {
                 
             });
         });
+        weatherBox.addEventListener('click',function(){
+            weatherInfo =  document.getElementById('weatherInfo')
+            weatherInfo.style.display = 'block';
+            console.log("hello")
+        })
 }
 
 
@@ -172,7 +174,7 @@ function fetchNearestStations(lat, lng) {
             stations.forEach(station => {
                 const element = document.createElement("div");
                 element.className = 'station-info';
-
+                console.log(station)
                 const nameElement = document.createElement("div");
                 nameElement.className = 'station-name';
                 nameElement.textContent = `Name: ${station.name}`;
