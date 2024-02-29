@@ -149,10 +149,21 @@ html, body {
 }
 #weatherbox{
     width: 20%;
+    max-width: 200px;
     z-index: 100;
-    background-color: rgba(240, 248, 255, 0.452);
+    background-color: rgba(253, 253, 253, 0.296);
+    border-radius: 5px;
    
 }
 #weatherInfo{
     display: None;
+}
+#settingsWheel{
+    
+    z-index: 100;
+    width: 30px;
+    height: 30px;
+}
+#settingIMG{
+    width:100%;
 }

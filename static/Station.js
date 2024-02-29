@@ -19,7 +19,8 @@ function initMap() {
     streetViewControl: false,
     zoomControl: false,
     mapTypeControl: false,
-    fullscreenControl: false
+    fullscreenControl: false,
+    ClickableIcons:false,
     });
     
     const directionsService = new google.maps.DirectionsService();
@@ -35,9 +36,11 @@ function initMap() {
     let input = document.getElementById("pac-input");
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
+    let settingsCog = document.getElementById("settingsWheel");
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
 
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
     fetch(`/weather?lat=53.3498&lng=-6.2603`)
     .then(response => response.json()) 
     .then(data => {
@@ -117,13 +120,17 @@ function initMap() {
                 let pinColor = color;
                 let pinImage = new google.maps.MarkerImage("http://maps.google.com/mapfiles/ms/icons/" + pinColor + "-dot.png");
 
-                let marker = new google.maps.Marker({
+                
+                const marker = new google.maps.Marker({
                     position: { lat: station.position_lat, lng: station.position_lng },
                     map: map,
-                    icon: pinImage,
-                    title: station.name
+                    title: station.name, // Tooltip for the marker
+                    icon: {
+                        url: "wolfripcover.jpg", // Path to the image you want to use as the marker
+                        scaledSize: new google.maps.Size(50, 50), // Size of the image
+                    },
                 });
-                
+                                
 
                 // Add click listener to each marker
                 marker.addListener('click', function() {
@@ -167,6 +174,15 @@ function initMap() {
                 console.log("hello1");
             }
         })
+        settingsCog.addEventListener('click',function(){
+            console.log("hello")
+            anime( {
+                targets:"#settingsWheel",
+                rotate:{
+                value: '+=2turn', // 0 + 2 = '2turn'
+                duration: 1800,
+                easing: 'easeInOutSine'}
+              })})
 }
 
 
@@ -210,11 +226,17 @@ function fetchNearestStations(lat, lng) {
                     
 
                             `;
-                            
                             infoElement.innerHTML = content;
+                            if (infoElement.style.display=='block'){
+                                infoElement.style.display = 'None';
+                                console.log("hello5");
+                            }else{
+                                infoElement.style.display = 'block';
+                                console.log("hello1");
+                            }
+                            
 
-                            console.log("bighairypeni")
-                            infoElement.style.display = 'block';
+                            
                         });
                 });
             })
