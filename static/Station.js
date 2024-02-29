@@ -94,7 +94,7 @@ function initMap() {
         duration: 500 
     });
     anime({
-        targets: '#pac-input',
+        targets: ['#pac-input','#settingsWheel'],
         translateX: [350], 
         easing: 'easeOutQuad', 
         duration: 500 
@@ -110,10 +110,13 @@ function initMap() {
                 let color;
                 if (station.available_bikes === 0) {
                     color = "red";
+                    pinImageUrl = "red_bike.png"
                 } else if (station.available_bikes > 0 && station.available_bikes <= 5) {
                     color = "yellow";
+                    pinImageUrl = "yellow_bike.png"
                 } else {
                     color = "green";
+                    pinImageUrl = "green_bike.png"
                 }
 
                 // Creating a colored pin
@@ -124,10 +127,10 @@ function initMap() {
                 const marker = new google.maps.Marker({
                     position: { lat: station.position_lat, lng: station.position_lng },
                     map: map,
-                    title: station.name, // Tooltip for the marker
+                    title: station.name, 
                     icon: {
-                        url: "wolfripcover.jpg", // Path to the image you want to use as the marker
-                        scaledSize: new google.maps.Size(50, 50), // Size of the image
+                        url: pinImageUrl, 
+                        scaledSize: new google.maps.Size(150, 150), 
                     },
                 });
                                 
