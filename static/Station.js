@@ -194,6 +194,24 @@ function initMap() {
                 duration: 1800,
                 easing: 'easeInOutSine'}
               })})
+        closeButton = document.getElementById("close");
+        closeButton.addEventListener('click',function(){
+            anime({
+                targets: '#sidebar',
+                translateX: [0, -500], 
+                easing: 'easeOutQuad', 
+                duration: 500 ,
+                complete: function(anim) {
+            // Once the sidebar animation is complete, apply display: none to the sidebar
+            document.querySelector('#sidebar').style.display = 'none';}
+            });
+            anime({
+                targets: '#pac-input',
+                translateX: [300, 20], 
+                easing: 'easeOutQuad', 
+                duration: 500 
+            });
+                })
 }
 
 

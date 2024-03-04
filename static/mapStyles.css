@@ -170,3 +170,7 @@ html, body {
 #settingIMG{
     width:100%;
 }
+#close {
+    font-size: 45px;
+    font-weight: 600;
+  }
