@@ -37,10 +37,18 @@ function initMap() {
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
+    let slider = document.getElementById("myRange");
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
-
+    map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
+    slider.addEventListener('input', function() {
+        const newLat = parseFloat(this.value)/10000000000;
+        const currentLng = map.getCenter().lng();
+        const currentlat = map.getCenter().lat(); 
+        const newCenter = { lat: newLat+currentlat, lng: currentLng };
+        map.setCenter(newCenter);
+    });
     fetch(`/weather?lat=53.3498&lng=-6.2603`)
     .then(response => response.json()) 
     .then(data => {
