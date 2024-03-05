@@ -31,13 +31,15 @@ function initMap() {
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
    
-
+    let opencloseFlag = 0;
     let currentInfowindow = null;
+    let openClose = document.getElementById("openClose")
     let input = document.getElementById("pac-input");
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -102,7 +104,7 @@ function initMap() {
         duration: 500 
     });
     anime({
-        targets: ['#pac-input','#settingsWheel'],
+        targets: ['#pac-input','#settingsWheel','#openClose'],
         translateX: [350], 
         easing: 'easeOutQuad', 
         duration: 500 
@@ -206,12 +208,49 @@ function initMap() {
             document.querySelector('#sidebar').style.display = 'none';}
             });
             anime({
-                targets: '#pac-input',
+                targets:  ['#pac-input','#settingsWheel','#openClose'],
                 translateX: [300, 20], 
                 easing: 'easeOutQuad', 
                 duration: 500 
             });
                 })
+        openClose.addEventListener('click',function(){
+            
+            if (opencloseFlag == 0 ){anime({
+                targets: '#sidebar',
+                translateX: [-300, 20], 
+                easing: 'easeOutQuad', 
+                duration: 500 
+            });
+            anime({
+                targets:  ['#pac-input','#settingsWheel','#openClose'],
+                translateX: [350], 
+                easing: 'easeOutQuad', 
+                duration: 500 
+
+            })
+            sidebar.style.display = 'block'
+            opencloseFlag = 1}
+            else{
+                opencloseFlag = 0
+                anime({
+                    targets: '#sidebar',
+                    translateX: [0, -500], 
+                    easing: 'easeOutQuad', 
+                    duration: 500 ,
+                    complete: function(anim) {
+                // Once the sidebar animation is complete, apply display: none to the sidebar
+                document.querySelector('#sidebar').style.display = 'none';}
+                });
+                anime({
+                    targets: ['#pac-input','#settingsWheel','#openClose'],
+                    translateX: [300, 20], 
+                    easing: 'easeOutQuad', 
+                    duration: 500 
+                });
+            }
+        })
+            
 }
 
 
