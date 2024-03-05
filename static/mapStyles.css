@@ -203,3 +203,7 @@ html, body {
 #openClose:hover {
     background-color: rgb(125, 230, 230); /* Change to desired hover background color */
 }
+#settingBox{
+    display: none;
+    background-color: rgb(255, 255, 255);
+}
