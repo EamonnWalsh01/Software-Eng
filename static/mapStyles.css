@@ -149,13 +149,16 @@ html, body {
     z-index: 30;
 }
 #weatherimg{
-    width: 100%;
+    width: 120%;
+    margin-top: 10px;
+    margin-left: 5px;
 }
 #weatherbox{
     width: 20%;
     max-width: 200px;
+    height:150px;
     z-index: 100;
-    background-color: rgba(253, 253, 253, 0.296);
+    background-color: rgba(0, 250, 233, 0.778);
     border-radius: 5px;
    
 }

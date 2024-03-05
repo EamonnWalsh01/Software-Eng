@@ -86,7 +86,7 @@ def current_weather():
 
     with engine.connect() as connection:
         query=text("""
-            SELECT lon, lat, temp, feels_like, humidity, rain_1h, weather_desc, weather_brief, wind_speed,
+            SELECT lon, lat, temp, feels_like, humidity, rain_1h, weather_desc, weather_brief, wind_speed, weatherid,
                    SQRT(POW(69.1 * (lat - lat), 2) +
                     POW(69.1 * (lon - lon) * COS(lat / 57.3), 2)) AS distance
             FROM weather 

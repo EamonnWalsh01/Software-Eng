@@ -64,9 +64,19 @@ function initMap() {
     `;  
        document.getElementById('weatherInfo').innerHTML = contentWeather
 
-    
-
-    });
+       let currentWeather=data[0]['weatherid']
+       const image=document.getElementById('weatherimg')
+       if(currentWeather==800){
+        image.src="weathericons/clearnight.png";
+    }else if (currentWeather==801){
+        image.src="weathericons/few_clouds.png";
+    }else if(currentWeather==802){
+        image.src="weathericons/scattered_clouds.png";
+    }else if(currentWeather==803 || currentWeather==804){
+        image.src="weathericons/broken_clouds.png";
+    }
+}
+);
     
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
