@@ -38,10 +38,12 @@ function initMap() {
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
+    let clock = document.getElementById("section");
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(clock);
     slider.addEventListener('input', function() {
         const newLat = parseFloat(this.value)/10000000000;
         const currentLng = map.getCenter().lng();
