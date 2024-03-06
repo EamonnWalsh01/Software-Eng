@@ -64,11 +64,13 @@ function initMap() {
     `;  
        document.getElementById('weatherInfo').innerHTML = contentWeather;
        let daylight=true;
+       let containers=document.getElementById('weatherbox');
        let temp=(Math.round(data[0]['temp']-273.15)).toString()+"&deg;C";
        document.getElementById('temperature').innerHTML=temp;
        let currentWeather=data[0]['weatherid'];
        if (data[0]['sunset']<=data[0]['time']||data[0]['sunrise']>=data[0]['time']){
         daylight=false;
+        containers.style.backgroundColor='navy';
        }else{
         daylight=true;
        }
