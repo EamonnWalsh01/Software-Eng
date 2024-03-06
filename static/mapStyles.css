@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Slackside+One&display=swap');
+@font-face {
+    font-family: 'uggo'; 
+    src: url('UglyStick-2648.otf') format('opentype');
+    font-style: normal; 
+}
 
 html, body {
     height: 100%;
@@ -254,4 +259,4 @@ position:relative;
 width:32px;
 text-align:center;
 line-height:1;
-font-family: "Slackside One", cursive;}
+font-family: "uggo", sans-serif;}
