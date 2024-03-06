@@ -156,12 +156,14 @@ html, body {
 #weatherbox{
     width: 20%;
     max-width: 200px;
-    height:150px;
+    height: 150px;
     z-index: 100;
     background-color: rgba(0, 250, 233, 0.778);
     border-radius: 5px;
-   
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%);
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%);
 }
+
 #weatherInfo{
     display: None;
 }

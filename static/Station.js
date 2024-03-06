@@ -228,17 +228,17 @@ function initMap() {
                 
             });
         });
-        weatherBox.addEventListener('click',function(){
-            weatherInfo =  document.getElementById('weatherInfo')
+        // weatherBox.addEventListener('click',function(){
+        //     weatherInfo =  document.getElementById('weatherInfo')
             
-            if (weatherInfo.style.display=='block'){
-                weatherInfo.style.display = 'None';
-                console.log("hello5");
-            }else{
-                weatherInfo.style.display = 'block';
-                console.log("hello1");
-            }
-        })
+        //     if (weatherInfo.style.display=='block'){
+        //         weatherInfo.style.display = 'None';
+        //         console.log("hello5");
+        //     }else{
+        //         weatherInfo.style.display = 'block';
+        //         console.log("hello1");
+        //     }
+        // })
         settingsCog.addEventListener('click',function(){
             console.log("hello")
             anime( {
