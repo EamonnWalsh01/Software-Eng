@@ -181,3 +181,14 @@ html, body {
     font-size: 45px;
     font-weight: 600;
   }
+
+#temperature{
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    color: #000000; 
+    padding: 10px 20px; 
+    font-size: 50px; 
+    text-align: center;
+}

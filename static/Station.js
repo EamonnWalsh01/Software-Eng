@@ -49,7 +49,7 @@ function initMap() {
         const newCenter = { lat: newLat+currentlat, lng: currentLng };
         map.setCenter(newCenter);
     });
-    fetch(`/weather?lat=53.3498&lng=-6.2603`)
+    fetch(`/weather`)
     .then(response => response.json()) 
     .then(data => {
         // Correctly accessing nested attributes
@@ -62,18 +62,62 @@ function initMap() {
             
         
     `;  
-       document.getElementById('weatherInfo').innerHTML = contentWeather
+       document.getElementById('weatherInfo').innerHTML = contentWeather;
+       let daylight=true;
+       let temp=(Math.round(data[0]['temp']-273.15)).toString()+"&deg;C";
+       document.getElementById('temperature').innerHTML=temp;
+       let currentWeather=data[0]['weatherid'];
+       if (data[0]['sunset']<=data[0]['time']||data[0]['sunrise']>=data[0]['time']){
+        daylight=false;
+       }else{
+        daylight=true;
+       }
 
-       let currentWeather=data[0]['weatherid']
        const image=document.getElementById('weatherimg')
-       if(currentWeather==800){
-        image.src="weathericons/clearnight.png";
-    }else if (currentWeather==801){
-        image.src="weathericons/few_clouds.png";
-    }else if(currentWeather==802){
-        image.src="weathericons/scattered_clouds.png";
-    }else if(currentWeather==803 || currentWeather==804){
-        image.src="weathericons/broken_clouds.png";
+       if (currentWeather>=800){
+        if(currentWeather==800){
+            if (daylight==true){
+                image.src="weathericons/Sunny.png";
+            }else{
+                image.src="weathericons/clearnight.png";
+            }
+        }else if (currentWeather==801){
+            if (daylight==true){
+                image.src="weathericons/few_clouds.png";
+            }else{
+                image.src="weathericons/few_clouds_night.png";
+            }
+        }else if(currentWeather==802){
+            image.src="weathericons/scattered_clouds.png";
+        }else if(currentWeather==803 || currentWeather==804){
+            image.src="weathericons/broken_clouds.png";
+        }
+    }else if(currentWeather>=700){
+        if(currentWeather<=761||currentWeather==771){
+            image.src="weathericons/mist.png";
+        }else if(currentWeather==762){
+            image.src="weathericons/ash.png";
+        }else{
+            image.src="weathericons/tornado.png";
+        }
+    }else if(currentWeather>=600){
+        image.src="weathericons/snow.png";
+    }else if(currentWeather>=500){
+        if(currentWeather<=506){
+            if (daylight==true){
+                image.src="weathericons/rain.png";
+            }else{
+                image.src="weathericons/rain_night.png";
+            } 
+        }else if(currentWeather==511){
+            image.src="weathericons/snow.png";
+        }else{
+            image.src="weathericons/shower_rain.png";
+        }
+    }else if(currentWeather>=300){
+        image.src="weathericons/shower_rain.png";
+    }else if(currentWeather>=200){
+        image.src="weathericons/thunderstorm.png";
     }
 }
 );
