@@ -203,7 +203,7 @@ function initMap() {
                 targets: '#settingBox',
                 translateY: [-500, 0], 
                 easing: 'easeOutQuad', 
-                duration: 500 ,
+                duration: 1000 ,
                 })
               settingBox.style.display = 'block';
             }
@@ -220,7 +220,7 @@ function initMap() {
                     targets: '#settingBox',
                     translateY: [0, -500], 
                     easing: 'easeInQuad', 
-                    duration: 500 ,
+                    duration: 1000 ,
                     complete: function(anim) {
                         // Once the sidebar animation is complete, apply display: none to the sidebar
                         document.querySelector('#settingBox').style.display = 'none';}
