@@ -219,7 +219,7 @@ function initMap() {
                   anime({
                     targets: '#settingBox',
                     translateY: [0, -500], 
-                    easing: 'easeOutQuad', 
+                    easing: 'easeInQuad', 
                     duration: 500 ,
                     complete: function(anim) {
                         // Once the sidebar animation is complete, apply display: none to the sidebar
@@ -236,7 +236,7 @@ function initMap() {
             anime({
                 targets: '#sidebar',
                 translateX: [0, -500], 
-                easing: 'easeOutQuad', 
+                easing: 'easeInQuad', 
                 duration: 500 ,
                 complete: function(anim) {
             // Once the sidebar animation is complete, apply display: none to the sidebar
@@ -245,7 +245,7 @@ function initMap() {
             anime({
                 targets:  ['#pac-input','#settingsWheel','#openClose'],
                 translateX: [300, 20], 
-                easing: 'easeOutQuad', 
+                easing: 'easeInQuad', 
                 duration: 500 
             });
                 })
@@ -271,7 +271,7 @@ function initMap() {
                 anime({
                     targets: '#sidebar',
                     translateX: [0, -500], 
-                    easing: 'easeOutQuad', 
+                    easing: 'easeInQuad', 
                     duration: 500 ,
                     complete: function(anim) {
                 // Once the sidebar animation is complete, apply display: none to the sidebar
@@ -280,7 +280,7 @@ function initMap() {
                 anime({
                     targets: ['#pac-input','#settingsWheel','#openClose'],
                     translateX: [300, 20], 
-                    easing: 'easeOutQuad', 
+                    easing: 'easeInQuad', 
                     duration: 500 
                 });
             }
