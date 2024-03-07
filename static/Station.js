@@ -30,15 +30,19 @@ function initMap() {
    
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
-   
-
+    let settingFlag = 0;
+    let opencloseFlag = 0;
     let currentInfowindow = null;
+    let settingBox = document.getElementById('settingBox');
+    let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
+    let settingsIMG = document.getElementById("settingIMG");
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
     let clock = document.getElementById("section");
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -160,11 +164,11 @@ function initMap() {
         duration: 500 
     });
     anime({
-        targets: ['#pac-input','#settingsWheel'],
+        targets: ['#pac-input','#settingsWheel','#openClose'],
         translateX: [350], 
         easing: 'easeOutQuad', 
         duration: 500 
-    })
+    });opencloseFlag = 1;
     });
 
     fetch('/stations')
@@ -232,44 +236,105 @@ function initMap() {
                 
             });
         });
-        // weatherBox.addEventListener('click',function(){
-        //     weatherInfo =  document.getElementById('weatherInfo')
-            
-        //     if (weatherInfo.style.display=='block'){
-        //         weatherInfo.style.display = 'None';
-        //         console.log("hello5");
-        //     }else{
-        //         weatherInfo.style.display = 'block';
-        //         console.log("hello1");
-        //     }
-        // })
-        settingsCog.addEventListener('click',function(){
-            console.log("hello")
+       
+       
+        settingsIMG.addEventListener('click',function(){
+            if (settingFlag == 0){
+                settingFlag = 1;
             anime( {
-                targets:"#settingsWheel",
+                targets:"#settingIMG",
                 rotate:{
                 value: '+=2turn', // 0 + 2 = '2turn'
                 duration: 1800,
                 easing: 'easeInOutSine'}
-              })})
+              })
+              anime({
+                targets: '#settingBox',
+                translateY: [-500, 0], 
+                easing: 'easeOutQuad', 
+                duration: 1000 ,
+                })
+              settingBox.style.display = 'block';
+            }
+            else{
+                settingFlag = 0;
+                anime( {
+                    targets:"#settingIMG",
+                    rotate:{
+                    value: '+=2turn', // 0 + 2 = '2turn'
+                    duration: 1800,
+                    easing: 'easeInOutSine'}
+                  })
+                  anime({
+                    targets: '#settingBox',
+                    translateY: [0, -500], 
+                    easing: 'easeInQuad', 
+                    duration: 1000 ,
+                    complete: function(anim) {
+                        // Once the sidebar animation is complete, apply display: none to the sidebar
+                        document.querySelector('#settingBox').style.display = 'none';}
+                        
+                    })
+                  
+                }
+        })
+            
         closeButton = document.getElementById("close");
         closeButton.addEventListener('click',function(){
+            opencloseFlag = 0;
             anime({
                 targets: '#sidebar',
                 translateX: [0, -500], 
-                easing: 'easeOutQuad', 
+                easing: 'easeInQuad', 
                 duration: 500 ,
                 complete: function(anim) {
             // Once the sidebar animation is complete, apply display: none to the sidebar
             document.querySelector('#sidebar').style.display = 'none';}
             });
             anime({
-                targets: '#pac-input',
+                targets:  ['#pac-input','#settingsWheel','#openClose'],
                 translateX: [300, 20], 
-                easing: 'easeOutQuad', 
+                easing: 'easeInQuad', 
                 duration: 500 
             });
                 })
+        openClose.addEventListener('click',function(){
+            
+            if (opencloseFlag == 0 ){anime({
+                targets: '#sidebar',
+                translateX: [-300, 20], 
+                easing: 'easeOutQuad', 
+                duration: 500 
+            });
+            anime({
+                targets:  ['#pac-input','#settingsWheel','#openClose'],
+                translateX: [350], 
+                easing: 'easeOutQuad', 
+                duration: 500 
+
+            })
+            sidebar.style.display = 'block'
+            opencloseFlag = 1}
+            else{
+                opencloseFlag = 0
+                anime({
+                    targets: '#sidebar',
+                    translateX: [0, -500], 
+                    easing: 'easeInQuad', 
+                    duration: 500 ,
+                    complete: function(anim) {
+                // Once the sidebar animation is complete, apply display: none to the sidebar
+                document.querySelector('#sidebar').style.display = 'none';}
+                });
+                anime({
+                    targets: ['#pac-input','#settingsWheel','#openClose'],
+                    translateX: [300, 20], 
+                    easing: 'easeInQuad', 
+                    duration: 500 
+                });
+            }
+        })
+            
 }
 
 
