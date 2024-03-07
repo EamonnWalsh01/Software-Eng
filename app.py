@@ -86,11 +86,11 @@ def current_weather():
 
     with engine.connect() as connection:
         query=text("""
-            SELECT lon, lat, temp, feels_like, humidity, rain_1h, weather_desc, weather_brief, wind_speed,
+            SELECT lon, lat, temp, feels_like, humidity, rain_1h, weather_desc, weather_brief, wind_speed, weatherid, TIME_TO_SEC(datetime) as time, MOD(sunrise,86400)as sunrise, MOD(sunset,86400) as sunset, datetime,
                    SQRT(POW(69.1 * (lat - lat), 2) +
                     POW(69.1 * (lon - lon) * COS(lat / 57.3), 2)) AS distance
             FROM weather 
-            ORDER BY datetime, distance DESC 
+            ORDER BY datetime DESC
             LIMIT 1;      
                 """)
         
