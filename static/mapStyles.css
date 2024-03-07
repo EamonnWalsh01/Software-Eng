@@ -190,3 +190,78 @@ html, body {
     font-size: 45px;
     font-weight: 600;
   }
+  .clock {
+    width:240px;
+    height:54px;
+    margin:0 auto;
+    padding:5px;
+    background:#cccccc00;
+    font-family:"Orbitron", sans-serif;
+    font-size:44px;
+    }
+    .clock .hour,
+    .clock .minute,
+    .clock .second {
+    float:left;
+    width:70px;
+    margin-right:10px;
+    }
+    .clock .second {
+    margin-right:0;
+    }
+    .clock .t {
+    overflow:hidden;
+    position:relative;
+    width:32px;
+    height:44px;
+    }
+    .clock .t:first-child {
+    float:left;
+    }
+    .clock .t:last-child {
+    float:right;
+    }
+    .clock .nums {
+    list-style:none;
+    position:absolute;
+    top:0;
+    left:0;
+    margin:0;
+    padding:0;
+    }
+    .clock .t0 .nums {
+    top:0;
+    }
+    .clock .t1 .nums {
+    top:-40px;
+    }
+    .clock .t2 .nums {
+    top:-80px;
+    }
+    .clock .t3 .nums {
+    top:-120px;
+    }
+    .clock .t4 .nums {
+    top:-160px;
+    }
+    .clock .t5 .nums {
+    top:-200px;
+    }
+    .clock .t6 .nums {
+    top:-240px;
+    }
+    .clock .t7 .nums {
+    top:-280px;
+    }
+    .clock .t8 .nums {
+    top:-320px;
+    }
+    .clock .t9 .nums {
+    top:-360px;
+    }
+    .clock .nums li {
+    position:relative;
+    width:32px;
+    text-align:center;
+    line-height:1;
+    font-family: "uggo", sans-serif;}
