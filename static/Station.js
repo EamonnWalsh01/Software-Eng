@@ -22,14 +22,54 @@ function initMap() {
     fullscreenControl: false,
     ClickableIcons:false,
     });
-    
+
+    //Test Section Start
+    const dublinLonLat={
+        maxlat:53.360,
+        minlat:53.330,
+        maxlon:-6.231,
+        minlon:-6.310
+    }
+
+    const mapLimits=new google.maps.LatLngBounds(
+        new google.maps.LatLng(dublinLonLat.minlat,dublinLonLat.minlon),
+        new google.maps.LatLng(dublinLonLat.maxlat,dublinLonLat.maxlon)
+    );
+
+    google.maps.event.addListener(map, 'drag', function() {
+        if (mapLimits.contains(map.getCenter())) return;
+
+        var c = map.getCenter(),
+        x = c.lng(),
+        y = c.lat(),
+        maxX = mapLimits.getNorthEast().lng(),
+        maxY = mapLimits.getNorthEast().lat(),
+        minX = mapLimits.getSouthWest().lng(),
+        minY = mapLimits.getSouthWest().lat();
+
+        if (x < minX) x = minX;
+        if (x > maxX) x = maxX;
+        if (y < minY) y = minY;
+        if (y > maxY) y = maxY;
+
+    map.setCenter(new google.maps.LatLng(y, x));
+});
+
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+        if (map.getZoom() < 14) {
+            map.setZoom(14);
+        }
+    });
+
+    //Test Section End
+
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
 
    
-    // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
-    // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
+    //const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
+    //const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
     let settingFlag = 0;
     let opencloseFlag = 0;
     let currentInfowindow = null;
@@ -37,7 +77,7 @@ function initMap() {
     let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
     let settingsIMG = document.getElementById("settingIMG");
-    let searchBox = new google.maps.places.SearchBox(input);
+    let searchBox = new google.maps.places.SearchBox(input, {bounds: mapLimits});
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
@@ -81,7 +121,7 @@ function initMap() {
         daylight=true;
        }
 
-       const image=document.getElementById('weatherimg')
+       const image=document.getElementById('weatherimg')// learned in semester 1!!!!!!!!!!!
        if (currentWeather>=800){
         if(currentWeather==800){
             if (daylight==true){
