@@ -74,10 +74,13 @@ JOIN RoundedWeather rw ON swa.rounded_last_update = rw.rounded_datetime;
     with engine.connect() as connection:
         # Use the query string directly, but make sure to wrap it in `text()` here
         result = connection.execute(text(query))
-        array_data = np.array(result.fetchall())
-        print(array_data)
-    # Example of how to use the DataFrame, here we just print it
-    print(array_data[0])
-    return f"Dataframe created. Check server logs for output.{array_data[0]}"
+        raw = result.fetchall()
+       
+        df = pd.DataFrame(raw, columns=result.keys())
+        print(df.shape,df.columns)
+    
+    csv_filename = "stations_data.csv"
+    df.to_csv(csv_filename, index=False)
+    return f"Dataframe created. Check server logs for output."
 get_stations_dataframe()
 
