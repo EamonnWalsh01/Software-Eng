@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
 import configparser
-
+import pandas as pd 
+import numpy as np 
 app = Flask(__name__, static_url_path='')
 
 config = configparser.ConfigParser()
@@ -47,20 +48,19 @@ def get_availability(number):
 @app.route('/stations/dataframe')
 def get_stations_dataframe():
     query = """
-            SELECT s.number, s.address, s.banking, s.bike_stands, s.name, s.position_lat, s.position_lng, a.available_bikes
-            FROM station s
-            LEFT JOIN (
-                SELECT number, available_bikes, ROW_NUMBER() OVER(PARTITION BY number ORDER BY last_update DESC) AS rn
-                FROM availability
-            ) a ON s.number = a.number AND a.rn = 1
-            """
-    result = db.engine.execute(text(query))
-    df = pd.DataFrame(result.fetchall(), columns=result.keys())
+            SELECT * FROM availability 
+            
+            ORDER BY last_update DESC 
+            LIMIT 40
+        """
+    with engine.connect() as connection:
+        # Use the query string directly, but make sure to wrap it in `text()` here
+        result = connection.execute(text(query))
+        array_data = np.array(result.fetchall())
+        print(array_data)
     # Example of how to use the DataFrame, here we just print it
-    print(df)
-    return "Dataframe created. Check server logs for output."
-
-
+    print(array_data)
+    return f"Dataframe created. Check server logs for output.{array_data}"
 
 @app.route('/nearest-stations')
 def nearest_stations():
