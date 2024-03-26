@@ -17,50 +17,58 @@ engine = create_engine(DATABASE_URI)
 
 def get_stations_dataframe():
     query = """
-           WITH NumberSeries AS (
-    SELECT 1 AS num
-    UNION ALL SELECT 2
-    UNION ALL SELECT 3
-    -- Add numbers up to 12
-    UNION ALL SELECT 12
+           WITH RoundedAvailability AS (
+    SELECT number,
+           available_bikes,
+           available_bike_stands,
+           DATE_FORMAT(last_update, '%Y-%m-%d %H:00:00') AS rounded_last_update,
+           DATE_FORMAT(DATE_SUB(last_update, INTERVAL MINUTE(last_update) % 5 MINUTE), '%Y-%m-%d %H:%i:00') AS rounded_last_update_5mins,
+           ROW_NUMBER() OVER(PARTITION BY number ORDER BY last_update DESC) AS rn
+    FROM availability
 ),
-ExpandedWeather AS (
-    SELECT w.*,
-           ns.num AS interval_number,
-           ADDTIME(w.datetime, MAKETIME(0, (ns.num - 1) * 5, 0)) AS interval_datetime
-    FROM weather w
-    CROSS JOIN NumberSeries ns
+RoundedWeather AS (
+    SELECT lon,
+           lat,
+           temp,
+           feels_like,
+           humidity,
+           rain_1h,
+           weather_desc,
+           weather_brief,
+           wind_speed,
+           weatherid,
+           DATE_FORMAT(datetime, '%Y-%m-%d %H:00:00') AS rounded_datetime
+    FROM weather
 ),
-AvailabilityWithStation AS (
+StationWithAvailability AS (
     SELECT s.number,
            s.name,
            s.position_lat,
            s.position_lng,
            a.available_bikes,
            a.available_bike_stands,
-           a.last_update,
-           DATE_FORMAT(a.last_update, '%Y-%m-%d %H:%i:00') AS rounded_last_update
+           a.rounded_last_update
     FROM station s
-    JOIN availability a ON s.number = a.number
-    -- Depending on your requirements, you might filter for the most recent data or a specific time range here
+    JOIN RoundedAvailability a ON s.number = a.number
+    WHERE a.rn = 1
 )
-SELECT aws.number,
-       aws.name,
-       aws.position_lat,
-       aws.position_lng,
-       aws.available_bikes,
-       aws.available_bike_stands,
-       aws.last_update,
-       ew.temp,
-       ew.feels_like,
-       ew.humidity,
-       ew.rain_1h,
-       ew.weather_desc,
-       ew.weather_brief,
-       ew.wind_speed,
-       ew.weatherid
-FROM AvailabilityWithStation aws
-JOIN ExpandedWeather ew ON aws.rounded_last_update = ew.interval_datetime
+SELECT swa.number,
+       swa.name,
+       swa.position_lat,
+       swa.position_lng,
+       swa.available_bikes,
+       swa.available_bike_stands,
+       swa.rounded_last_update,
+       rw.temp,
+       rw.feels_like,
+       rw.humidity,
+       rw.rain_1h,
+       rw.weather_desc,
+       rw.weather_brief,
+       rw.wind_speed,
+       rw.weatherid
+FROM StationWithAvailability swa
+JOIN RoundedWeather rw ON swa.rounded_last_update = rw.rounded_datetime;
 
         """
     with engine.connect() as connection:
@@ -72,3 +80,4 @@ JOIN ExpandedWeather ew ON aws.rounded_last_update = ew.interval_datetime
     print(array_data[0])
     return f"Dataframe created. Check server logs for output.{array_data[0]}"
 get_stations_dataframe()
+
