@@ -44,6 +44,21 @@ def get_availability(number):
             return jsonify(availability_data)
         else:
             return jsonify({"error": "No data found for station number {}".format(number)}), 404
+@app.route('/stations/dataframe')
+def get_stations_dataframe():
+    query = """
+            SELECT s.number, s.address, s.banking, s.bike_stands, s.name, s.position_lat, s.position_lng, a.available_bikes
+            FROM station s
+            LEFT JOIN (
+                SELECT number, available_bikes, ROW_NUMBER() OVER(PARTITION BY number ORDER BY last_update DESC) AS rn
+                FROM availability
+            ) a ON s.number = a.number AND a.rn = 1
+            """
+    result = db.engine.execute(text(query))
+    df = pd.DataFrame(result.fetchall(), columns=result.keys())
+    # Example of how to use the DataFrame, here we just print it
+    print(df)
+    return "Dataframe created. Check server logs for output."
 
 
 
