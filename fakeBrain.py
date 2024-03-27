@@ -47,7 +47,7 @@ model = tf.keras.Sequential([
 
 # Add the output layer
 
-
+#ju
 # Compile the model
 model.compile(optimizer='adam', loss='mean_squared_error',metrics=['accuracy'])
 model.fit(train_x, y_train, epochs=20,batch_size=50)
