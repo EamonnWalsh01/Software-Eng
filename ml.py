@@ -39,6 +39,7 @@ RoundedWeather AS (
            weatherid,
            DATE_FORMAT(datetime, '%Y-%m-%d %H:00:00') AS rounded_datetime
     FROM weather
+    WHERE lon < -6.28 AND lat < 53.345
     
     
 ),
@@ -61,6 +62,7 @@ SELECT swa.number,
        swa.available_bikes,
        swa.available_bike_stands,
        swa.rounded_last_update,
+       swa.rounded_last_update_5mins,
        rw.temp,
        rw.feels_like,
        rw.humidity,
