@@ -39,6 +39,8 @@ RoundedWeather AS (
            weatherid,
            DATE_FORMAT(datetime, '%Y-%m-%d %H:00:00') AS rounded_datetime
     FROM weather
+    
+    
 ),
 StationWithAvailability AS (
     SELECT s.number,
@@ -50,7 +52,7 @@ StationWithAvailability AS (
            a.rounded_last_update
     FROM station s
     JOIN RoundedAvailability a ON s.number = a.number
-    WHERE a.rn = 1
+  
 )
 SELECT swa.number,
        swa.name,
@@ -75,7 +77,7 @@ JOIN RoundedWeather rw ON swa.rounded_last_update = rw.rounded_datetime;
         # Use the query string directly, but make sure to wrap it in `text()` here
         result = connection.execute(text(query))
         raw = result.fetchall()
-       
+      
         df = pd.DataFrame(raw, columns=result.keys())
         print(df.shape,df.columns)
     
