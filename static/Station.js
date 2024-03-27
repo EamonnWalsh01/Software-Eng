@@ -217,6 +217,7 @@ function initMap() {
                                     <p>Available Stands: ${availability.available_bike_stands}</p>
                                     <p>Status: ${availability.status}</p>
                                     <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                                    <a href="javascript:void(0)" class="info-link" onclick="openNav()">More Info</a>
                                 </div>
                             `;
                            if (currentInfowindow) {
@@ -412,3 +413,23 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer, start, 
         }
     );
 }
+
+
+function openNav() {
+    anime({
+      targets: '#graphArea',
+      width: '250px', // Sidebar width when open
+      easing: 'easeInOutQuad', // Animation easing function
+      duration: 500 // Duration of the animation in milliseconds
+    });
+  }
+  
+  function closeNav() {
+    anime({
+      targets: '#graphArea',
+      width: '0px', // Sidebar width when closed
+      easing: 'easeInOutQuad',
+      duration: 500
+    });
+  }
+  
