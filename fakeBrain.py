@@ -16,27 +16,27 @@ weekday=df['rounded_last_update_5mins'].dt.dayofweek
 weekdaydf = pd.get_dummies(weekday, prefix='day_of_week')
 df = pd.concat([df, weekdaydf], axis=1)
 
-
+print(df.columns)
 # Step 2: Convert these seconds to a fraction of the day
 df['time_as_fraction'] = df['time_as_fraction'] / 86400
 # Applying the function to the 'available_bike_stands' column
 #y_set = pd.DataFrame(df['available_bike_stands'].apply(map_to_five))
 y_set = to_categorical(df['available_bike_stands'])
 y_set =  pd.DataFrame(y_set)
+print(y_set)
 # Ensure x_set is in the correct shape
 x_set = df[['time_as_fraction']]
 #x_set =df.select_dtypes(include=['number'])
 print(df.columns)
 #x_set = df[['number','time_as_fraction','temp','feels_like']]
-#x_set = df.drop(['available_bike_stands',"name","weather_desc","weather_brief",], axis=1)
-x_set = df['time_as_fraction']
+
 train_x = x_set.sample(frac=.9, replace=True)
 
 
 # For the remainder dataset, separate X and Y as you did initially
 remainder_df = df.drop(train_x.index)
-remainder_x = remainder_df.select_dtypes(include=['number'])
-remainder_y = remainder_df['available_bike_stands'].apply(map_to_five)
+remainder_x = remainder_df[['time_as_fraction']]
+remainder_y = to_categorical(remainder_df['available_bike_stands'])
 
 y_train = y_set.loc[train_x.index]
 
@@ -45,11 +45,11 @@ model = tf.keras.Sequential([
       tf.keras.layers.Normalization(input_shape=[1,], axis=None),
        #tf.keras.layers.Dense(10, activation='relu'),
        #tf.keras.layers.Dense(10, activation='relu'),
-       #tf.keras.layers.Dense(1000, activation='relu'),
+       tf.keras.layers.Dense(1000, activation='relu'),
       tf.keras.layers.Dense(1000, activation='relu'),
        #     tf.keras.layers.Dense(1000, activation='relu'),
      
-      tf.keras.layers.Dense(6, activation='relu', use_bias=True)
+      tf.keras.layers.Dense(21, activation='relu', use_bias=True)
   ])
 # Add the hidden layers
 
@@ -57,8 +57,8 @@ model = tf.keras.Sequential([
 
 #ju
 # Compile the model
-model.compile(optimizer='adam', loss="categorical_crossentropy",metrics=['accuracy'])
-model.fit(train_x, y_train, epochs=20,batch_size=1)
+model.compile(optimizer='adam', loss="categorical_crossentropy",metrics=['Accuracy','MeanSquaredError'])
+model.fit(train_x, y_train, epochs=20,batch_size=4)
 print("hi")
 evaluation = model.evaluate(remainder_x, remainder_y, verbose=2)
 print(f"Model evaluation on remainder set: {evaluation}")
