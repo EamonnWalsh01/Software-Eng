@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
 import configparser
+from datetime import datetime, timedelta
 
 app = Flask(__name__, static_url_path='')
 
@@ -44,6 +45,31 @@ def get_availability(number):
             return jsonify(availability_data)
         else:
             return jsonify({"error": "No data found for station number {}".format(number)}), 404
+
+
+@app.route('/data/historical/<int:number>')
+def get_historical_data(number):
+    twenty_four_hours_ago = datetime.now() - timedelta(days=1)
+    
+    with engine.connect() as connection:
+        query = text("""
+            SELECT last_update, available_bikes FROM availability
+            WHERE last_update >= :twenty_four_hours_ago AND number = :number
+            ORDER BY last_update
+        """)
+        result = connection.execute(query, {"twenty_four_hours_ago": twenty_four_hours_ago, "number": number})
+        
+        
+        
+        
+    
+
+        if result:
+            data = [dict(row) for row in result.mappings()]
+            print(data)
+            return jsonify(data)
+        else:
+            return jsonify({"error": f"No historical data found for station number {number}"}), 404
 
 
 
