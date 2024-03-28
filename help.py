@@ -29,20 +29,19 @@ x_set = df[['time_as_fraction','day_of_week_0','day_of_week_1','day_of_week_2','
 print(df.columns)
 #x_set = df[['number','time_as_fraction','temp','feels_like']]
 #x_set = df.drop(['available_bike_stands',"name","weather_desc","weather_brief",], axis=1)
-x_set = df['time_as_fraction']
 train_x = x_set.sample(frac=.9, replace=True)
 
 
 # For the remainder dataset, separate X and Y as you did initially
 remainder_df = df.drop(train_x.index)
-remainder_x = remainder_df.select_dtypes(include=['number'])
-remainder_y = remainder_df['available_bike_stands'].apply(map_to_five)
+remainder_x = remainder_df[['time_as_fraction','day_of_week_0','day_of_week_1','day_of_week_2','day_of_week_3','day_of_week_4','day_of_week_5','day_of_week_6','temp','feels_like']]
+remainder_y = remainder_df['available_bike_stands']
 
 y_train = y_set.loc[train_x.index]
-
+remainder_y=y_set.loc[remainder_x.index]
 
 model = tf.keras.Sequential([
-      tf.keras.layers.Normalization(input_shape=[1,], axis=None),
+      tf.keras.layers.Normalization(input_shape=[10,], axis=None),
        #tf.keras.layers.Dense(10, activation='relu'),
        #tf.keras.layers.Dense(10, activation='relu'),
        #tf.keras.layers.Dense(1000, activation='relu'),
