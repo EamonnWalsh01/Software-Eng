@@ -12,6 +12,10 @@ def map_to_five(x):
     return min(x, 5)
 df['rounded_last_update_5mins'] = pd.to_datetime(df['rounded_last_update_5mins'])
 df['time_as_fraction'] = df['rounded_last_update_5mins'].dt.hour * 3600 + df['rounded_last_update_5mins'].dt.minute * 60 + df['rounded_last_update_5mins'].dt.second
+weekday=df['rounded_last_update_5mins'].dt.dayofweek
+weekdaydf = pd.get_dummies(weekday, prefix='day_of_week')
+df = pd.concat([df, weekdaydf], axis=1)
+
 
 # Step 2: Convert these seconds to a fraction of the day
 df['time_as_fraction'] = df['time_as_fraction'] / 86400
