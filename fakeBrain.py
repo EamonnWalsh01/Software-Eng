@@ -35,12 +35,12 @@ train_x = x_set.sample(frac=.9, replace=True)
 
 # For the remainder dataset, separate X and Y as you did initially
 remainder_df = df.drop(train_x.index)
-remainder_x = remainder_df.select_dtypes(include=['number'])
+remainder_x = remainder_df[['time_as_fraction','day_of_week_0','day_of_week_1','day_of_week_2','day_of_week_3','day_of_week_4','day_of_week_5','day_of_week_6','temp','feels_like']]
+
 remainder_y = remainder_df['available_bike_stands'].apply(map_to_five)
 
 y_train = y_set.loc[train_x.index]
-
-
+remainder_y = y_set.loc[remainder_x.index]
 model = tf.keras.Sequential([
       tf.keras.layers.Normalization(input_shape=[1,], axis=None),
        #tf.keras.layers.Dense(10, activation='relu'),
@@ -57,11 +57,10 @@ model = tf.keras.Sequential([
 
 #ju
 # Compile the model
-model.compile(optimizer='adam', loss="categorical_crossentropy",metrics=['accuracy', 'mse'])
+model.compile(optimizer='adam', loss="categorical_crossentropy",metrics=['accuracy', 'mse','categorical_accuracy'])
 model.fit(train_x, y_train, epochs=20,batch_size=1)
 print("hi")
 evaluation = model.evaluate(remainder_x, remainder_y, verbose=2)
 print(f"Model evaluation on remainder set: {evaluation}")
 
 # Model summary
-
