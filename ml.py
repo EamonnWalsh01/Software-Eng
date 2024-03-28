@@ -25,6 +25,7 @@ def get_stations_dataframe():
            DATE_FORMAT(DATE_SUB(last_update, INTERVAL MINUTE(last_update) % 5 MINUTE), '%Y-%m-%d %H:%i:00') AS rounded_last_update_5mins,
            ROW_NUMBER() OVER(PARTITION BY number ORDER BY last_update DESC) AS rn
     FROM availability
+    WHERE number=2
 ),
 RoundedWeather AS (
     SELECT lon,
@@ -50,7 +51,8 @@ StationWithAvailability AS (
            s.position_lng,
            a.available_bikes,
            a.available_bike_stands,
-           a.rounded_last_update
+           a.rounded_last_update,
+           a.rounded_last_update_5mins
     FROM station s
     JOIN RoundedAvailability a ON s.number = a.number
   
@@ -62,6 +64,7 @@ SELECT swa.number,
        swa.available_bikes,
        swa.available_bike_stands,
        swa.rounded_last_update,
+       swa.rounded_last_update_5mins,
        rw.temp,
        rw.feels_like,
        rw.humidity,
