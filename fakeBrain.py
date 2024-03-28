@@ -24,7 +24,7 @@ df['time_as_fraction'] = df['time_as_fraction'] / 86400
 y_set = to_categorical(df['available_bike_stands'])
 y_set =  pd.DataFrame(y_set)
 # Ensure x_set is in the correct shape
-x_set = df[['time_as_fraction']]
+x_set = df[['time_as_fraction','day_of_week_0','day_of_week_1','day_of_week_2','day_of_week_3','day_of_week_4','day_of_week_5','day_of_week_6','temp','feels_like']]
 #x_set =df.select_dtypes(include=['number'])
 print(df.columns)
 #x_set = df[['number','time_as_fraction','temp','feels_like']]
@@ -49,7 +49,7 @@ model = tf.keras.Sequential([
       tf.keras.layers.Dense(1000, activation='relu'),
        #     tf.keras.layers.Dense(1000, activation='relu'),
      
-      tf.keras.layers.Dense(6, activation='relu', use_bias=True)
+      tf.keras.layers.Dense(21, activation='relu', use_bias=True)
   ])
 # Add the hidden layers
 
@@ -57,7 +57,7 @@ model = tf.keras.Sequential([
 
 #ju
 # Compile the model
-model.compile(optimizer='adam', loss="categorical_crossentropy",metrics=['accuracy'])
+model.compile(optimizer='adam', loss="categorical_crossentropy",metrics=['accuracy', 'mse'])
 model.fit(train_x, y_train, epochs=20,batch_size=1)
 print("hi")
 evaluation = model.evaluate(remainder_x, remainder_y, verbose=2)
