@@ -25,7 +25,7 @@ def get_stations_dataframe():
            DATE_FORMAT(DATE_SUB(last_update, INTERVAL MINUTE(last_update) % 5 MINUTE), '%Y-%m-%d %H:%i:00') AS rounded_last_update_5mins,
            ROW_NUMBER() OVER(PARTITION BY number ORDER BY last_update DESC) AS rn
     FROM availability
-    WHERE number=2
+    
 ),
 RoundedWeather AS (
     SELECT lon,

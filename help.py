@@ -48,7 +48,7 @@ model = tf.keras.Sequential([
       tf.keras.layers.Dense(1000, activation='relu'),
        #     tf.keras.layers.Dense(1000, activation='relu'),
      
-      tf.keras.layers.Dense(21, activation='relu', use_bias=True)
+      tf.keras.layers.Dense(41, activation='relu', use_bias=True)
   ])
 # Add the hidden layers
 #so i can commit
