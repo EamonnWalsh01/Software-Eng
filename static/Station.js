@@ -217,7 +217,7 @@ function initMap() {
                                     <p>Available Stands: ${availability.available_bike_stands}</p>
                                     <p>Status: ${availability.status}</p>
                                     <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
-                                    <a href="javascript:void(0)" class="info-link" onclick="openNav()">More Info</a>
+                                    <a href="javascript:void(0)" class="info-link" onclick="openNav(${station.number})">More Info</a>
                                 </div>
                             `;
                            if (currentInfowindow) {
@@ -415,14 +415,40 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer, start, 
 }
 
 
-function openNav() {
+function openNav(stationNumber) {
+    // Use Anime.js to animate opening the sidebar
     anime({
-      targets: '#graphArea',
-      width: '250px', // Sidebar width when open
-      easing: 'easeInOutQuad', // Animation easing function
-      duration: 500 // Duration of the animation in milliseconds
+        targets: '#graphArea',
+        width: '600px', // Sidebar width when open
+        easing: 'easeInOutQuad', // Animation easing function
+        duration: 500 // Duration of the animation in milliseconds
     });
-  }
+
+    // Clear the sidebar content first
+    document.getElementById('graphArea').innerHTML = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>';
+
+
+    // Create Historical Data button
+    const historicalDataBtn = document.createElement('button');
+    historicalDataBtn.innerText = 'Historical Data';
+    historicalDataBtn.addEventListener('click', function() {
+        fetchAndPlotHistoricalData(stationNumber);
+    });
+
+    // Create Predictive Data button (placeholder for now)
+    const predictiveDataBtn = document.createElement('button');
+    predictiveDataBtn.innerText = 'Predictive Data';
+    predictiveDataBtn.addEventListener('click', function() {
+        // Placeholder function for predictive data
+        console.log('Predictive data function to be implemented');
+    });
+
+    // Append buttons to the sidebar ('graphArea')
+    document.getElementById('graphArea').appendChild(historicalDataBtn);
+    document.getElementById('graphArea').appendChild(predictiveDataBtn);
+}
+
+
   
   function closeNav() {
     anime({
@@ -432,4 +458,110 @@ function openNav() {
       duration: 500
     });
   }
+
+
+
+  async function fetchAndPlotHistoricalData(stationNumber) {
+    try {
+        // Fetch the historical data from the Flask backend
+        const response = await fetch(`/data/historical/${stationNumber}`);
+        const json_data = await response.json();
+        
+        const dates = json_data.map(item => item.last_update);
+        const availability = json_data.map(item => item.available_bikes);
+
+        // Ensure the graphArea is clear before plotting a new graph
+        const graphArea = document.getElementById('graphArea');
+        graphArea.innerHTML += '<canvas id="bikeAvailabilityChart"></canvas>';
+        console.log(dates);
+        console.log(availability);
+
+        // ... inside your fetchAndPlotHistoricalData function ...
+
+const labels = dates.map(date => {
+    // Create a date object from the date string
+    const dateObj = new Date(date);
+    // Get hours in 24-hour format
+    let hours = dateObj.getHours();
+    // Convert to 12-hour format with AM/PM
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return `${hours} ${ampm}`;
+});
+
+const data = {
+    labels: labels,
+    datasets: [{
+        label: 'Bike Station Availability',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: availability,
+        fill: false,
+        pointRadius: 0 // Set the point radius to 0 to remove the markers
+    }]
+};
+
+const config = {
+    type: 'line',
+    data: data,
+    options: {
+        title: {
+            display: true,
+            text: 'Bike Availability in the Last 24 Hours'
+        },
+        animation: {
+            onComplete: () => {
+                anime({
+                    targets: '#bikeAvailabilityChart',
+                    keyframes: [
+                        {scale: 0.9},
+                        {scale: 1.0},
+                    ],
+                    duration: 500,
+                    easing: 'easeOutElastic(1, .8)'
+                });
+            }
+        },
+        // Additional options for scales might be required depending on your exact needs
+        scales: {
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Hour of the Day'
+                },
+                ticks: {
+                    // Prevent compression of labels by setting autoSkip to false
+                    autoSkip: false
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Available Bikes'
+                }
+            }]
+        },
+        // Disable interaction points (tooltips)
+        tooltips: {
+            enabled: false
+        }
+    }
+};
+
+// Make sure you are getting the correct canvas element by its id
+const availabilityGraph = new Chart(
+    document.getElementById('bikeAvailabilityChart'),
+    config
+);
+
+// ... rest of your function ...
+
+        
+    } catch (error) {
+        console.error('Failed to fetch and plot historical data:', error);
+    }
+}
+
+
   
