@@ -1,7 +1,11 @@
 from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
 import configparser
+
 from datetime import datetime, timedelta
+
+import pandas as pd 
+import numpy as np 
 
 app = Flask(__name__, static_url_path='')
 
@@ -47,6 +51,7 @@ def get_availability(number):
             return jsonify({"error": "No data found for station number {}".format(number)}), 404
 
 
+
 @app.route('/data/historical/<int:number>')
 def get_historical_data(number):
     twenty_four_hours_ago = datetime.now() - timedelta(days=1)
@@ -71,6 +76,24 @@ def get_historical_data(number):
         else:
             return jsonify({"error": f"No historical data found for station number {number}"}), 404
 
+
+
+@app.route('/stations/dataframe')
+def get_stations_dataframe():
+    query = """
+            SELECT * FROM availability 
+            
+            ORDER BY last_update DESC 
+            LIMIT 40
+        """
+    with engine.connect() as connection:
+        # Use the query string directly, but make sure to wrap it in `text()` here
+        result = connection.execute(text(query))
+        array_data = np.array(result.fetchall())
+        print(array_data)
+    # Example of how to use the DataFrame, here we just print it
+    print(array_data)
+    return f"Dataframe created. Check server logs for output.{array_data}"
 
 
 @app.route('/nearest-stations')
