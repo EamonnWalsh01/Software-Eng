@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, text
 import configparser
 
 from datetime import datetime, timedelta
-
+import pickle
 import pandas as pd 
 import numpy as np 
 
@@ -63,11 +63,6 @@ def get_historical_data(number):
             ORDER BY last_update
         """)
         result = connection.execute(query, {"twenty_four_hours_ago": twenty_four_hours_ago, "number": number})
-        
-        
-        
-        
-    
 
         if result:
             data = [dict(row) for row in result.mappings()]

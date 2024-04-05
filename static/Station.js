@@ -478,84 +478,84 @@ function openNav(stationNumber) {
 
         // ... inside your fetchAndPlotHistoricalData function ...
 
-const labels = dates.map(date => {
-    // Create a date object from the date string
-    const dateObj = new Date(date);
-    // Get hours in 24-hour format
-    let hours = dateObj.getHours();
-    // Convert to 12-hour format with AM/PM
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    return `${hours} ${ampm}`;
-});
+        const labels = dates.map(date => {
+            // Create a date object from the date string
+            const dateObj = new Date(date);
+            // Get hours in 24-hour format
+            let hours = dateObj.getHours();
+            // Convert to 12-hour format with AM/PM
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            return `${hours} ${ampm}`;
+        });
 
-const data = {
-    labels: labels,
-    datasets: [{
-        label: 'Bike Station Availability',
-        backgroundColor: 'rgb(255, 99, 132)',
-        borderColor: 'rgb(255, 99, 132)',
-        data: availability,
-        fill: false,
-        pointRadius: 0 // Set the point radius to 0 to remove the markers
-    }]
-};
-
-const config = {
-    type: 'line',
-    data: data,
-    options: {
-        title: {
-            display: true,
-            text: 'Bike Availability in the Last 24 Hours'
-        },
-        animation: {
-            onComplete: () => {
-                anime({
-                    targets: '#bikeAvailabilityChart',
-                    keyframes: [
-                        {scale: 0.9},
-                        {scale: 1.0},
-                    ],
-                    duration: 500,
-                    easing: 'easeOutElastic(1, .8)'
-                });
-            }
-        },
-        // Additional options for scales might be required depending on your exact needs
-        scales: {
-            xAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Hour of the Day'
-                },
-                ticks: {
-                    // Prevent compression of labels by setting autoSkip to false
-                    autoSkip: false
-                }
-            }],
-            yAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Available Bikes'
-                }
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Bike Station Availability',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: availability,
+                fill: false,
+                pointRadius: 0 // Set the point radius to 0 to remove the markers
             }]
-        },
-        // Disable interaction points (tooltips)
-        tooltips: {
-            enabled: false
-        }
-    }
-};
+        };
 
-// Make sure you are getting the correct canvas element by its id
-const availabilityGraph = new Chart(
-    document.getElementById('bikeAvailabilityChart'),
-    config
-);
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                title: {
+                    display: true,
+                    text: 'Bike Availability in the Last 24 Hours'
+                },
+                animation: {
+                    onComplete: () => {
+                        anime({
+                            targets: '#bikeAvailabilityChart',
+                            keyframes: [
+                                {scale: 0.9},
+                                {scale: 1.0},
+                            ],
+                            duration: 500,
+                            easing: 'easeOutElastic(1, .8)'
+                        });
+                    }
+                },
+                // Additional options for scales might be required depending on your exact needs
+                scales: {
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Hour of the Day'
+                        },
+                        ticks: {
+                            // Prevent compression of labels by setting autoSkip to false
+                            autoSkip: false
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Available Bikes'
+                        }
+                    }]
+                },
+                // Disable interaction points (tooltips)
+                tooltips: {
+                    enabled: false
+                }
+            }
+        };
 
-// ... rest of your function ...
+        // Make sure you are getting the correct canvas element by its id
+        const availabilityGraph = new Chart(
+            document.getElementById('bikeAvailabilityChart'),
+            config
+        );
+
+        // ... rest of your function ...
 
         
     } catch (error) {
