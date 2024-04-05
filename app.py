@@ -145,42 +145,43 @@ def current_weather():
         return jsonify(nearest_weather)
     
 
-@app.route('/data/predictive/<int:number>/')
-def predict(number):
-    print('station',number)
+@app.route('/data/predictive/<int:number>/<int:month>/<int:day>')
+def predict(number,month,day):
+    print('station',month,day)
     # Get input data from the request
     model_path = 'models/model'+str(number)+'.pkl'
     with open(model_path, 'rb') as file:
         model = pickle.load(file)
     
+    predictions_list = []
+    for time in range(32400, 64800, 3600):
 
-    input_data = {
-        'number': [number],
-        'time_as_fraction': [42400],
-        'month': [4],
-        'day': [7],
-        'day_of_week_0': [0],
-        'day_of_week_1': [0],
-        'day_of_week_2': [0],
-        'day_of_week_3': [1],
-        'day_of_week_4': [0],
-        'day_of_week_5': [0],
-        'day_of_week_6': [0],
-        'temp': [290],
-        'feels_like': [290]
-    }
+        input_data = {
+            'number': [number],
+            'time_as_fraction': [time],
+            'month': [month],
+            'day': [day],
+            'day_of_week_0': [0],
+            'day_of_week_1': [0],
+            'day_of_week_2': [0],
+            'day_of_week_3': [1],
+            'day_of_week_4': [0],
+            'day_of_week_5': [0],
+            'day_of_week_6': [0],
+            'temp': [290],
+            'feels_like': [290]
+        }
 
-    # Convert the input data into a pandas DataFrame
-    df = pd.DataFrame.from_dict(input_data)
-
-    # Make a prediction
-    predictions = model.predict(df)
+        # Convert the input data into a pandas DataFrame
+        df = pd.DataFrame.from_dict(input_data)
+        predictions = model.predict(df)
+        predictions_list.append(predictions.tolist()[0])
 
     # Print the prediction
-    print(predictions)
-    print(type(predictions))
+    print(predictions_list)
+    
     # Convert predictions to a list for JSON response
-    predictions_list = predictions.tolist()
+    
 
     # Return the predictions as a JSON response
     return jsonify(predictions_list)

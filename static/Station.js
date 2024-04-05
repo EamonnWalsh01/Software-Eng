@@ -439,7 +439,7 @@ function openNav(stationNumber) {
     const predictiveDataBtn = document.createElement('button');
     predictiveDataBtn.innerText = 'Predictive Data';
     predictiveDataBtn.addEventListener('click', function() {
-        fetchAndPlotPredictiveData(stationNumber);
+        showPredictiveArea(stationNumber);
         console.log('Predictive data function to be implemented');
     });
 
@@ -458,6 +458,51 @@ function openNav(stationNumber) {
       duration: 500
     });
   }
+
+  function showPredictiveArea(number) {
+    
+  
+    // Create the container div for the predictive area
+    const predictiveArea = document.createElement('div');
+    predictiveArea.id = 'predictiveArea';
+  
+    // Create the date input
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.id = 'predictiveDateInput';
+  
+    // Set min and max date range within the next two weeks
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 14);
+  
+    dateInput.min = today.toISOString().split('T')[0];
+    dateInput.max = maxDate.toISOString().split('T')[0];
+  
+    // Create the submit button
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Plot Predictive Data';
+    submitButton.className = 'button';
+  
+    // Add event listener to the submit button
+    submitButton.addEventListener('click', function() {
+      const selectedDate = dateInput.value;
+      if (selectedDate) {
+        fetchAndPlotPredictiveData(number, selectedDate);
+      } else {
+        alert('Please select a date within the next two weeks.');
+      }
+    });
+  
+    // Append the elements to the predictiveArea
+    predictiveArea.appendChild(dateInput);
+    predictiveArea.appendChild(submitButton);
+  
+    // Append the predictiveArea to the graphArea
+    document.getElementById('graphArea').appendChild(predictiveArea);
+  }
+  
+  
 
 
 
@@ -564,10 +609,13 @@ function openNav(stationNumber) {
 }
 
 
-async function fetchAndPlotPredictiveData(stationNumber) {
+async function fetchAndPlotPredictiveData(stationNumber, date) {
     try {
         // Fetch the historical data from the Flask backend
-        const response = await fetch(`/data/predictive/${stationNumber}`);
+        console.log(date);
+        var month = date.split('-')[1];
+        var day = date.split('-')[2];
+        const response = await fetch(`/data/predictive/${stationNumber}/${month}/${day}`);
         
     }
     catch (error) {
