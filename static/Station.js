@@ -19,7 +19,8 @@ function initMap() {
     streetViewControl: false,
     zoomControl: false,
     mapTypeControl: false,
-    fullscreenControl: false
+    fullscreenControl: false,
+    ClickableIcons:false,
     });
     
     const directionsService = new google.maps.DirectionsService();
@@ -29,21 +30,37 @@ function initMap() {
    
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
-   
-
+    let settingFlag = 0;
+    let opencloseFlag = 0;
     let currentInfowindow = null;
+    let settingBox = document.getElementById('settingBox');
+    let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
+    let settingsIMG = document.getElementById("settingIMG");
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
+    let settingsCog = document.getElementById("settingsWheel");
+    let slider = document.getElementById("myRange");
+    let clock = document.getElementById("section");
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
-
+    map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-    fetch(`/weather?lat=53.3498&lng=-6.2603`)
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(clock);
+    slider.addEventListener('input', function() {
+        const newLat = parseFloat(this.value)/10000000000;
+        const currentLng = map.getCenter().lng();
+        const currentlat = map.getCenter().lat(); 
+        const newCenter = { lat: newLat+currentlat, lng: currentLng };
+        map.setCenter(newCenter);
+    });
+    fetch(`/weather`)
     .then(response => response.json()) 
     .then(data => {
         // Correctly accessing nested attributes
        
-        let content = `
+        let contentWeather = `
        
             <h3>Weather Info</h3>
             <p>Temperature: ${data[0]['temp']}</p>
@@ -51,11 +68,67 @@ function initMap() {
             
         
     `;  
-       document.getElementById('weatherInfo').innerHTML = content
+       document.getElementById('weatherInfo').innerHTML = contentWeather;
+       let daylight=true;
+       let containers=document.getElementById('weatherbox');
+       let temp=(Math.round(data[0]['temp']-273.15)).toString()+"&deg;C";
+       document.getElementById('temperature').innerHTML=temp;
+       let currentWeather=data[0]['weatherid'];
+       if (data[0]['sunset']<=data[0]['time']||data[0]['sunrise']>=data[0]['time']){
+        daylight=false;
+        containers.style.backgroundColor='navy';
+       }else{
+        daylight=true;
+       }
 
-    
-
-    });
+       const image=document.getElementById('weatherimg')
+       if (currentWeather>=800){
+        if(currentWeather==800){
+            if (daylight==true){
+                image.src="weathericons/Sunny.png";
+            }else{
+                image.src="weathericons/clearnight.png";
+            }
+        }else if (currentWeather==801){
+            if (daylight==true){
+                image.src="weathericons/few_clouds.png";
+            }else{
+                image.src="weathericons/few_clouds_night.png";
+            }
+        }else if(currentWeather==802){
+            image.src="weathericons/scattered_clouds.png";
+        }else if(currentWeather==803 || currentWeather==804){
+            image.src="weathericons/broken_clouds.png";
+        }
+    }else if(currentWeather>=700){
+        if(currentWeather<=761||currentWeather==771){
+            image.src="weathericons/mist.png";
+        }else if(currentWeather==762){
+            image.src="weathericons/ash.png";
+        }else{
+            image.src="weathericons/tornado.png";
+        }
+    }else if(currentWeather>=600){
+        image.src="weathericons/snow.png";
+    }else if(currentWeather>=500){
+        if(currentWeather<=506){
+            if (daylight==true){
+                image.src="weathericons/rain.png";
+            }else{
+                image.src="weathericons/rain_night.png";
+            } 
+        }else if(currentWeather==511){
+            image.src="weathericons/snow.png";
+        }else{
+            image.src="weathericons/shower_rain.png";
+        }
+    }else if(currentWeather>=300){
+        image.src="weathericons/shower_rain.png";
+    }else if(currentWeather>=200){
+        image.src="weathericons/thunderstorm.png";
+    }
+}
+);
     
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
@@ -91,11 +164,11 @@ function initMap() {
         duration: 500 
     });
     anime({
-        targets: '#pac-input',
+        targets: ['#pac-input','#settingsWheel','#openClose'],
         translateX: [350], 
         easing: 'easeOutQuad', 
         duration: 500 
-    })
+    });opencloseFlag = 1;
     });
 
     fetch('/stations')
@@ -107,23 +180,30 @@ function initMap() {
                 let color;
                 if (station.available_bikes === 0) {
                     color = "red";
+                    pinImageUrl = "red_bike.png"
                 } else if (station.available_bikes > 0 && station.available_bikes <= 5) {
                     color = "yellow";
+                    pinImageUrl = "yellow_bike.png"
                 } else {
                     color = "green";
+                    pinImageUrl = "green_bike.png"
                 }
 
                 // Creating a colored pin
                 let pinColor = color;
                 let pinImage = new google.maps.MarkerImage("http://maps.google.com/mapfiles/ms/icons/" + pinColor + "-dot.png");
 
-                let marker = new google.maps.Marker({
+                
+                const marker = new google.maps.Marker({
                     position: { lat: station.position_lat, lng: station.position_lng },
                     map: map,
-                    icon: pinImage,
-                    title: station.name
+                    title: station.name, 
+                    icon: {
+                        url: pinImageUrl, 
+                        scaledSize: new google.maps.Size(150, 150), 
+                    },
                 });
-                
+                                
 
                 // Add click listener to each marker
                 marker.addListener('click', function() {
@@ -137,6 +217,7 @@ function initMap() {
                                     <p>Available Stands: ${availability.available_bike_stands}</p>
                                     <p>Status: ${availability.status}</p>
                                     <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                                    <a href="javascript:void(0)" class="info-link" onclick="openNav()">More Info</a>
                                 </div>
                             `;
                            if (currentInfowindow) {
@@ -156,17 +237,105 @@ function initMap() {
                 
             });
         });
-        weatherBox.addEventListener('click',function(){
-            weatherInfo =  document.getElementById('weatherInfo')
+       
+       
+        settingsIMG.addEventListener('click',function(){
+            if (settingFlag == 0){
+                settingFlag = 1;
+            anime( {
+                targets:"#settingIMG",
+                rotate:{
+                value: '+=2turn', // 0 + 2 = '2turn'
+                duration: 1800,
+                easing: 'easeInOutSine'}
+              })
+              anime({
+                targets: '#settingBox',
+                translateY: [-500, 0], 
+                easing: 'easeOutQuad', 
+                duration: 1000 ,
+                })
+              settingBox.style.display = 'block';
+            }
+            else{
+                settingFlag = 0;
+                anime( {
+                    targets:"#settingIMG",
+                    rotate:{
+                    value: '+=2turn', // 0 + 2 = '2turn'
+                    duration: 1800,
+                    easing: 'easeInOutSine'}
+                  })
+                  anime({
+                    targets: '#settingBox',
+                    translateY: [0, -500], 
+                    easing: 'easeInQuad', 
+                    duration: 1000 ,
+                    complete: function(anim) {
+                        // Once the sidebar animation is complete, apply display: none to the sidebar
+                        document.querySelector('#settingBox').style.display = 'none';}
+                        
+                    })
+                  
+                }
+        })
             
-            if (weatherInfo.style.display=='block'){
-                weatherInfo.style.display = 'None';
-                console.log("hello5");
-            }else{
-                weatherInfo.style.display = 'block';
-                console.log("hello1");
+        closeButton = document.getElementById("close");
+        closeButton.addEventListener('click',function(){
+            opencloseFlag = 0;
+            anime({
+                targets: '#sidebar',
+                translateX: [0, -500], 
+                easing: 'easeInQuad', 
+                duration: 500 ,
+                complete: function(anim) {
+            // Once the sidebar animation is complete, apply display: none to the sidebar
+            document.querySelector('#sidebar').style.display = 'none';}
+            });
+            anime({
+                targets:  ['#pac-input','#settingsWheel','#openClose'],
+                translateX: [300, 20], 
+                easing: 'easeInQuad', 
+                duration: 500 
+            });
+                })
+        openClose.addEventListener('click',function(){
+            
+            if (opencloseFlag == 0 ){anime({
+                targets: '#sidebar',
+                translateX: [-300, 20], 
+                easing: 'easeOutQuad', 
+                duration: 500 
+            });
+            anime({
+                targets:  ['#pac-input','#settingsWheel','#openClose'],
+                translateX: [350], 
+                easing: 'easeOutQuad', 
+                duration: 500 
+
+            })
+            sidebar.style.display = 'block'
+            opencloseFlag = 1}
+            else{
+                opencloseFlag = 0
+                anime({
+                    targets: '#sidebar',
+                    translateX: [0, -500], 
+                    easing: 'easeInQuad', 
+                    duration: 500 ,
+                    complete: function(anim) {
+                // Once the sidebar animation is complete, apply display: none to the sidebar
+                document.querySelector('#sidebar').style.display = 'none';}
+                });
+                anime({
+                    targets: ['#pac-input','#settingsWheel','#openClose'],
+                    translateX: [300, 20], 
+                    easing: 'easeInQuad', 
+                    duration: 500 
+                });
             }
         })
+            
 }
 
 
@@ -200,17 +369,27 @@ function fetchNearestStations(lat, lng) {
                         .then(response => response.json())
                         .then(availability => {
                             let content = `
-                                
-                                    
-                                    Available Stands: ${availability.available_bike_stands}
-                                    Status: ${availability.status}
-                                    Last Update: ${new Date(availability.last_update).toLocaleString()}
-                                
+                           
+       
+                            <h3>Additioinal Info</h3>
+                            <p>Availible Stands: ${availability.available_bike_stands}</p>
+                            <p>Status: ${availability.status}</p>
+                            <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                        
+                    
+
                             `;
+                            infoElement.innerHTML = content;
+                            if (infoElement.style.display=='block'){
+                                infoElement.style.display = 'None';
+                                console.log("hello5");
+                            }else{
+                                infoElement.style.display = 'block';
+                                console.log("hello1");
+                            }
                             
-                            infoElement.textContent = content;
+
                             
-                            infoElement.style.display = 'block';
                         });
                 });
             })
@@ -234,3 +413,23 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer, start, 
         }
     );
 }
+
+
+function openNav() {
+    anime({
+      targets: '#graphArea',
+      width: '250px', // Sidebar width when open
+      easing: 'easeInOutQuad', // Animation easing function
+      duration: 500 // Duration of the animation in milliseconds
+    });
+  }
+  
+  function closeNav() {
+    anime({
+      targets: '#graphArea',
+      width: '0px', // Sidebar width when closed
+      easing: 'easeInOutQuad',
+      duration: 500
+    });
+  }
+  
