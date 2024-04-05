@@ -66,7 +66,6 @@ def get_historical_data(number):
 
         if result:
             data = [dict(row) for row in result.mappings()]
-            print(data)
             return jsonify(data)
         else:
             return jsonify({"error": f"No historical data found for station number {number}"}), 404
@@ -144,6 +143,47 @@ def current_weather():
         nearest_weather = [dict(row) for row in result.mappings()]
         print(nearest_weather)
         return jsonify(nearest_weather)
+    
+
+@app.route('/data/predictive/<int:number>/')
+def predict(number):
+    print('station',number)
+    # Get input data from the request
+    model_path = 'models/model'+str(number)+'.pkl'
+    with open(model_path, 'rb') as file:
+        model = pickle.load(file)
+    
+
+    input_data = {
+        'number': [number],
+        'time_as_fraction': [42400],
+        'month': [4],
+        'day': [7],
+        'day_of_week_0': [0],
+        'day_of_week_1': [0],
+        'day_of_week_2': [0],
+        'day_of_week_3': [1],
+        'day_of_week_4': [0],
+        'day_of_week_5': [0],
+        'day_of_week_6': [0],
+        'temp': [290],
+        'feels_like': [290]
+    }
+
+    # Convert the input data into a pandas DataFrame
+    df = pd.DataFrame.from_dict(input_data)
+
+    # Make a prediction
+    predictions = model.predict(df)
+
+    # Print the prediction
+    print(predictions)
+    print(type(predictions))
+    # Convert predictions to a list for JSON response
+    predictions_list = predictions.tolist()
+
+    # Return the predictions as a JSON response
+    return jsonify(predictions_list)
 
 @app.route('/')
 def index():

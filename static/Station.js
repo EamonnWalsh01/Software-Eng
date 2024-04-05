@@ -439,7 +439,7 @@ function openNav(stationNumber) {
     const predictiveDataBtn = document.createElement('button');
     predictiveDataBtn.innerText = 'Predictive Data';
     predictiveDataBtn.addEventListener('click', function() {
-        // Placeholder function for predictive data
+        fetchAndPlotPredictiveData(stationNumber);
         console.log('Predictive data function to be implemented');
     });
 
@@ -564,4 +564,13 @@ function openNav(stationNumber) {
 }
 
 
-  
+async function fetchAndPlotPredictiveData(stationNumber) {
+    try {
+        // Fetch the historical data from the Flask backend
+        const response = await fetch(`/data/predictive/${stationNumber}`);
+        
+    }
+    catch (error) {
+        console.error('Failed to fetch and plot predictive data:', error);
+    }
+}
