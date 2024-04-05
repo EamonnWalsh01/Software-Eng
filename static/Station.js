@@ -415,7 +415,7 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer, start, 
 }
 
 
-function openNav(stationNumber) {
+async function openNav(stationNumber) {
     // Use Anime.js to animate opening the sidebar
     anime({
         targets: '#graphArea',
@@ -427,7 +427,9 @@ function openNav(stationNumber) {
     // Clear the sidebar content first
     document.getElementById('graphArea').innerHTML = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>';
 
-
+    const response = await fetch(`/station/${stationNumber}`);
+    const json_data = await response.json();
+    console.log(json_data);
     // Create Historical Data button
     const historicalDataBtn = document.createElement('button');
     historicalDataBtn.innerText = 'Historical Data';

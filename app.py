@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
 import configparser
-
+import json
 from datetime import datetime, timedelta
 import pickle
 import pandas as pd 
@@ -145,6 +145,29 @@ def current_weather():
         return jsonify(nearest_weather)
     
 
+@app.route('/station/<int:station_number>')
+def get_station(station_number):
+    with engine.connect() as connection:
+        result = connection.execute(text("""
+            SELECT s.number, s.address, s.banking, s.bike_stands, s.name, s.position_lat, s.position_lng, a.available_bikes
+            FROM station s
+            LEFT JOIN (
+                SELECT number, available_bikes, last_update
+                FROM availability
+                WHERE number = :station_number
+                ORDER BY last_update DESC
+                LIMIT 1
+            ) a ON s.number = a.number
+            WHERE s.number = :station_number
+        """), {"station_number": station_number})
+        
+        # Attempt to fetch one row
+        
+        station_data = [dict(row) for row in result.mappings()]
+        return jsonify(station_data)
+        
+    
+
 @app.route('/data/predictive/<int:number>/<int:month>/<int:day>')
 def predict(number,month,day):
     print('station',month,day)
@@ -152,6 +175,11 @@ def predict(number,month,day):
     model_path = 'models/model'+str(number)+'.pkl'
     with open(model_path, 'rb') as file:
         model = pickle.load(file)
+    
+    station_info = json.loads(get_station(number).get_data(as_text=True))[0]
+    lat = station_info['position_lat']
+    lon = station_info['position_lng']
+
     
     predictions_list = []
     for time in range(32400, 64800, 3600):
