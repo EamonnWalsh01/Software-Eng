@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
 import configparser
 import pandas as pd 
+import pickle
 import numpy as np 
 app = Flask(__name__, static_url_path='')
 
