@@ -462,6 +462,24 @@ async function openNav(stationNumber) {
         area.innerHTML = ''; 
     }
 
+    var form = document.createElement("form");
+    form.innerHTML = `
+        <label for="dateTime">Select Date and Time (within next 5 days):</label>
+        <input type="datetime-local" id="dateTime" name="dateTime" required>
+        <input type="hidden"  name="number" value=${number}>
+        <button type="submit" id="submitBtn">Predict</button>
+    `;
+
+    area.appendChild(form);
+
+    var now = new Date();
+    var fiveDaysFromNow = new Date(now.getTime() + (5 * 24 * 60 * 60 * 1000));
+    document.getElementById("dateTime").setAttribute("min", now.toISOString().slice(0, -8));
+    document.getElementById("dateTime").setAttribute("max", fiveDaysFromNow.toISOString().slice(0, -8));
+
+
+    area.innerHTML += '<p id="prediction-answer">Available Predictions: </p>'
+
     // Helper function to create a button
     function createButton(label, date, station) {
         const btn = document.createElement('button');
@@ -494,25 +512,7 @@ async function openNav(stationNumber) {
         area.appendChild(button);
     });
 
-    var form = document.createElement("form");
-    form.innerHTML = `
-        <label for="dateTime">Select Date and Time (within next 5 days):</label>
-        <input type="datetime-local" id="dateTime" name="dateTime" required>
-        <button type="submit">Submit</button>
-    `;
-
-    area.appendChild(form);
-
-    var now = new Date();
-    var fiveDaysFromNow = new Date(now.getTime() + (5 * 24 * 60 * 60 * 1000));
-    document.getElementById("dateTime").setAttribute("min", now.toISOString().slice(0, -8));
-    document.getElementById("dateTime").setAttribute("max", fiveDaysFromNow.toISOString().slice(0, -8));
-
-    form.addEventListener("submit", function(event) {
-        var selectedDateTime = document.getElementById("dateTime").value;
-        predictByDateTime(number, selectedDateTime);
-        event.preventDefault();
-    });
+    
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -530,6 +530,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add active class to the clicked button
             event.target.classList.add('active-btn');
             fetchAndPlotPredictiveData(number, date);
+        }
+    });
+
+    area.addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON' && event.target.id === 'submitBtn') {
+            event.preventDefault();
+            var selectedDateTime = document.getElementById("dateTime").value;
+            var number = document.querySelector('input[name="number"]').value;
+            predictByDateTime(number, selectedDateTime);
+            
         }
     });
 
@@ -755,4 +765,18 @@ async function fetchAndPlotPredictiveData(stationNumber, date) {
 async function predictByDateTime(stationNumber, dateTime) {
     console.log(stationNumber);
     console.log(dateTime);
+    try{
+        
+        dateTime = new Date(dateTime);
+
+        var month = dateTime.getMonth() + 1; // Months are zero-based, so add 1
+        var date = dateTime.getDate();
+        var epochTimeInSeconds = Math.floor(dateTime.getTime() / 1000);
+        const response = await fetch(`/data/predictivetime/${stationNumber}/${month}/${date}/${epochTimeInSeconds}`);
+        const json_data = await response.json();
+        console.log(json_data);
+        document.getElementById('prediction-answer').textContent = `Available Predictions: ${json_data[0]}`;
+    }catch (error) {
+        console.error('Failed to predict by date time:', error);
+    }
 }

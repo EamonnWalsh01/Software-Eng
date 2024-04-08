@@ -183,24 +183,25 @@ def predict(number,month,day):
     station_info = json.loads(get_station(number).get_data(as_text=True))[0]
     lat = station_info['position_lat']
     lon = station_info['position_lng']
-
-    forecast = get_weather_forecast_for_day(lat,lon,day,month)
+    day_of_week = get_day_of_week(month, day)
+    forecast = get_weather_forecast(lat,lon)
+    day_forecast = filter_forecast_for_day(forecast, day, month)
     
     predictions_list = []
-    for data in forecast:
+    for data in day_forecast:
 
         input_data = {
             'number': [number],
             'time_as_fraction': [int(data.get('time'))/86400],
             'month': [month],
             'day': [day],
-            'day_of_week_0': [0],
-            'day_of_week_1': [0],
-            'day_of_week_2': [0],
-            'day_of_week_3': [1],
-            'day_of_week_4': [0],
-            'day_of_week_5': [0],
-            'day_of_week_6': [0],
+            'day_of_week_0': day_of_week[0],
+            'day_of_week_1': day_of_week[1],
+            'day_of_week_2': day_of_week[2],
+            'day_of_week_3': day_of_week[3],
+            'day_of_week_4': day_of_week[4],
+            'day_of_week_5': day_of_week[5],
+            'day_of_week_6': day_of_week[6],
             'temp': [data.get('temp')],
             'feels_like': [data.get('feels_like')] 
         }
@@ -217,42 +218,99 @@ def predict(number,month,day):
     print(predictions_list)
     return jsonify(predictions_list)
 
-def get_weather_forecast_for_day(lat,lon, day, month):
+
+@app.route('/data/predictivetime/<int:number>/<int:month>/<int:day>/<int:seconds>')
+def predict_by_time(number,month,day,seconds):
+    print('station',month,day)
+    # Get input data from the request
+    model_path = 'models/model'+str(number)+'.pkl'
+    with open(model_path, 'rb') as file:
+        model = pickle.load(file)
+    
+    station_info = json.loads(get_station(number).get_data(as_text=True))[0]
+    lat = station_info['position_lat']
+    lon = station_info['position_lng']
+    day_of_week = get_day_of_week(month, day)
+    forecast = get_weather_forecast(lat,lon)
+    closest_data = min(forecast['list'], key=lambda x: abs(int(x['dt']) - seconds), default=None)
+    temp = closest_data['main']['temp']
+    feels_like = closest_data['main']['feels_like']
+    
+    
+
+    input_data = {
+        'number': [number],
+        'time_as_fraction': [seconds/86400],
+        'month': [month],
+        'day': [day],
+        'day_of_week_0': day_of_week[0],
+        'day_of_week_1': day_of_week[1],
+        'day_of_week_2': day_of_week[2],
+        'day_of_week_3': day_of_week[3],
+        'day_of_week_4': day_of_week[4],
+        'day_of_week_5': day_of_week[5],
+        'day_of_week_6': day_of_week[6],
+        'temp': [temp],
+        'feels_like': [feels_like] 
+    }
+
+    # Convert the input data into a pandas DataFrame
+    df = pd.DataFrame.from_dict(input_data)
+    predictions = model.predict(df)
+    
+    predictions = predictions.tolist()
+    predictions[0] = int(predictions[0])
+    # 
+    return jsonify(predictions)
+
+def get_weather_forecast(lat,lon):
     url = f'http://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={weather_api}'
     response = requests.get(url)
 
     if response.status_code == 200:
         # Parse the JSON response
         data = response.json()
-        current_year = datetime.now().year
-        date_object = datetime(current_year, month, day)
-        start_timestamp = date_object.timestamp()
-        end_timestamp  = start_timestamp  + 86400
-
-        if(start_timestamp  < int(time.time())):
-            start_timestamp  = int(time.time())
-
-        filtered_forecasts = []
-        # Loop through the forecast data
-        for forecast in data['list']:
-            # Check if the forecast time is within the specified range
-            if start_timestamp <= forecast['dt'] <= end_timestamp:
-                # Extract the desired information
-                forecast_time = forecast['dt']
-                temp = forecast['main']['temp']
-                feels_like = forecast['main']['feels_like']
-                
-                # Append to the results list
-                filtered_forecasts.append({
-                    'time': forecast_time,
-                    'temp': temp,
-                    'feels_like': feels_like
-                })
-
-        return filtered_forecasts
+        return data
     else:
         print("Failed to retrieve data")
         return None
+
+def filter_forecast_for_day(data, day, month):
+    
+    current_year = datetime.now().year
+    date_object = datetime(current_year, month, day)
+    start_timestamp = date_object.timestamp()
+    end_timestamp  = start_timestamp  + 86400
+
+    if(start_timestamp  < int(time.time())):
+        start_timestamp  = int(time.time())
+
+    filtered_forecasts = []
+    # Loop through the forecast data
+    for forecast in data['list']:
+        # Check if the forecast time is within the specified range
+        if start_timestamp <= forecast['dt'] <= end_timestamp:
+            # Extract the desired information
+            forecast_time = forecast['dt']
+            temp = forecast['main']['temp']
+            feels_like = forecast['main']['feels_like']
+            
+            # Append to the results list
+            filtered_forecasts.append({
+                'time': forecast_time,
+                'temp': temp,
+                'feels_like': feels_like
+            })
+
+    return filtered_forecasts
+    
+def get_day_of_week(month, day):
+    current_year = datetime.now().year
+    date_object = datetime(current_year, month, day)
+    day_of_week = date_object.weekday()
+    day_of_week_list = [0] * 7
+    day_of_week_list[day_of_week] = 1
+    return day_of_week_list
 
 @app.route('/')
 def index():
