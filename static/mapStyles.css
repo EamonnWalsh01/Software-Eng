@@ -434,19 +434,7 @@ html, body {
     padding-top: 60px;
   }
   
-  /* Sidebar links */
-  .graphArea a {
-    padding: 10px 15px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-  }
-  
-  .graphArea a:hover {
-    color: #f1f1f1;
-  }
+ 
   
   /* Close button */
   .closebtn {
@@ -479,26 +467,23 @@ html, body {
     transition: margin-left .5s;
   }
 
-  /* style.css */
-#predictiveArea {
-  border: 2px solid #007bff;
-  border-radius: 5px;
-  padding: 20px;
-  margin-top: 20px;
-  background-color: #f0f8ff;
-}
+ 
 
-#predictiveDateInput {
-  margin-right: 10px;
-}
-
-.button {
+#dataContainer button {
+  margin: 5px;
+  padding: 10px 15px;
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
   cursor: pointer;
 }
 
-  
+#dataContainer button:hover {
+  background-color: #0056b3;
+}
+
+#dataContainer .predictive-btn.active-btn {
+  background-color: #4CAF50; /* This will now override because of increased specificity */
+  color: white;
+}
+
