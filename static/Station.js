@@ -424,35 +424,30 @@ async function openNav(stationNumber) {
         duration: 500 // Duration of the animation in milliseconds
     });
 
-    // Clear the sidebar content first
-    document.getElementById('graphArea').innerHTML = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>';
-
+    
     const response = await fetch(`/station/${stationNumber}`);
     const json_data = await response.json();
     console.log(json_data);
     // Create Historical Data button
-    const historicalDataBtn = document.createElement('button');
-    historicalDataBtn.innerText = 'Historical Data';
+    const historicalDataBtn = document.getElementById('historicalDataBtn');
     historicalDataBtn.addEventListener('click', function() {
         fetchAndPlotHistoricalData(stationNumber);
     });
 
     // Create Predictive Data button (placeholder for now)
-    const predictiveDataBtn = document.createElement('button');
-    predictiveDataBtn.innerText = 'Predictive Data';
+    const predictiveDataBtn = document.getElementById('predictiveDataBtn');
     predictiveDataBtn.addEventListener('click', function() {
         showPredictiveArea(stationNumber);
         console.log('Predictive data function to be implemented');
     });
 
-    // Append buttons to the sidebar ('graphArea')
-    document.getElementById('graphArea').appendChild(historicalDataBtn);
-    document.getElementById('graphArea').appendChild(predictiveDataBtn);
+    
 }
 
 
   
   function closeNav() {
+    document.getElementById("dataContainer").innerHTML = '';
     anime({
       targets: '#graphArea',
       width: '0px', // Sidebar width when closed
@@ -462,54 +457,103 @@ async function openNav(stationNumber) {
   }
 
   function showPredictiveArea(number) {
-    
-  
-    // Create the container div for the predictive area
-    const predictiveArea = document.createElement('div');
-    predictiveArea.id = 'predictiveArea';
-  
-    // Create the date input
-    const dateInput = document.createElement('input');
-    dateInput.type = 'date';
-    dateInput.id = 'predictiveDateInput';
-  
-    // Set min and max date range within the next two weeks
-    const today = new Date();
-    const maxDate = new Date();
-    maxDate.setDate(today.getDate() + 14);
-  
-    dateInput.min = today.toISOString().split('T')[0];
-    dateInput.max = maxDate.toISOString().split('T')[0];
-  
-    // Create the submit button
-    const submitButton = document.createElement('button');
-    submitButton.textContent = 'Plot Predictive Data';
-    submitButton.className = 'button';
-  
-    // Add event listener to the submit button
-    submitButton.addEventListener('click', function() {
-      const selectedDate = dateInput.value;
-      if (selectedDate) {
-        fetchAndPlotPredictiveData(number, selectedDate);
-      } else {
-        alert('Please select a date within the next two weeks.');
-      }
+    const area = document.getElementById('dataContainer');
+    if (area !== null) {
+        area.innerHTML = ''; 
+    }
+
+    var form = document.createElement("form");
+    form.innerHTML = `
+        <label for="dateTime">Select Date and Time (within next 5 days):</label>
+        <input type="datetime-local" id="dateTime" name="dateTime" required>
+        <input type="hidden"  name="number" value=${number}>
+        <button type="submit" id="submitBtn">Predict</button>
+    `;
+
+    area.appendChild(form);
+
+    var now = new Date();
+    var fiveDaysFromNow = new Date(now.getTime() + (5 * 24 * 60 * 60 * 1000));
+    document.getElementById("dateTime").setAttribute("min", now.toISOString().slice(0, -8));
+    document.getElementById("dateTime").setAttribute("max", fiveDaysFromNow.toISOString().slice(0, -8));
+
+
+    area.innerHTML += '<p id="prediction-answer">Available Predictions: </p>'
+
+    // Helper function to create a button
+    function createButton(label, date, station) {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.className = 'predictive-btn'; // Add a class to identify buttons
+        btn.dataset.date = date; // Store the date in a data attribute
+        btn.dataset.station = station; // Store the station number in a data attribute
+        return btn;
+    }
+
+    // Generate dates for Today, Tomorrow, and the next 3 days
+    const dates = [];
+    for (let i = 0; i < 5; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() + i);
+        dates.push(date);
+    }
+
+    // Array of day names to use for button labels
+    const dayNames = ["Today", "Tomorrow"];
+    for (let i = 2; i < 5; i++) {
+        dayNames.push(dates[i].toLocaleDateString('en-US', { weekday: 'long' }));
+    }
+
+    // Create and append buttons to the predictive area
+    dates.forEach((date, index) => {
+        const label = dayNames[index];
+        const formattedDate = date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+        const button = createButton(label, formattedDate, number);
+        area.appendChild(button);
     });
-  
-    // Append the elements to the predictiveArea
-    predictiveArea.appendChild(dateInput);
-    predictiveArea.appendChild(submitButton);
-  
-    // Append the predictiveArea to the graphArea
-    document.getElementById('graphArea').appendChild(predictiveArea);
-  }
-  
+
+    
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add a click event listener to the dataContainer for the day predictioin button.
+    const area = document.getElementById('dataContainer');
+
+    area.addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON' && event.target.classList.contains('predictive-btn')) {
+            const date = event.target.dataset.date;
+            const number = event.target.dataset.station;
+            document.querySelectorAll('.predictive-btn').forEach(function(button) {
+                button.classList.remove('active-btn');
+            });
+            
+            // Add active class to the clicked button
+            event.target.classList.add('active-btn');
+            fetchAndPlotPredictiveData(number, date);
+        }
+    });
+
+    area.addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON' && event.target.id === 'submitBtn') {
+            event.preventDefault();
+            var selectedDateTime = document.getElementById("dateTime").value;
+            var number = document.querySelector('input[name="number"]').value;
+            predictByDateTime(number, selectedDateTime);
+            
+        }
+    });
+
+});
   
 
 
 
   async function fetchAndPlotHistoricalData(stationNumber) {
     try {
+        const area = document.getElementById('dataContainer');
+        if (area !== null) {
+            area.innerHTML = ''; 
+        }
         // Fetch the historical data from the Flask backend
         const response = await fetch(`/data/historical/${stationNumber}`);
         const json_data = await response.json();
@@ -518,7 +562,7 @@ async function openNav(stationNumber) {
         const availability = json_data.map(item => item.available_bikes);
 
         // Ensure the graphArea is clear before plotting a new graph
-        const graphArea = document.getElementById('graphArea');
+        const graphArea = document.getElementById('dataContainer');
         graphArea.innerHTML += '<canvas id="bikeAvailabilityChart"></canvas>';
         console.log(dates);
         console.log(availability);
@@ -602,8 +646,6 @@ async function openNav(stationNumber) {
             config
         );
 
-        // ... rest of your function ...
-
         
     } catch (error) {
         console.error('Failed to fetch and plot historical data:', error);
@@ -612,15 +654,129 @@ async function openNav(stationNumber) {
 
 
 async function fetchAndPlotPredictiveData(stationNumber, date) {
-    try {
+    
         // Fetch the historical data from the Flask backend
         console.log(date);
+        
+
+    try {
+        // Fetch the historical data from the Flask backend
         var month = date.split('-')[1];
         var day = date.split('-')[2];
         const response = await fetch(`/data/predictive/${stationNumber}/${month}/${day}`);
+        const json_data = await response.json();
         
+        const dates = json_data.map(item => item.time);
+        
+        const availability = json_data.map(item => item.availability);
+
+        // Ensure the graphArea is clear before plotting a new graph
+        const graphArea = document.getElementById('dataContainer');
+        graphArea.innerHTML += '<canvas id="bikeAvailabilityChart"></canvas>';
+        
+        console.log(availability);
+
+
+        const labels = dates.map(date => {
+            
+            const dateObj = new Date(date*1000);
+            // Get hours in 24-hour format
+            let hours = dateObj.getHours();
+            // Convert to 12-hour format with AM/PM
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            return `${hours} ${ampm}`;
+        });
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Bike Station Availability',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: availability,
+                fill: false,
+                pointRadius: 0 // Set the point radius to 0 to remove the markers
+            }]
+        };
+
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                title: {
+                    display: true,
+                    text: 'Bike Availability in the Last 24 Hours'
+                },
+                animation: {
+                    onComplete: () => {
+                        anime({
+                            targets: '#bikeAvailabilityChart',
+                            keyframes: [
+                                {scale: 0.9},
+                                {scale: 1.0},
+                            ],
+                            duration: 500,
+                            easing: 'easeOutElastic(1, .8)'
+                        });
+                    }
+                },
+                // Additional options for scales might be required depending on your exact needs
+                scales: {
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Hour of the Day'
+                        },
+                        ticks: {
+                            // Prevent compression of labels by setting autoSkip to false
+                            autoSkip: false
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Available Bikes'
+                        }
+                    }]
+                },
+                // Disable interaction points (tooltips)
+                tooltips: {
+                    enabled: false
+                }
+            }
+        };
+
+        // Make sure you are getting the correct canvas element by its id
+        const availabilityGraph = new Chart(
+            document.getElementById('bikeAvailabilityChart'),
+            config
+        );
+
+        
+    } catch (error) {
+        console.error('Failed to fetch and plot historical data:', error);
     }
-    catch (error) {
-        console.error('Failed to fetch and plot predictive data:', error);
+    
+}
+
+
+async function predictByDateTime(stationNumber, dateTime) {
+    console.log(stationNumber);
+    console.log(dateTime);
+    try{
+        
+        dateTime = new Date(dateTime);
+
+        var month = dateTime.getMonth() + 1; // Months are zero-based, so add 1
+        var date = dateTime.getDate();
+        var epochTimeInSeconds = Math.floor(dateTime.getTime() / 1000);
+        const response = await fetch(`/data/predictivetime/${stationNumber}/${month}/${date}/${epochTimeInSeconds}`);
+        const json_data = await response.json();
+        console.log(json_data);
+        document.getElementById('prediction-answer').textContent = `Available Predictions: ${json_data[0]}`;
+    }catch (error) {
+        console.error('Failed to predict by date time:', error);
     }
 }
