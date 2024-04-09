@@ -431,7 +431,10 @@ async function openNav(stationNumber) {
     // Create Historical Data button
     const historicalDataBtn = document.getElementById('historicalDataBtn');
     historicalDataBtn.addEventListener('click', function() {
-        fetchAndPlotHistoricalData(stationNumber);
+        //fetchAndPlotHistoricalData(stationNumber);
+        document.getElementById('dataContainer').innerHTML = '';
+        fetchAndPlotData(stationNumber, 'historical');
+        
     });
 
     // Create Predictive Data button (placeholder for now)
@@ -529,7 +532,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add active class to the clicked button
             event.target.classList.add('active-btn');
-            fetchAndPlotPredictiveData(number, date);
+            //fetchAndPlotPredictiveData(number, date);
+            fetchAndPlotData(number, 'predictive', date);
         }
     });
 
@@ -759,6 +763,112 @@ async function fetchAndPlotPredictiveData(stationNumber, date) {
         console.error('Failed to fetch and plot historical data:', error);
     }
     
+}
+
+
+async function fetchAndPlotData(stationNumber, type, date) {
+    try {
+        const graphArea = document.getElementById('dataContainer');
+        // Reset the inner HTML to only have the canvas element
+        graphArea.innerHTML += '<canvas id="bikeAvailabilityChart"></canvas>';
+
+        let url, label;
+        if (type === 'historical') {
+            url = `/data/historical/${stationNumber}`;
+            label = 'Historical Bike Availability';
+        } else if (type === 'predictive') {
+            const [year, month, day] = date.split('-');
+            url = `/data/predictive/${stationNumber}/${month}/${day}`;
+            label = 'Predictive Bike Availability';
+        }
+
+        const response = await fetch(url);
+        const jsonData = await response.json();
+
+        const canvas = document.getElementById('bikeAvailabilityChart');
+        const ctx = canvas.getContext('2d');
+
+        let labels = [];
+        let dataPoints = jsonData.map(item => {
+            let timeStamp, xValue, yValue;
+            if (type === 'historical') {
+                timeStamp = new Date(item.last_update);
+                xValue = `${timeStamp.getHours()}:${('0'+timeStamp.getMinutes()).slice(-2)}`; // Ensures minutes are two digits
+                yValue = item.available_bikes;
+            } else {
+                timeStamp = new Date(item.time*1000);
+                xValue = `${timeStamp.getHours()}:${('0'+timeStamp.getMinutes()).slice(-2)}`; // Ensures minutes are two digits
+                yValue = item.availability;
+            }
+            labels.push(xValue);
+            return { x: xValue, y: yValue };
+        });
+
+        // Unique labels for historical data to avoid duplicate time labels
+        if (type === 'historical') {
+            labels = [...new Set(labels)];
+        }
+
+        let gradient = ctx.createLinearGradient(0, canvas.clientHeight, 0, 0);
+        gradient.addColorStop(0, 'rgb(255, 205, 86)');
+        gradient.addColorStop(1, 'rgb(75, 192, 192)');
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                label,
+                data: dataPoints,
+                borderColor: gradient,
+                fill: false,
+                tension: 0.1,
+                pointRadius: 0
+            }]
+        };
+
+        const config = {
+            type: 'line',
+            data,
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: label
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'category',
+                        labels: labels,
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Available Bikes'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest'
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    }
+                }
+            }
+        };
+
+        new Chart(ctx, config);
+    } catch (error) {
+        console.error('Failed to fetch and plot data:', error);
+    }
 }
 
 
