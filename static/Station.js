@@ -430,7 +430,7 @@ async function openNav(stationNumber) {
     const stationData = json_data[0];
 
     const container = document.getElementById('station-container');
-    container.innerHTML = ''; // Clear the container before adding new content
+    container.innerHTML = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>'; // Clear the container before adding new content
 
     // Create station name header
     const nameHeader = document.createElement('h1');
@@ -590,8 +590,19 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             var selectedDateTime = document.getElementById("dateTime").value;
             var number = document.querySelector('input[name="number"]').value;
-            predictByDateTime(number, selectedDateTime);
             
+            // Create date objects for the current time, selected time, and 5 days from now
+            var currentDate = new Date();
+            var selectedDate = new Date(selectedDateTime);
+            var fiveDaysFromNow = new Date(currentDate);
+            fiveDaysFromNow.setDate(currentDate.getDate() + 5);
+            
+            // Ensure the selected date is within the next 5 days
+            if (selectedDate > currentDate && selectedDate <= fiveDaysFromNow) {
+                predictByDateTime(number, selectedDateTime);
+            } else {
+                alert('Please select a date and time within the next 5 days.');
+            }
         }
     });
 
@@ -602,7 +613,10 @@ document.addEventListener('DOMContentLoaded', function() {
 async function fetchAndPlotData(stationNumber, type, date) {
     try {
         const graphArea = document.getElementById('dataContainer');
-        // Reset the inner HTML to only have the canvas element
+        const canvasElement = document.getElementById('bikeAvailabilityChart');
+        if (canvasElement) {
+            canvasElement.remove();
+        }
         graphArea.innerHTML += '<canvas id="bikeAvailabilityChart"></canvas>';
 
         let url, label;
@@ -718,7 +732,7 @@ async function predictByDateTime(stationNumber, dateTime) {
         const response = await fetch(`/data/predictivetime/${stationNumber}/${month}/${date}/${epochTimeInSeconds}`);
         const json_data = await response.json();
         console.log(json_data);
-        document.getElementById('prediction-answer').textContent = `Available Predictions: ${json_data[0]}`;
+        document.getElementById('prediction-answer').textContent = `Predicted Availability: ${json_data[0]}`;
     }catch (error) {
         console.error('Failed to predict by date time:', error);
     }

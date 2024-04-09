@@ -421,30 +421,9 @@ html, body {
     }
 
     /* The sidebar */
-.graphArea {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    background-color: whitesmoke;
-    overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 60px;
-  }
+
   
  
-  
-  /* Close button */
-  .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-  }
-  
   /* Style for More Info link */
 .info-link {
     display: inline-block;
@@ -469,13 +448,22 @@ html, body {
 
  
 
-/* General Resets */
 .graphArea {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: whitesmoke;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
   font-family: 'Arial', sans-serif;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
-  
+    
 }
 
 .closebtn {
@@ -494,19 +482,25 @@ html, body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adding a subtle shadow for depth */
   border-radius: 8px; /* Slightly rounded corners for a modern feel */
   background: #FFFFFF; /* White background */
+  display: flex; /* Enables flexbox */
+  align-items: center; /* Centers items vertically */
+  justify-content: space-between;
 }
 
 #station-container h1 {
   color: #333333; /* Dark gray color for better readability */
   margin-bottom: 16px; /* Spacing below the header */
+  padding-right: 8px;
 }
 
 .info-wrapper {
   display: flex;
   flex-wrap: wrap; /* Allow wrapping for smaller screens */
   gap: 20px; /* Space between info containers */
-  border-top: 2px solid #EEEEEE; /* Light separator for visual structure */
-  padding-top: 20px; /* Space above the first info container */
+  border-left: 2px solid #EEEEEE; /* Light separator for visual structure */
+  padding-top: 10px; /* Space above the first info container */
+  padding-left: 10px;
+
 }
 
 .info-container, .address-stands-container {
@@ -563,8 +557,66 @@ html, body {
   opacity: 0.8;
 }
 
-/* Prediction Section */
 #dataContainer {
-  text-align: center;
-  width: 100%;
+  font-family: 'Arial', sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#dataContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Creates space between form elements */
+}
+
+#dataContainer label {
+  font-size: 16px;
+  color: #333;
+}
+
+#dataContainer input[type="datetime-local"],
+#dataContainer input[type="hidden"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#submitBtn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#submitBtn:hover {
+  background-color: #0056b3;
+}
+
+.predictive-btn {
+  padding: 8px 15px;
+  margin-right: 10px; /* Space between buttons */
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.predictive-btn:hover {
+  background-color: #1e7e34;
+}
+
+#prediction-answer {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #555;
 }
