@@ -338,7 +338,6 @@ function initMap() {
             
 }
 
-
 function fetchNearestStations(lat, lng) {
     fetch(`/nearest-stations?lat=${lat}&lng=${lng}`)
         .then(response => response.json())
@@ -396,7 +395,6 @@ function fetchNearestStations(lat, lng) {
             });
         ;
 }
-
 function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
     directionsService.route(
         {
@@ -413,8 +411,6 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer, start, 
         }
     );
 }
-
-
 async function openNav(stationNumber) {
     // Use Anime.js to animate opening the sidebar
     anime({
@@ -442,11 +438,8 @@ async function openNav(stationNumber) {
     });
 
     
-}
-
-
-  
-  function closeNav() {
+} 
+function closeNav() {
     document.getElementById("dataContainer").innerHTML = '';
     anime({
       targets: '#graphArea',
@@ -778,5 +771,103 @@ async function predictByDateTime(stationNumber, dateTime) {
         document.getElementById('prediction-answer').textContent = `Available Predictions: ${json_data[0]}`;
     }catch (error) {
         console.error('Failed to predict by date time:', error);
+    }
+}
+function fetchNearestStationsPredictive(lat,long,dateTime){
+    fetch(`/nearest-stations?lat=${lat}&lng=${lng}`)
+        .then(response => response.json())
+        .then(stationsPredict => {
+            const sidebar = document.getElementById("sidebar");
+            
+            var month = dateTime.getMonth() + 1; // Months are zero-based, so add 1
+            var date = dateTime.getDate();
+            var epochTimeInSeconds = Math.floor(dateTime.getTime() / 1000);
+            stations.forEach(station => {
+                const element = document.createElement("div");
+                element.className = 'station-info';
+                console.log(station)
+                const nameElement = document.createElement("div");
+                nameElement.className = 'station-name';
+                nameElement.textContent = `Name: ${station.name}`;
+                element.appendChild(nameElement);
+
+                const bikesElement = document.createElement("div");
+                bikesElement.className = 'available-bikes';
+                bikesElement.textContent = `Bikes Available: ${predictByDateTime(stationNumber, dateTime)}`;
+                const infoElement = document.createElement("div");
+                infoElement.className = 'sidebarInfoWindow';
+                element.appendChild(bikesElement);
+                element.appendChild(infoElement);
+                sidebar.appendChild(element);
+                
+                element.addEventListener('click', function() {
+                    fetch(`/data/predictive/${number}/${month}/${day}`)
+                        .then(response => response.json())
+                        .then(availability => {
+                            let content = `
+                           
+       
+                            <h3>Additioinal Info</h3>
+                            <p>Availible Stands: ${availability.available_bike_stands}</p>
+                            <p>Status: ${availability.status}</p>
+                            <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                        
+                    
+
+                            `;
+                            infoElement.innerHTML = content;
+                            if (infoElement.style.display=='block'){
+                                infoElement.style.display = 'None';
+                                console.log("hello5");
+                            }else{
+                                infoElement.style.display = 'block';
+                                console.log("hello1");
+                            }
+                            
+
+                            
+                        });
+                });
+            })
+            });
+        ;
+}
+function recolour(){
+    async function recolour() {
+        // Assuming stationNumbers is an array of station IDs/numbers you want predictions for
+        const stationNumbers = [1, 2, 3, 4]; // Example station numbers, replace with your actual data source
+    
+        const today = new Date();
+        const month = today.getMonth() + 1; // JavaScript months are 0-based
+        const day = today.getDate();
+        const seconds = today.getHours() * 3600 + today.getMinutes() * 60 + today.getSeconds();
+    
+        for (let number of stationNumbers) {
+            const url = `/data/predictivetime/${number}/${month}/${day}/${seconds}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const predictions = await response.json();
+                // Assuming predictions is an array with a single item for the predicted number of bikes
+                const available_bikes = predictions[0];
+    
+                let pinImageUrl;
+                if (available_bikes === 0) {
+                    pinImageUrl = "red_bike.png";
+                } else if (available_bikes > 0 && available_bikes <= 5) {
+                    pinImageUrl = "yellow_bike.png";
+                } else {
+                    pinImageUrl = "green_bike.png";
+                }
+    
+                // Assuming you have a function to update or create a marker for a station
+                updateMarker(number, available_bikes, pinImageUrl);
+            } catch (error) {
+                console.error('Failed to fetch prediction:', error);
+            }
+        }
     }
 }
