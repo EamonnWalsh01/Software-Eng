@@ -436,11 +436,62 @@ async function openNav(stationNumber) {
     
     const response = await fetch(`/station/${stationNumber}`);
     const json_data = await response.json();
-    console.log(json_data);
+    const stationData = json_data[0];
+
+    const container = document.getElementById('station-container');
+    container.innerHTML = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>'; // Clear the container before adding new content
+
+    // Create station name header
+    const nameHeader = document.createElement('h1');
+    nameHeader.textContent = stationData.name;
+    container.appendChild(nameHeader);
+
+    // Create a wrapper for info containers to align them with address and bike stands
+    const infoWrapper = document.createElement('div');
+    infoWrapper.classList.add('info-wrapper');
+
+    // Create available bikes container
+    const bikeContainer = document.createElement('div');
+    bikeContainer.classList.add('info-container');
+    bikeContainer.innerHTML = `<img src="bike.png" alt="Bike Icon"> <p>Available Bikes: ${stationData.available_bikes}</p>`;
+    infoWrapper.appendChild(bikeContainer);
+
+    // Create banking info container
+    const bankingContainer = document.createElement('div');
+    bankingContainer.classList.add('info-container');
+    const bankingInfo = stationData.banking ? 'Banking Available' : 'No Banking';
+    bankingContainer.innerHTML = `<img src="card.png" alt="Card Icon"> <p>${bankingInfo}</p>`;
+    infoWrapper.appendChild(bankingContainer);
+
+    // Append the info wrapper to the main container
+    container.appendChild(infoWrapper);
+
+    // Create a wrapper for address and bike stands to facilitate side-by-side layout
+    const addressStandsWrapper = document.createElement('div');
+    addressStandsWrapper.classList.add('address-stands-container');
+
+    // Create address paragraph
+    const addressPara = document.createElement('p');
+    addressPara.textContent = `Address: ${stationData.address}`;
+    addressStandsWrapper.appendChild(addressPara);
+
+    // Create bike stands paragraph
+    const standsPara = document.createElement('p');
+    standsPara.textContent = `Bike Stands: ${stationData.bike_stands}`;
+    addressStandsWrapper.appendChild(standsPara);
+
+    // Append the address and bike stands wrapper to the info wrapper for side-by-side layout
+    infoWrapper.appendChild(addressStandsWrapper);
+
+
+
     // Create Historical Data button
     const historicalDataBtn = document.getElementById('historicalDataBtn');
     historicalDataBtn.addEventListener('click', function() {
-        fetchAndPlotHistoricalData(stationNumber);
+        //fetchAndPlotHistoricalData(stationNumber);
+        document.getElementById('dataContainer').innerHTML = '';
+        fetchAndPlotData(stationNumber, 'historical');
+        
     });
 
     // Create Predictive Data button (placeholder for now)
@@ -535,7 +586,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add active class to the clicked button
             event.target.classList.add('active-btn');
-            fetchAndPlotPredictiveData(number, date);
+            //fetchAndPlotPredictiveData(number, date);
+            fetchAndPlotData(number, 'predictive', date);
         }
     });
 
@@ -544,8 +596,19 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             var selectedDateTime = document.getElementById("dateTime").value;
             var number = document.querySelector('input[name="number"]').value;
-            predictByDateTime(number, selectedDateTime);
             
+            // Create date objects for the current time, selected time, and 5 days from now
+            var currentDate = new Date();
+            var selectedDate = new Date(selectedDateTime);
+            var fiveDaysFromNow = new Date(currentDate);
+            fiveDaysFromNow.setDate(currentDate.getDate() + 5);
+            
+            // Ensure the selected date is within the next 5 days
+            if (selectedDate > currentDate && selectedDate <= fiveDaysFromNow) {
+                predictByDateTime(number, selectedDateTime);
+            } else {
+                alert('Please select a date and time within the next 5 days.');
+            }
         }
     });
 
@@ -553,218 +616,112 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
 
-
-  async function fetchAndPlotHistoricalData(stationNumber) {
+async function fetchAndPlotData(stationNumber, type, date) {
     try {
-        const area = document.getElementById('dataContainer');
-        if (area !== null) {
-            area.innerHTML = ''; 
+        const graphArea = document.getElementById('dataContainer');
+        const canvasElement = document.getElementById('bikeAvailabilityChart');
+        if (canvasElement) {
+            canvasElement.remove();
         }
-        // Fetch the historical data from the Flask backend
-        const response = await fetch(`/data/historical/${stationNumber}`);
-        const json_data = await response.json();
-        
-        const dates = json_data.map(item => item.last_update);
-        const availability = json_data.map(item => item.available_bikes);
-
-        // Ensure the graphArea is clear before plotting a new graph
-        const graphArea = document.getElementById('dataContainer');
         graphArea.innerHTML += '<canvas id="bikeAvailabilityChart"></canvas>';
-        console.log(dates);
-        console.log(availability);
 
-        // ... inside your fetchAndPlotHistoricalData function ...
+        let url, label;
+        if (type === 'historical') {
+            url = `/data/historical/${stationNumber}`;
+            label = 'Historical Bike Availability';
+        } else if (type === 'predictive') {
+            const [year, month, day] = date.split('-');
+            url = `/data/predictive/${stationNumber}/${month}/${day}`;
+            label = 'Predictive Bike Availability';
+        }
 
-        const labels = dates.map(date => {
-            // Create a date object from the date string
-            const dateObj = new Date(date);
-            // Get hours in 24-hour format
-            let hours = dateObj.getHours();
-            // Convert to 12-hour format with AM/PM
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
-            return `${hours} ${ampm}`;
+        const response = await fetch(url);
+        const jsonData = await response.json();
+
+        const canvas = document.getElementById('bikeAvailabilityChart');
+        const ctx = canvas.getContext('2d');
+
+        let labels = [];
+        let dataPoints = jsonData.map(item => {
+            let timeStamp, xValue, yValue;
+            if (type === 'historical') {
+                timeStamp = new Date(item.last_update);
+                xValue = `${timeStamp.getHours()}:${('0'+timeStamp.getMinutes()).slice(-2)}`; // Ensures minutes are two digits
+                yValue = item.available_bikes;
+            } else {
+                timeStamp = new Date(item.time*1000);
+                xValue = `${timeStamp.getHours()}:${('0'+timeStamp.getMinutes()).slice(-2)}`; // Ensures minutes are two digits
+                yValue = item.availability;
+            }
+            labels.push(xValue);
+            return { x: xValue, y: yValue };
         });
+
+        // Unique labels for historical data to avoid duplicate time labels
+        if (type === 'historical') {
+            labels = [...new Set(labels)];
+        }
+
+        let gradient = ctx.createLinearGradient(0, canvas.clientHeight, 0, 0);
+        gradient.addColorStop(0, 'rgb(255, 205, 86)');
+        gradient.addColorStop(1, 'rgb(75, 192, 192)');
 
         const data = {
             labels: labels,
             datasets: [{
-                label: 'Bike Station Availability',
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                data: availability,
+                label,
+                data: dataPoints,
+                borderColor: gradient,
                 fill: false,
-                pointRadius: 0 // Set the point radius to 0 to remove the markers
+                tension: 0.1,
+                pointRadius: 0
             }]
         };
 
         const config = {
             type: 'line',
-            data: data,
+            data,
             options: {
-                title: {
-                    display: true,
-                    text: 'Bike Availability in the Last 24 Hours'
-                },
-                animation: {
-                    onComplete: () => {
-                        anime({
-                            targets: '#bikeAvailabilityChart',
-                            keyframes: [
-                                {scale: 0.9},
-                                {scale: 1.0},
-                            ],
-                            duration: 500,
-                            easing: 'easeOutElastic(1, .8)'
-                        });
+                plugins: {
+                    title: {
+                        display: true,
+                        text: label
                     }
                 },
-                // Additional options for scales might be required depending on your exact needs
                 scales: {
-                    xAxes: [{
-                        scaleLabel: {
+                    x: {
+                        type: 'category',
+                        labels: labels,
+                        position: 'bottom',
+                        title: {
                             display: true,
-                            labelString: 'Hour of the Day'
-                        },
-                        ticks: {
-                            // Prevent compression of labels by setting autoSkip to false
-                            autoSkip: false
+                            text: 'Time'
                         }
-                    }],
-                    yAxes: [{
-                        scaleLabel: {
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
                             display: true,
-                            labelString: 'Available Bikes'
+                            text: 'Available Bikes'
                         }
-                    }]
+                    }
                 },
-                // Disable interaction points (tooltips)
-                tooltips: {
-                    enabled: false
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest'
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    }
                 }
             }
         };
 
-        // Make sure you are getting the correct canvas element by its id
-        const availabilityGraph = new Chart(
-            document.getElementById('bikeAvailabilityChart'),
-            config
-        );
-
-        
+        new Chart(ctx, config);
     } catch (error) {
-        console.error('Failed to fetch and plot historical data:', error);
+        console.error('Failed to fetch and plot data:', error);
     }
-}
-
-
-async function fetchAndPlotPredictiveData(stationNumber, date) {
-    
-        // Fetch the historical data from the Flask backend
-        console.log(date);
-        
-
-    try {
-        // Fetch the historical data from the Flask backend
-        var month = date.split('-')[1];
-        var day = date.split('-')[2];
-        const response = await fetch(`/data/predictive/${stationNumber}/${month}/${day}`);
-        const json_data = await response.json();
-        
-        const dates = json_data.map(item => item.time);
-        
-        const availability = json_data.map(item => item.availability);
-
-        // Ensure the graphArea is clear before plotting a new graph
-        const graphArea = document.getElementById('dataContainer');
-        graphArea.innerHTML += '<canvas id="bikeAvailabilityChart"></canvas>';
-        
-        console.log(availability);
-
-
-        const labels = dates.map(date => {
-            
-            const dateObj = new Date(date*1000);
-            // Get hours in 24-hour format
-            let hours = dateObj.getHours();
-            // Convert to 12-hour format with AM/PM
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
-            return `${hours} ${ampm}`;
-        });
-
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: 'Bike Station Availability',
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                data: availability,
-                fill: false,
-                pointRadius: 0 // Set the point radius to 0 to remove the markers
-            }]
-        };
-
-        const config = {
-            type: 'line',
-            data: data,
-            options: {
-                title: {
-                    display: true,
-                    text: 'Bike Availability in the Last 24 Hours'
-                },
-                animation: {
-                    onComplete: () => {
-                        anime({
-                            targets: '#bikeAvailabilityChart',
-                            keyframes: [
-                                {scale: 0.9},
-                                {scale: 1.0},
-                            ],
-                            duration: 500,
-                            easing: 'easeOutElastic(1, .8)'
-                        });
-                    }
-                },
-                // Additional options for scales might be required depending on your exact needs
-                scales: {
-                    xAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Hour of the Day'
-                        },
-                        ticks: {
-                            // Prevent compression of labels by setting autoSkip to false
-                            autoSkip: false
-                        }
-                    }],
-                    yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Available Bikes'
-                        }
-                    }]
-                },
-                // Disable interaction points (tooltips)
-                tooltips: {
-                    enabled: false
-                }
-            }
-        };
-
-        // Make sure you are getting the correct canvas element by its id
-        const availabilityGraph = new Chart(
-            document.getElementById('bikeAvailabilityChart'),
-            config
-        );
-
-        
-    } catch (error) {
-        console.error('Failed to fetch and plot historical data:', error);
-    }
-    
 }
 
 
@@ -781,7 +738,7 @@ async function predictByDateTime(stationNumber, dateTime) {
         const response = await fetch(`/data/predictivetime/${stationNumber}/${month}/${date}/${epochTimeInSeconds}`);
         const json_data = await response.json();
         console.log(json_data);
-        document.getElementById('prediction-answer').textContent = `Available Predictions: ${json_data[0]}`;
+        document.getElementById('prediction-answer').textContent = `Predicted Availability: ${json_data[0]}`;
     }catch (error) {
         console.error('Failed to predict by date time:', error);
     }

@@ -438,30 +438,9 @@ html, body {
 
 
     /* The sidebar */
-.graphArea {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    background-color: whitesmoke;
-    overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 60px;
-  }
+
   
  
-  
-  /* Close button */
-  .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-  }
-  
   /* Style for More Info link */
 .info-link {
     display: inline-block;
@@ -486,22 +465,175 @@ html, body {
 
  
 
-#dataContainer button {
-  margin: 5px;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
+.graphArea {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: whitesmoke;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+  font-family: 'Arial', sans-serif;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    
+}
+
+.closebtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 36px;
   cursor: pointer;
 }
 
-#dataContainer button:hover {
+#station-container {
+  font-family: 'Arial', sans-serif; /* Using Arial for a clean look, but you can choose any font */
+  max-width: 800px; /* Limiting the width for better readability */
+  margin: 0 auto; /* Centering the container */
+  padding: 20px; /* Adding some padding for spacing */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adding a subtle shadow for depth */
+  border-radius: 8px; /* Slightly rounded corners for a modern feel */
+  background: #FFFFFF; /* White background */
+  display: flex; /* Enables flexbox */
+  align-items: center; /* Centers items vertically */
+  justify-content: space-between;
+}
+
+#station-container h1 {
+  color: #333333; /* Dark gray color for better readability */
+  margin-bottom: 16px; /* Spacing below the header */
+  padding-right: 8px;
+}
+
+.info-wrapper {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
+  gap: 20px; /* Space between info containers */
+  border-left: 2px solid #EEEEEE; /* Light separator for visual structure */
+  padding-top: 10px; /* Space above the first info container */
+  padding-left: 10px;
+
+}
+
+.info-container, .address-stands-container {
+  flex: 1; /* Flex items to evenly distribute space */
+  min-width: 220px; /* Minimum width to ensure content does not get too squished */
+  display: flex;
+  align-items: center; /* Vertically center content */
+  gap: 10px; /* Space between icon and text */
+}
+
+.info-container img, .address-stands-container img {
+  width: 32px; /* Standardize icon size */
+  height: 32px; /* Standardize icon size */
+}
+
+#station-container p {
+  color: #666666; /* Lighter gray for the text to soften the design */
+  margin: 0; /* Remove default margin to control spacing */
+  line-height: 1.5; /* Improve readability with better line spacing */
+}
+
+/* Additional styling for specific elements as needed */
+
+
+/* Buttons */
+.button-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.sidebar-btn {
+  flex-basis: 48%; /* slightly less than half to account for margin */
+  padding: 10px 0;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+#historicalDataBtn {
+  background-color: #17a2b8; /* Differentiate color */
+}
+
+#predictiveDataBtn {
+  background-color: #28a745; /* Differentiate color */
+}
+
+.sidebar-btn:hover {
+  opacity: 0.8;
+}
+
+#dataContainer {
+  font-family: 'Arial', sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#dataContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Creates space between form elements */
+}
+
+#dataContainer label {
+  font-size: 16px;
+  color: #333;
+}
+
+#dataContainer input[type="datetime-local"],
+#dataContainer input[type="hidden"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#submitBtn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#submitBtn:hover {
   background-color: #0056b3;
 }
 
-#dataContainer .predictive-btn.active-btn {
-  background-color: #4CAF50; /* This will now override because of increased specificity */
+.predictive-btn {
+  padding: 8px 15px;
+  margin-right: 10px; /* Space between buttons */
+  background-color: #28a745;
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
+.predictive-btn:hover {
+  background-color: #1e7e34;
+}
 
+#prediction-answer {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #555;
+}
