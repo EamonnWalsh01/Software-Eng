@@ -42,6 +42,8 @@ function initMap() {
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
     let clock = document.getElementById("section");
+    let timeSetting=document.getElementById("timeSet");
+    let timeBoc=document.getElementById("timeBox");
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
@@ -239,44 +241,14 @@ function initMap() {
         });
        
        
-        settingsIMG.addEventListener('click',function(){
+        timeBox.addEventListener('click',function(){
             if (settingFlag == 0){
                 settingFlag = 1;
-            anime( {
-                targets:"#settingIMG",
-                rotate:{
-                value: '+=2turn', // 0 + 2 = '2turn'
-                duration: 1800,
-                easing: 'easeInOutSine'}
-              })
-              anime({
-                targets: '#settingBox',
-                translateY: [-500, 0], 
-                easing: 'easeOutQuad', 
-                duration: 1000 ,
-                })
-              settingBox.style.display = 'block';
+                timeSetting.style.display='block';
             }
             else{
                 settingFlag = 0;
-                anime( {
-                    targets:"#settingIMG",
-                    rotate:{
-                    value: '+=2turn', // 0 + 2 = '2turn'
-                    duration: 1800,
-                    easing: 'easeInOutSine'}
-                  })
-                  anime({
-                    targets: '#settingBox',
-                    translateY: [0, -500], 
-                    easing: 'easeInQuad', 
-                    duration: 1000 ,
-                    complete: function(anim) {
-                        // Once the sidebar animation is complete, apply display: none to the sidebar
-                        document.querySelector('#settingBox').style.display = 'none';}
-                        
-                    })
-                  
+                timeSetting.style.display='none'; 
                 }
         })
             

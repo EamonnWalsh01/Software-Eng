@@ -177,12 +177,28 @@ html, body {
 #settingsWheel{
     
     z-index: 100;
-    width: 30px;
-    height: 30px;
+    width: 75px;
+    height: 100px;
     margin-top: 15px;
     margin-left: 20px;
+    cursor: pointer;
     
 }
+
+#timeBox{
+  background-color: red;
+  color: white;
+  font-size: 30px;
+  padding-left: 10px;
+  border-radius: 10px;
+}
+
+#timeSet{
+  width:100%;
+  display: none;
+
+}
+
 #settingIMG{
     width:100%;
 }
@@ -420,6 +436,7 @@ html, body {
 
     }
 
+
     /* The sidebar */
 .graphArea {
     height: 100%;
@@ -486,4 +503,5 @@ html, body {
   background-color: #4CAF50; /* This will now override because of increased specificity */
   color: white;
 }
+
 
