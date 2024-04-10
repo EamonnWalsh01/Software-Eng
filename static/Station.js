@@ -1,23 +1,6 @@
 let start = {}
 let end = {}
-document.addEventListener('DOMContentLoaded', function() {
-    // Place the initMap call here to ensure it's run when the DOM is fully loaded
-    initMap(); // Make sure this function is defined in one of your script files or in this <script> block
-    
-    let predTime = document.getElementById("predTime");
-    let updateTime = document.getElementById("updateTime");
-    
-    updateTime.addEventListener('click', function(event) {  
-        event.preventDefault(); // Prevent the form from submitting normally
-        
-        let predTimeValue = predTime.value;
-        let predDate = document.getElementById("predDate");
-        let predDateValue = predDate.value;
 
-        console.log("Pred Time Value:", predTimeValue);
-        console.log("Pred Date Value:", predDateValue);
-    });
-});
 function initMap() {
    
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -73,13 +56,7 @@ function initMap() {
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(clock);
-    slider.addEventListener('input', function() {
-        const newLat = parseFloat(this.value)/10000000000;
-        const currentLng = map.getCenter().lng();
-        const currentlat = map.getCenter().lat(); 
-        const newCenter = { lat: newLat+currentlat, lng: currentLng };
-        map.setCenter(newCenter);
-    });
+    
     fetch(`/weather`)
     .then(response => response.json()) 
     .then(data => {
@@ -369,6 +346,8 @@ function initMap() {
                     console.error('Failed to fetch prediction:', error);
                 }
             }})
+            var date = document.getElementById('dateInput').value;
+    
             
 }
 
@@ -807,102 +786,44 @@ async function predictByDateTime(stationNumber, dateTime) {
         console.error('Failed to predict by date time:', error);
     }
 }
-function fetchNearestStationsPredictive(lat,long,dateTime){
-    fetch(`/nearest-stations?lat=${lat}&lng=${lng}`)
-        .then(response => response.json())
-        .then(stationsPredict => {
-            const sidebar = document.getElementById("sidebar");
-            
-            var month = dateTime.getMonth() + 1; // Months are zero-based, so add 1
-            var date = dateTime.getDate();
-            var epochTimeInSeconds = Math.floor(dateTime.getTime() / 1000);
-            stations.forEach(station => {
-                const element = document.createElement("div");
-                element.className = 'station-info';
-                console.log(station)
-                const nameElement = document.createElement("div");
-                nameElement.className = 'station-name';
-                nameElement.textContent = `Name: ${station.name}`;
-                element.appendChild(nameElement);
-
-                const bikesElement = document.createElement("div");
-                bikesElement.className = 'available-bikes';
-                bikesElement.textContent = `Bikes Available: ${predictByDateTime(stationNumber, dateTime)}`;
-                const infoElement = document.createElement("div");
-                infoElement.className = 'sidebarInfoWindow';
-                element.appendChild(bikesElement);
-                element.appendChild(infoElement);
-                sidebar.appendChild(element);
-                
-                element.addEventListener('click', function() {
-                    fetch(`/data/predictive/${number}/${month}/${day}`)
-                        .then(response => response.json())
-                        .then(availability => {
-                            let content = `
-                           
-       
-                            <h3>Additioinal Info</h3>
-                            <p>Availible Stands: ${availability.available_bike_stands}</p>
-                            <p>Status: ${availability.status}</p>
-                            <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
-                        
-                    
-
-                            `;
-                            infoElement.innerHTML = content;
-                            if (infoElement.style.display=='block'){
-                                infoElement.style.display = 'None';
-                                console.log("hello5");
-                            }else{
-                                infoElement.style.display = 'block';
-                                console.log("hello1");
-                            }
-                            
-
-                            
-                        });
-                });
-            })
-            });
-        ;
-}
 
 
-    async function recolour() {
-        // Assuming stationNumbers is an array of station IDs/numbers you want predictions for
-        console.log('hello')
-        const stationNumbers = Array.from({length: 117}, (x, i) => i); // Example station numbers, replace with your actual data source
-        console.log(stationNumbers)
-        const today = new Date();
-        const month = today.getMonth() + 1; // JavaScript months are 0-based
-        const day = today.getDate();
-        const seconds = today.getHours() * 3600 + today.getMinutes() * 60 + today.getSeconds();
+async function recolour() {
+    console.log('Starting recolour process...');
+    const stationNumbers = Array.from({length: 117}, (_, i) => i); 
+    console.log(stationNumbers);
     
-        for (let number of stationNumbers) {
-            const url = `/data/predictivetime/${number}/${month}/${day}/${seconds}`;
-            
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const predictions = await response.json();
-                // Assuming predictions is an array with a single item for the predicted number of bikes
-                const available_bikes = predictions[0];
-    
-                let pinImageUrl;
-                if (available_bikes === 0) {
-                    pinImageUrl = "red_bike.png";
-                } else if (available_bikes > 0 && available_bikes <= 5) {
-                    pinImageUrl = "yellow_bike.png";
-                } else {
-                    pinImageUrl = "green_bike.png";
-                }
-    
-                // Assuming you have a function to update or create a marker for a station
-                updateMarker(number, available_bikes, pinImageUrl);
-            } catch (error) {
-                console.error('Failed to fetch prediction:', error);
-            }
+    // Example fixed date and time, replace with your actual values
+    var predTimeValue = predTime.value;
+    var predDateValue = predDate.value;
+    var fullDateTime = new Date(predDateValue + 'T' + predTimeValue);
+    // Convert fixedDateTime to month, day, and seconds as needed for the URL
+    const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
+    const day = fullDateTime.getDate();
+    const seconds = fullDateTime.getHours() * 3600 + fullDateTime.getMinutes() * 60 + fullDateTime.getSeconds();
+    console.log(month,day,seconds)
+    const fetchPromises = stationNumbers.map(number => {
+        const url = `/data/predictivetime/${number}/${month}/${day}/${seconds}`;
+        return fetch(url).then(response => response.ok ? response.json() : Promise.reject('Network response was not ok')).then(predictions => ({
+            number,
+            predictions
+        })).catch(error => ({
+            number,
+            error
+        }));
+    });
+
+    const results = await Promise.allSettled(fetchPromises);
+
+    results.forEach(result => {
+        if (result.status === 'fulfilled' && !result.value.error) {
+            const { number, predictions } = result.value;
+            const available_bikes = predictions[0];
+
+            let pinImageUrl = available_bikes === 0 ? "red_bike.png" : available_bikes > 0 && available_bikes <= 5 ? "yellow_bike.png" : "green_bike.png";
+            updateMarker(number, available_bikes, pinImageUrl);
+        } else {
+            console.error(`Failed to fetch prediction for station ${result.value.number}:`, result.value.error);
         }
-    }
+    });
+}
