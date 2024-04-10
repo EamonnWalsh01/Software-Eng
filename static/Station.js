@@ -1,6 +1,6 @@
 let start = {}
 let end = {}
-
+let markers = {};
 function initMap() {
    
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -200,11 +200,14 @@ function initMap() {
                     position: { lat: station.position_lat, lng: station.position_lng },
                     map: map,
                     title: station.name, 
+                    number:station.number,
                     icon: {
                         url: pinImageUrl, 
                         scaledSize: new google.maps.Size(150, 150), 
                     },
-                });
+                    
+                } );
+                markers[station.number] = marker;
                                 
 
                 // Add click listener to each marker
@@ -407,6 +410,78 @@ function fetchNearestStations(lat, lng) {
             })
             });
         ;
+}
+function updateMarker(number, available_bikes, pinImageUrl) {
+    if (markers[number]) {
+        // Assuming markers[number] is a Google Maps Marker instance
+        markers[number].setIcon({
+            url: pinImageUrl,
+            scaledSize: new google.maps.Size(150, 150) // Adjust size as needed
+        });
+        // Optional: update title or other marker properties here
+    } else {
+        // If marker doesn't exist, create it (assuming you have the position)
+        markers[number] = new google.maps.Marker({
+            position: { /* position */ },
+            map: map,
+            icon: {
+                url: pinImageUrl,
+                scaledSize: new google.maps.Size(150, 150) // Adjust size as needed
+            }
+        });
+    }
+}
+async function recolour() {
+    console.log('Starting recolour process...');
+    const stationNumbers = Array.from({length: 117}, (_, i) => i); 
+    console.log(stationNumbers);
+    
+    // Example fixed date and time, replace with your actual values
+    var predTimeValue = predTime.value;
+    var predDateValue = predDate.value;
+    var fullDateTime = new Date(predDateValue + 'T' + predTimeValue);
+    // Convert fixedDateTime to month, day, and seconds as needed for the URL
+    const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
+    const day = fullDateTime.getDate();
+    const epochTime = fullDateTime.getTime();
+    
+    const threeHoursInMilliseconds = 10800000;
+    const roundedEpochTime = Math.round(epochTime / threeHoursInMilliseconds) * threeHoursInMilliseconds;
+    const fetchPromises = stationNumbers.map(number => {
+        const url = `/data/predictive/${number}/${month}/${day}`;
+        return fetch(url)
+            .then(response => response.ok ? response.json() : Promise.reject('Network response was not ok'))
+            .then(data => {
+                // Assuming data is an array of predictions
+                // Find the prediction closest to the roundedEpochTime
+                const closestPrediction = data.reduce((prev, curr) => {
+                    return (Math.abs(curr.time * 1000 - roundedEpochTime) < Math.abs(prev.time * 1000 - roundedEpochTime) ? curr : prev);
+                });
+                return {
+                    number,
+                    predictions: closestPrediction
+                };
+            }).catch(error => ({
+                number,
+                error
+            }));
+    });
+
+    const results = await Promise.allSettled(fetchPromises);
+
+    results.forEach(result => {
+        if (result.status === 'fulfilled' && !result.value.error) {
+            console.log('success')
+            const { number, predictions } = result.value;
+            const available_bikes = Math.round(predictions.availability);
+
+            let pinImageUrl = available_bikes === 0 ? "red_bike.png" : available_bikes > 0 && available_bikes <= 5 ? "yellow_bike.png" : "green_bike.png";
+            updateMarker(number, available_bikes, pinImageUrl);
+        } else {
+            console.error(`Failed to fetch prediction for station ${result.value.number}:`, result.value.error);
+        }
+        console.log('finished function')
+    });
 }
 function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
     directionsService.route(
@@ -745,42 +820,4 @@ async function predictByDateTime(stationNumber, dateTime) {
 }
 
 
-async function recolour() {
-    console.log('Starting recolour process...');
-    const stationNumbers = Array.from({length: 117}, (_, i) => i); 
-    console.log(stationNumbers);
-    
-    // Example fixed date and time, replace with your actual values
-    var predTimeValue = predTime.value;
-    var predDateValue = predDate.value;
-    var fullDateTime = new Date(predDateValue + 'T' + predTimeValue);
-    // Convert fixedDateTime to month, day, and seconds as needed for the URL
-    const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
-    const day = fullDateTime.getDate();
-    const seconds = fullDateTime.getHours() * 3600 + fullDateTime.getMinutes() * 60 + fullDateTime.getSeconds();
-    console.log(month,day,seconds)
-    const fetchPromises = stationNumbers.map(number => {
-        const url = `/data/predictivetime/${number}/${month}/${day}/${seconds}`;
-        return fetch(url).then(response => response.ok ? response.json() : Promise.reject('Network response was not ok')).then(predictions => ({
-            number,
-            predictions
-        })).catch(error => ({
-            number,
-            error
-        }));
-    });
 
-    const results = await Promise.allSettled(fetchPromises);
-
-    results.forEach(result => {
-        if (result.status === 'fulfilled' && !result.value.error) {
-            const { number, predictions } = result.value;
-            const available_bikes = predictions[0];
-
-            let pinImageUrl = available_bikes === 0 ? "red_bike.png" : available_bikes > 0 && available_bikes <= 5 ? "yellow_bike.png" : "green_bike.png";
-            updateMarker(number, available_bikes, pinImageUrl);
-        } else {
-            console.error(`Failed to fetch prediction for station ${result.value.number}:`, result.value.error);
-        }
-    });
-}
