@@ -11,10 +11,13 @@
 
 
 <script src="Station.js"></script>
+
 <script>
     
     window.onload = initMap;
     
+;
+
 </script>
 </head>
 <body>
@@ -42,9 +45,9 @@
         <div id="timeBox">Live</div>
         
         <form id="timeSet">
-        <input type="time" />
-            <input type="date" id="pred_time" name="pred_time">
-            <input type="submit">
+        <input id = 'predTime'type="time" />
+            <input type="date" id="predDate" name="pred_time">
+            <input id ="updateTime"type="submit">
           </form>
         <!-- <div id="timeSet"></div> -->
     </div>
@@ -54,7 +57,7 @@
     <input id="pac-input" class="controls" type="text" placeholder="Search Box">
    
     <div id = "mapbox">
-    <div id = "openClose"><img src="arrow.png" id="settingIMG" alt="">></div>
+    <div id = "openClose"><img src="arrow.png" id="settingIMG" alt=""></div>
     <div id="sidebar"><span id="close">&times;</span></div>
     <div id="map" ></div>
     <div id="graphArea" class="graphArea">

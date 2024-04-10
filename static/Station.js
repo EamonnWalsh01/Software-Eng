@@ -1,5 +1,23 @@
 let start = {}
 let end = {}
+document.addEventListener('DOMContentLoaded', function() {
+    // Place the initMap call here to ensure it's run when the DOM is fully loaded
+    initMap(); // Make sure this function is defined in one of your script files or in this <script> block
+    
+    let predTime = document.getElementById("predTime");
+    let updateTime = document.getElementById("updateTime");
+    
+    updateTime.addEventListener('click', function(event) {  
+        event.preventDefault(); // Prevent the form from submitting normally
+        
+        let predTimeValue = predTime.value;
+        let predDate = document.getElementById("predDate");
+        let predDateValue = predDate.value;
+
+        console.log("Pred Time Value:", predTimeValue);
+        console.log("Pred Date Value:", predDateValue);
+    });
+});
 function initMap() {
    
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -37,6 +55,7 @@ function initMap() {
     let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
     let settingsIMG = document.getElementById("settingIMG");
+    
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
@@ -44,6 +63,10 @@ function initMap() {
     let clock = document.getElementById("section");
     let timeSetting=document.getElementById("timeSet");
     let timeBoc=document.getElementById("timeBox");
+    let updateTime = document.getElementById("updateTime");
+    let predTime = document.getElementById("predTime")
+    let predDate = document.getElementById("predDate")
+    
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
@@ -131,7 +154,7 @@ function initMap() {
     }
 }
 );
-    
+
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
     });
@@ -307,6 +330,45 @@ function initMap() {
                 });
             }
         })
+        updateTime.addEventListener('click',function(){  // Assuming stationNumbers is an array of station IDs/numbers you want predictions for
+            console.log(predTime);
+            const stationNumbers = Array.from({length: 117}, (x, i) => i); // Example station numbers, replace with your actual data source
+            
+            let predTimeValue = predTime.value;
+            console.log(predTimeValue);
+            let predDateValue = predDate.value;
+            const today = predTimeValue;
+            const month = today.getMonth() + 1; // JavaScript months are 0-based
+            const day = today.getDate();
+            const seconds = predTimeValue.getHours() * 3600 + predTimeValue.getMinutes() * 60 + predTimeValue.getSeconds();
+            console.log(today,seconds);
+            for (let number of stationNumbers) {
+                const url = `/data/predictivetime/${number}/${month}/${day}/${seconds}`;
+                
+                try {
+                    const response =  fetch(url);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const predictions = response.json();
+                    // Assuming predictions is an array with a single item for the predicted number of bikes
+                    const available_bikes = predictions[0];
+        
+                    let pinImageUrl;
+                    if (available_bikes === 0) {
+                        pinImageUrl = "red_bike.png";
+                    } else if (available_bikes > 0 && available_bikes <= 5) {
+                        pinImageUrl = "yellow_bike.png";
+                    } else {
+                        pinImageUrl = "green_bike.png";
+                    }
+        
+                    // Assuming you have a function to update or create a marker for a station
+                    updateMarker(number, available_bikes, pinImageUrl);
+                } catch (error) {
+                    console.error('Failed to fetch prediction:', error);
+                }
+            }})
             
 }
 
@@ -804,11 +866,13 @@ function fetchNearestStationsPredictive(lat,long,dateTime){
             });
         ;
 }
-function recolour(){
+
+
     async function recolour() {
         // Assuming stationNumbers is an array of station IDs/numbers you want predictions for
-        const stationNumbers = [1, 2, 3, 4]; // Example station numbers, replace with your actual data source
-    
+        console.log('hello')
+        const stationNumbers = Array.from({length: 117}, (x, i) => i); // Example station numbers, replace with your actual data source
+        console.log(stationNumbers)
         const today = new Date();
         const month = today.getMonth() + 1; // JavaScript months are 0-based
         const day = today.getDate();
@@ -842,4 +906,3 @@ function recolour(){
             }
         }
     }
-}
