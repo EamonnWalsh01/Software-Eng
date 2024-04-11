@@ -378,7 +378,21 @@ function fetchNearestStations(lat, lng) {
                 element.appendChild(bikesElement);
                 element.appendChild(infoElement);
                 sidebar.appendChild(element);
-                
+                element.addEventListener('mouseenter', () => {
+                    // Dim all other elements
+                    document.querySelectorAll('.station-info').forEach(otherElement => {
+                        if (otherElement !== element) {
+                            otherElement.classList.add('dimmed');
+                        }
+                    });
+                });
+            
+                element.addEventListener('mouseleave', () => {
+                    // Remove the dimming effect from all elements
+                    document.querySelectorAll('.station-info').forEach(otherElement => {
+                        otherElement.classList.remove('dimmed');
+                    });
+                });
                 element.addEventListener('click', function() {
                     fetch(`/availability/${station.number}`)
                         .then(response => response.json())
@@ -444,7 +458,7 @@ async function recolour() {
     const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
     const day = fullDateTime.getDate();
     const epochTime = fullDateTime.getTime();
-    
+    console.log(fullDateTime)
     const threeHoursInMilliseconds = 10800000;
     const roundedEpochTime = Math.round(epochTime / threeHoursInMilliseconds) * threeHoursInMilliseconds;
     const fetchPromises = stationNumbers.map(number => {
@@ -457,14 +471,18 @@ async function recolour() {
                 const closestPrediction = data.reduce((prev, curr) => {
                     return (Math.abs(curr.time * 1000 - roundedEpochTime) < Math.abs(prev.time * 1000 - roundedEpochTime) ? curr : prev);
                 });
+                console.log(closestPrediction)
                 return {
                     number,
                     predictions: closestPrediction
                 };
-            }).catch(error => ({
-                number,
-                error
-            }));
+            }).catch(error => {
+                console.log(`Fetch failed for station number ${number}:`, error);
+                return {
+                    number,
+                    error: `Fetch failed: ${error.message || error}`
+                };
+            });;
     });
 
     const results = await Promise.allSettled(fetchPromises);

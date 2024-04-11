@@ -23,7 +23,9 @@ html, body {
     height: 100%; 
     width: 100%; 
 }
-
+.dimmed {
+  opacity: 0.5;
+}
 #sidebar {
     position: absolute; 
     top: 0;
@@ -31,9 +33,10 @@ html, body {
     width: 300px; 
     height: 100%; 
     overflow-y: scroll; 
-    background-color: rgba(255, 255, 255, 0.295); 
+    background-color: rgba(0, 251, 255, 0.295); 
     padding: 20px;
-
+    border-left: 5px solid #000000;
+    border-right: 5px solid #000000;
     display: none; 
     z-index: 5;
     
@@ -71,7 +74,7 @@ html, body {
 .station-info {
     font-family: "Roboto", sans-serif;
     width :100%;
-    
+    transition: opacity 0.5s ease;
     background-image: linear-gradient(to bottom, rgb(125, 230, 230) 50%, transparent 50%);
     background-size: 100% 200%; 
     background-repeat: no-repeat;
@@ -93,6 +96,9 @@ html, body {
   .station-info:hover {
     background-size: 100% 100%;
     background-position: 0 0; 
+  }
+#sidebar:hover>:not {
+    opacity: .3;
   }
 .available-bikes {
     margin-top: 5px;
@@ -186,7 +192,7 @@ html, body {
 }
 
 #timeBox{
-  background-color: red;
+  background-color: rgb(0, 238, 255);
   color: white;
   font-size: 30px;
   padding-left: 10px;
@@ -570,7 +576,7 @@ html, body {
   background-color: #28a745; /* Differentiate color */
 }
 
-.sidebar-btn:hover {
+#dataContainer:hover {
   opacity: 0.8;
 }
 
