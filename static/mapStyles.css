@@ -210,7 +210,10 @@ html, body {
   border-radius: 5px;
   font-weight: bold; /* Make the text stand out */
 }
-
+#timeBox:hover{
+  background-color: #004288;
+  transition: background-color 0.2s;
+}
 #timeSet {
   width: 100%;
   display: none;
@@ -239,15 +242,16 @@ html, body {
 }
 
 #timeSet button {
-  background-color: #28a745; /* Success color */
+  background-color: #23edff; /* Success color */
   color: white;
+  width: 100%;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 #timeSet button:hover {
-  background-color: #218838; /* Darker on hover */
+  background-color: #08535a; /* Darker on hover */
 }
 
 /* Styling the reset and addDestination buttons separately for visual differentiation */
