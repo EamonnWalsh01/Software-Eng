@@ -49,6 +49,19 @@ function initMap() {
     let updateTime = document.getElementById("updateTime");
     let predTime = document.getElementById("predTime")
     let predDate = document.getElementById("predDate")
+
+    //Limit Dates to range of weather predictions
+    //Set Minimum Date as today
+    var today = new Date();
+    var minDate=today.toISOString().split('T')[0];
+    document.getElementById("predDate").setAttribute("min", minDate);
+
+    //Set Maximum Date as 5 days in the future(End of weather predictions)
+    var enddate = new Date();
+    enddate.setDate(enddate.getDate()+5);
+    var maxDate = enddate.toISOString().split('T')[0];
+    document.getElementById("predDate").setAttribute("max", maxDate);
+
     
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
