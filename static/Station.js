@@ -260,7 +260,7 @@ function initMap() {
         timeBox.addEventListener('click',function(){
             if (settingFlag == 0){
                 settingFlag = 1;
-                timeSetting.style.display='block';
+                timeSetting.style.display='flex';
             }
             else{
                 settingFlag = 0;

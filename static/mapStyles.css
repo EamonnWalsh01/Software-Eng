@@ -181,12 +181,16 @@ html, body {
 #weatherInfo{
     display: None;
 }
+
+
 #settingsWheel {
   position: absolute; /* Adjusted to fit your layout needs */
   top: 20px; /* Distance from the top */
   right: 20px; /* Distance from the right */
+  margin-left: 20px;
+  margin-top: 10px;
   padding: 15px;
-  max-width: 200px;
+  max-width: 150px;
   background-color: #f0f0f0; /* Light background for the settings area */
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Subtle shadow for depth */
@@ -206,10 +210,10 @@ html, body {
   border-radius: 5px;
   font-weight: bold; /* Make the text stand out */
 }
-/* Styling adjustments for the timeSet form and its child elements */
+
 #timeSet {
   width: 100%;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 10px;
 }
@@ -254,6 +258,8 @@ html, body {
 #reset:hover, #addDestination:hover {
   background-color: #117a8b; /* Darker on hover */
 }
+
+
 #settingIMG{
     width:100%;
 }
@@ -261,7 +267,7 @@ html, body {
     font-size: 45px;
     font-weight: 600;
   }
-  e
+  
     #temperature{
 
         position: absolute;
@@ -477,12 +483,18 @@ html, body {
 #dataContainer:hover {
   opacity: 0.8;
 }
-
-button:hover {
-  background-color: #0056b3; /* Darker shade for hover effect */
+input[type="time"],
+input[type="date"],
+button,
+p {
+  background-color: #f2f2f2; /* Light grey background */
+  border: 1px solid #d4d4d4; /* Solid border */
+  padding: 10px; /* Padding for spacing */
+  border-radius: 4px; /* Rounded corners */
+  font-family: Arial, sans-serif; /* Font family */
+  font-size: 16px; /* Font size */
+  color: #333; /* Text color */
 }
-
-/* Adjustments for responsiveness */
 
 #dataContainer {
   font-family: 'Arial', sans-serif;
