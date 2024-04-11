@@ -56,6 +56,7 @@ html, body {
     padding: 0 12px;
     margin-top: 10px;
     margin-left: 20px;
+    font-family:"Orbitron", sans-serif;
     font-size: 14px;
     line-height: 40px;
     height: 40px;
@@ -578,6 +579,18 @@ html, body {
 
 #dataContainer:hover {
   opacity: 0.8;
+}
+input[type="time"],
+input[type="date"],
+button,
+p {
+  background-color: #f2f2f2; /* Light grey background */
+  border: 1px solid #d4d4d4; /* Solid border */
+  padding: 10px; /* Padding for spacing */
+  border-radius: 4px; /* Rounded corners */
+  font-family: Arial, sans-serif; /* Font family */
+  font-size: 16px; /* Font size */
+  color: #333; /* Text color */
 }
 
 #dataContainer {
