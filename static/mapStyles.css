@@ -181,31 +181,79 @@ html, body {
 #weatherInfo{
     display: None;
 }
-#settingsWheel{
-    
-    z-index: 100;
-    width: 75px;
-    height: 100px;
-    margin-top: 15px;
-    margin-left: 20px;
-    cursor: pointer;
-    
+#settingsWheel {
+  position: absolute; /* Adjusted to fit your layout needs */
+  top: 20px; /* Distance from the top */
+  right: 20px; /* Distance from the right */
+  padding: 15px;
+  max-width: 200px;
+  background-color: #f0f0f0; /* Light background for the settings area */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+  z-index: 100; /* Ensure it's above other elements */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center child elements */
+  gap: 15px; /* Space between child elements */
 }
 
-#timeBox{
-  background-color: rgb(0, 238, 255);
+#timeBox {
+  width: 80%; /* Adjust width as needed */
+  text-align: center;
+  background-color: #007bff; /* Primary color */
+  color: white; /* Text color */
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold; /* Make the text stand out */
+}
+/* Styling adjustments for the timeSet form and its child elements */
+#timeSet {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#timeSet > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#timeSet input, #timeSet button {
+  width: calc(100% - 60px); /* Full width minus label width */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#timeSet label {
+  width: 50px; /* Fixed width for labels */
+  text-align: right;
+  margin-right: 10px;
+}
+
+#timeSet button {
+  background-color: #28a745; /* Success color */
   color: white;
-  font-size: 30px;
-  padding-left: 10px;
-  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-#timeSet{
-  width:100%;
-  display: none;
-
+#timeSet button:hover {
+  background-color: #218838; /* Darker on hover */
 }
 
+/* Styling the reset and addDestination buttons separately for visual differentiation */
+#reset, #addDestination {
+  background-color: #17a2b8; /* Info color */
+}
+
+#reset:hover, #addDestination:hover {
+  background-color: #117a8b; /* Darker on hover */
+}
 #settingIMG{
     width:100%;
 }
@@ -213,158 +261,7 @@ html, body {
     font-size: 45px;
     font-weight: 600;
   }
-  .clock {
-
-    width:240px;
-
-    height:54px;
-
-    margin:0 auto;
-
-    padding:5px;
-
-    background:#cccccc00;
-
-    font-family:"Orbitron", sans-serif;
-
-    font-size:44px;
-
-    }
-
-    .clock .hour,
-
-    .clock .minute,
-
-    .clock .second {
-
-    float:left;
-
-    width:70px;
-
-    margin-right:10px;
-
-    }
-
-    .clock .second {
-
-    margin-right:0;
-
-    }
-
-    .clock .t {
-
-    overflow:hidden;
-
-    position:relative;
-
-    width:32px;
-
-    height:44px;
-
-    }
-
-    .clock .t:first-child {
-
-    float:left;
-
-    }
-
-    .clock .t:last-child {
-
-    float:right;
-
-    }
-
-    .clock .nums {
-
-    list-style:none;
-
-    position:absolute;
-
-    top:0;
-
-    left:0;
-
-    margin:0;
-
-    padding:0;
-
-    }
-
-    .clock .t0 .nums {
-
-    top:0;
-
-    }
-
-    .clock .t1 .nums {
-
-    top:-40px;
-
-    }
-
-    .clock .t2 .nums {
-
-    top:-80px;
-
-    }
-
-    .clock .t3 .nums {
-
-    top:-120px;
-
-    }
-
-    .clock .t4 .nums {
-
-    top:-160px;
-
-    }
-
-    .clock .t5 .nums {
-
-    top:-200px;
-
-    }
-
-    .clock .t6 .nums {
-
-    top:-240px;
-
-    }
-
-    .clock .t7 .nums {
-
-    top:-280px;
-
-    }
-
-    .clock .t8 .nums {
-
-    top:-320px;
-
-    }
-
-    .clock .t9 .nums {
-
-    top:-360px;
-
-    }
-
-    .clock .nums li {
-
-    position:relative;
-
-    width:32px;
-
-    text-align:center;
-
-    line-height:1;
-
-    font-family: "uggo", sans-serif;}
-
-
-
+  e
     #temperature{
 
         position: absolute;
@@ -580,18 +477,12 @@ html, body {
 #dataContainer:hover {
   opacity: 0.8;
 }
-input[type="time"],
-input[type="date"],
-button,
-p {
-  background-color: #f2f2f2; /* Light grey background */
-  border: 1px solid #d4d4d4; /* Solid border */
-  padding: 10px; /* Padding for spacing */
-  border-radius: 4px; /* Rounded corners */
-  font-family: Arial, sans-serif; /* Font family */
-  font-size: 16px; /* Font size */
-  color: #333; /* Text color */
+
+button:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
 }
+
+/* Adjustments for responsiveness */
 
 #dataContainer {
   font-family: 'Arial', sans-serif;

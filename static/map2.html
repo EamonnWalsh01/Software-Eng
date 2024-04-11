@@ -44,11 +44,12 @@
     <div id ="settingsWheel">
         <div id="timeBox">Live</div>
         
-        <form id="dateForm">
-            <label for="dateInput">Date:</label>
-            <input type="date" id="predDate" name="dateInput">
-            <label for="timeInput">Time:</label>
-            <input type="time" id="predTime" name="timeInput">
+        <form id="timeSet">
+            <div id = 'dateInput'><label for="dateInput">Date:</label>
+                <input type="date" id="predDate" name="dateInput"></div>
+            <div id = timeInput><label for="timeInput">Time:</label>
+                <input type="time" id="predTime" name="timeInput"></div>
+            
             <button type="button" onclick="recolour()">Submit</button>
             <button type="button" id="reset" onclick="recolour()">Reset Date</button>
             <button type="button" id="addDestination" onclick="recolour()">Add Destination</button>
