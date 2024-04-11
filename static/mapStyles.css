@@ -35,8 +35,8 @@ html, body {
     overflow-y: scroll; 
     background-color: rgba(0, 251, 255, 0.295); 
     padding: 20px;
-    border-left: 5px solid #000000;
-    border-right: 5px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #000000;
     display: none; 
     z-index: 5;
     
@@ -326,7 +326,7 @@ html, body {
 
     #openClose::after {
 
-        content: ">>"; /* This is the arrow. Adjust as needed for your design */
+       
 
         display: block;
 

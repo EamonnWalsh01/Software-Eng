@@ -514,6 +514,45 @@ async function recolour() {
         console.log('finished function')
     });
 }
+
+function resetbitches() {
+    console.log("station resetting");
+    // Return the fetch call to ensure the promise chain is established
+    return fetch('/stations')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(station => {
+                let color;
+                let pinImageUrl; // Correctly scoped variable
+                console.log(station.number);
+                if (station.available_bikes === 0) {
+                    color = "red";
+                    pinImageUrl = "red_bike.png";
+                } else if (station.available_bikes > 0 && station.available_bikes <= 5) {
+                    color = "yellow";
+                    pinImageUrl = "yellow_bike.png";
+                } else {
+                    color = "green";
+                    pinImageUrl = "green_bike.png";
+                }
+
+                // Here, you're correctly calling updateMarker but need to pass station.number
+                updateMarker(station.number, station.available_bikes, pinImageUrl);
+                
+                // Assuming 'markers' is a global array or object
+                // If updateMarker returns a marker, you should assign it here
+                // Example:
+                // markers[station.number] = updateMarker(station.number, station.available_bikes, pinImageUrl);
+
+                // If updateMarker doesn't return the marker and markers is handled elsewhere,
+                // ensure markers[station.number] assignment is correctly managed
+            });
+        })
+        .catch(error => console.error('Error fetching stations:', error));  // Error handling
+}
+
+
+
 function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
     directionsService.route(
         {
