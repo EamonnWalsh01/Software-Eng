@@ -172,7 +172,7 @@ html, body {
     max-width: 200px;
     height: 150px;
     z-index: 100;
-    
+    border:2px solid black ;
     border-radius: 25px;
     margin:10px;
     background: linear-gradient(to bottom right, #f9d71c 0%, #f9d71c 0%, #00bfff 40%, #00bfff 60%);
@@ -184,6 +184,7 @@ html, body {
 
 #weatherInfo{
     display: None;
+    
 }
 
 
