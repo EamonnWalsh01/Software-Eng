@@ -466,6 +466,7 @@ async function recolour() {
     console.log(stationNumbers);
     document.getElementById('progressBar').style.width = '20%'
     // Example fixed date and time, replace with your actual values
+    var x = 0;
     var predTimeValue = predTime.value;
     var predDateValue = predDate.value;
     var fullDateTime = new Date(predDateValue + 'T' + predTimeValue);
@@ -481,12 +482,13 @@ async function recolour() {
         return fetch(url)
         .then(response => {
             // Simulate progress: 50% after receiving the response
-            document.getElementById('progressBar').style.width = '50%';
+            document.getElementById('progressBar').style.width = '30%';
             return response.json();
         })
             .then(data => {
                 // Assuming data is an array of predictions
                 // Find the prediction closest to the roundedEpochTime
+                
                 const closestPrediction = data.reduce((prev, curr) => {
                     return (Math.abs(curr.time * 1000 - roundedEpochTime) < Math.abs(prev.time * 1000 - roundedEpochTime) ? curr : prev);
                 });
@@ -495,6 +497,7 @@ async function recolour() {
                     number,
                     predictions: closestPrediction
                 };
+                
             }).catch(error => {
                 console.log(`Fetch failed for station number ${number}:`, error);
                 return {
@@ -503,32 +506,37 @@ async function recolour() {
                 };
             });;
     });
-
+    document.getElementById('progressBar').style.width = `50%`;
     const results = await Promise.allSettled(fetchPromises);
-
+    
     results.forEach(result => {
         if (result.status === 'fulfilled' && !result.value.error) {
             console.log('success')
+            
             const { number, predictions } = result.value;
             const available_bikes = Math.round(predictions.availability);
-
+            x+=1;
+            document.getElementById('progressBar').style.width = `${(50 + ((3*x) / 117) )* 100}%`;
             let pinImageUrl = available_bikes === 0 ? "red_bike.png" : available_bikes > 0 && available_bikes <= 5 ? "yellow_bike.png" : "green_bike.png";
             updateMarker(number, available_bikes, pinImageUrl);
+            document.getElementById('progressBar').style.width = `${(50 + x / 117) * 100}%`;
         } else {
             console.error(`Failed to fetch prediction for station ${result.value.number}:`, result.value.error);
         }
         console.log('finished function')
-        document.getElementById('progressBar').style.width = '100%'
+        document.getElementById('progressBar').style.width = '100%';
+        setTimeout(() => {
+            document.getElementById('progressBar').style.width = '0%';
+            console.log('Progress bar reset to 0%');
+        }, 1000);
     });
 }
 
 function resetbitches() {
     console.log("station resetting");
     document.getElementById('progressBar').style.width = '20%'
-    // Return the fetch call to ensure the promise chain is established
     return fetch('/stations')
     .then(response => {
-        // Simulate progress: 50% after receiving the response
         document.getElementById('progressBar').style.width = '50%';
         return response.json();
     })
