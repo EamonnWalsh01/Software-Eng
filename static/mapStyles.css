@@ -172,10 +172,14 @@ html, body {
     max-width: 200px;
     height: 150px;
     z-index: 100;
-    background-color: rgba(0, 250, 233, 0.778);
-    border-radius: 5px;
-    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%);
-    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%);
+    
+    border-radius: 25px;
+    margin:10px;
+    background: linear-gradient(to bottom right, #f9d71c 0%, #f9d71c 0%, #00bfff 40%, #00bfff 60%);
+
+
+    /* -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%);
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%); */
 }
 
 #weatherInfo{

@@ -43,13 +43,13 @@ function initMap() {
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
-    let clock = document.getElementById("section");
+        let clock = document.getElementById("section");
     let timeSetting=document.getElementById("timeSet");
     let timeBoc=document.getElementById("timeBox");
     let updateTime = document.getElementById("updateTime");
     let predTime = document.getElementById("predTime")
     let predDate = document.getElementById("predDate")
-
+    
     //Limit Dates to range of weather predictions
     //Set Minimum Date as today
     var today = new Date();
@@ -61,7 +61,7 @@ function initMap() {
     enddate.setDate(enddate.getDate()+5);
     var maxDate = enddate.toISOString().split('T')[0];
     document.getElementById("predDate").setAttribute("max", maxDate);
-
+    
     
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
@@ -69,6 +69,8 @@ function initMap() {
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(clock);
+    const now = new Date();
+    const minutes = now.getMinutes()+now.getHours()*60;
     
     fetch(`/weather`)
     .then(response => response.json()) 
@@ -89,12 +91,10 @@ function initMap() {
        let temp=(Math.round(data[0]['temp']-273.15)).toString()+"&deg;C";
        document.getElementById('temperature').innerHTML=temp;
        let currentWeather=data[0]['weatherid'];
-       if (data[0]['sunset']<=data[0]['time']||data[0]['sunrise']>=data[0]['time']){
-        daylight=false;
-        containers.style.backgroundColor='navy';
-       }else{
-        daylight=true;
-       }
+       let sunset =data[0]['sunset']/60;
+       let sunrise =data[0]['sunrise']/60;
+       weathercolour(minutes,sunrise,sunset);
+       
 
        const image=document.getElementById('weatherimg')
        if (currentWeather>=800){
@@ -148,7 +148,7 @@ function initMap() {
     map.addListener("bounds_changed", function() {
         searchBox.setBounds(map.getBounds());
     });
-
+    
     searchBox.addListener("places_changed", function() {
         const places = searchBox.getPlaces();
         const place = places[0];
@@ -458,6 +458,8 @@ function updateMarker(number, available_bikes, pinImageUrl) {
         });
     }
 }
+
+
 async function recolour() {
     console.log('Starting recolour process...');
     const stationNumbers = Array.from({length: 117}, (_, i) => i); 
@@ -901,3 +903,32 @@ async function predictByDateTime(stationNumber, dateTime) {
 
 
 
+ function weathercolour(time,sunrise,sunset) {
+    
+    let weatherBox = document.getElementById("weatherbox");
+    console.log(time)
+    console.log(sunrise)
+    console.log(sunset)
+    let minutes = time;
+    let angle;
+
+    // Determine the angle based on whether the time is in the first or second half of the day
+    if (minutes <= sunset&&minutes>=sunrise) {
+        // Map 0-720 minutes to 135-45 degrees
+        angle = 135 + (90 * (minutes / 720));
+    } else {
+        // Reset at 720 minutes and map 721-1440 minutes back from 135 to 45 degrees
+        angle = 135 + (90 * ((minutes - 720) / 720));
+    }
+
+    // Set the gradient style based on time of day, choosing different colors if needed
+    let gradientStyle;
+    if (minutes <= 720) {
+        gradientStyle = `linear-gradient(${angle}deg, #f9d71c 0%, #00bfff 40%, #00bfff 60%)`;
+    } else {
+        gradientStyle = `linear-gradient(${angle}deg, #adadad 0%, #084080 40%, #084080 60%)`;
+    }
+
+    weatherBox.style.background = gradientStyle;
+    console.log('Angle set to: ' + angle + ' degrees; Minutes: ' + minutes);
+};
