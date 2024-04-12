@@ -528,7 +528,7 @@ async function recolour() {
         setTimeout(() => {
             document.getElementById('progressBar').style.width = '0%';
             console.log('Progress bar reset to 0%');
-        }, 1000);
+        }, 2000);
     });
 }
 
@@ -567,6 +567,10 @@ function resetbitches() {
                 // If updateMarker doesn't return the marker and markers is handled elsewhere,
                 // ensure markers[station.number] assignment is correctly managed
             });document.getElementById('progressBar').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('progressBar').style.width = '0%';
+                console.log('Progress bar reset to 0%');
+            }, 2000);
         })
         .catch(error => console.error('Error fetching stations:', error));  // Error handling
 }
