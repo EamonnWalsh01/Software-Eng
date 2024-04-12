@@ -462,7 +462,7 @@ async function recolour() {
     console.log('Starting recolour process...');
     const stationNumbers = Array.from({length: 117}, (_, i) => i); 
     console.log(stationNumbers);
-    
+    document.getElementById('progressBar').style.width = '20%'
     // Example fixed date and time, replace with your actual values
     var predTimeValue = predTime.value;
     var predDateValue = predDate.value;
@@ -477,7 +477,11 @@ async function recolour() {
     const fetchPromises = stationNumbers.map(number => {
         const url = `/data/predictive/${number}/${month}/${day}`;
         return fetch(url)
-            .then(response => response.ok ? response.json() : Promise.reject('Network response was not ok'))
+        .then(response => {
+            // Simulate progress: 50% after receiving the response
+            document.getElementById('progressBar').style.width = '50%';
+            return response.json();
+        })
             .then(data => {
                 // Assuming data is an array of predictions
                 // Find the prediction closest to the roundedEpochTime
@@ -512,14 +516,20 @@ async function recolour() {
             console.error(`Failed to fetch prediction for station ${result.value.number}:`, result.value.error);
         }
         console.log('finished function')
+        document.getElementById('progressBar').style.width = '100%'
     });
 }
 
 function resetbitches() {
     console.log("station resetting");
+    document.getElementById('progressBar').style.width = '20%'
     // Return the fetch call to ensure the promise chain is established
     return fetch('/stations')
-        .then(response => response.json())
+    .then(response => {
+        // Simulate progress: 50% after receiving the response
+        document.getElementById('progressBar').style.width = '50%';
+        return response.json();
+    })
         .then(data => {
             data.forEach(station => {
                 let color;
@@ -546,7 +556,7 @@ function resetbitches() {
 
                 // If updateMarker doesn't return the marker and markers is handled elsewhere,
                 // ensure markers[station.number] assignment is correctly managed
-            });
+            });document.getElementById('progressBar').style.width = '100%';
         })
         .catch(error => console.error('Error fetching stations:', error));  // Error handling
 }

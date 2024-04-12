@@ -487,6 +487,21 @@ html, body {
 #dataContainer:hover {
   opacity: 0.8;
 }
+#progressContainer {
+  width: 100%;
+  background-color: #f0f0f0;
+}
+
+#progressBar {
+  width: 0%;
+  height: 30px;
+  background-color: #4CAF50;
+  text-align: center;
+  line-height: 30px;
+  color: #f0f0f0;
+  transition: width 0.5s ease-out;
+}
+
 input[type="time"],
 input[type="date"],
 button,
