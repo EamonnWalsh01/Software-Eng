@@ -6,7 +6,9 @@
 }
 
 html, body {
+  font-family: 'Arial', sans-serif;
     height: 100%;
+    font-size: 16px; 
     margin: 0;
     padding: 0;
 }
@@ -245,7 +247,9 @@ html, body {
   text-align: right;
   margin-right: 10px;
 }
-
+#timeInput,#dateInput{
+  font-size: 16px;
+}
 #timeSet button {
   background-color: #23edff; /* Success color */
   color: white;
@@ -511,7 +515,7 @@ html, body {
 input[type="time"],
 input[type="date"],
 button,
-p {
+ {
   background-color: #f2f2f2; /* Light grey background */
   border: 1px solid #d4d4d4; /* Solid border */
   padding: 10px; /* Padding for spacing */
