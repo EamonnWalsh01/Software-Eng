@@ -1,5 +1,6 @@
 let start = {}
 let end = {}
+let extraend ={}
 let markers = {};
 let daylight = true;
 function initMap() {
@@ -29,7 +30,7 @@ function initMap() {
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
 
-   
+    let secondInput = document.getElementById('pac-input2')
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
     let settingFlag = 0;
@@ -39,7 +40,7 @@ function initMap() {
     let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
     let settingsIMG = document.getElementById("settingIMG");
-    
+    let secondSearchBox = new google.maps.places.SearchBox(secondInput);
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
@@ -150,12 +151,37 @@ function initMap() {
         searchBox.setBounds(map.getBounds());
     });
     
+secondSearchBox.addListener("places_changed", function() {
+        const places = secondSearchBox.getPlaces();
+        if (places.length == 0) return;
+        const place = places[0];
+        if (!place.geometry) return;
+
+        extraend = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+        calculateAndDisplayRoute(directionsService, directionsRenderer, start,end, extraend);
+        const bounds = new google.maps.LatLngBounds();
+        
+        bounds.union(place.geometry.viewport);
+        map.fitBounds(bounds);
+        places.forEach(place => {
+            if (!place.geometry) return;
+            if (place.geometry.viewport) {
+                bounds.union(place.geometry.viewport);
+            } else {
+                bounds.extend(place.geometry.location);
+            }
+            
+           
+            fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
+        });
+       
+    });
     searchBox.addListener("places_changed", function() {
         const places = searchBox.getPlaces();
         const place = places[0];
         if (!place.geometry) return;
         start = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
-        calculateAndDisplayRoute(directionsService, directionsRenderer, start, end);
+        calculateAndDisplayRoute(directionsService, directionsRenderer, start, end,extraend);
         if (places.length === 0) return;
 
         const bounds = new google.maps.LatLngBounds();
@@ -186,7 +212,7 @@ function initMap() {
         duration: 500 
     });opencloseFlag = 1;
     });
-
+   
     fetch('/stations')
         .then(response => response.json())
         
@@ -259,6 +285,7 @@ function initMap() {
        
        
         timeBox.addEventListener('click',function(){
+            console.log('ass');
             if (settingFlag == 0){
                 settingFlag = 1;
                 timeSetting.style.display='flex';
@@ -367,7 +394,13 @@ function initMap() {
     
             
 }
-
+function endDest(){
+    if (document.getElementById('pac-input2').style.display == 'none'){
+    document.getElementById('pac-input2').style.display = 'block';
+}else{
+    document.getElementById('pac-input2').style.display = 'none'
+}
+}
 function fetchNearestStations(lat, lng) {
     fetch(`/nearest-stations?lat=${lat}&lng=${lng}`)
         .then(response => response.json())
@@ -483,6 +516,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
 
 
 async function recolour() {
+    document.getElementById('progressContainer').style.display = 'block'
     console.log('Starting recolour process...');
     const stationNumbers = Array.from({length: 117}, (_, i) => i); 
     console.log(stationNumbers);
@@ -527,6 +561,7 @@ async function recolour() {
                     error: `Fetch failed: ${error.message || error}`
                 };
             });;
+            
     });
     document.getElementById('progressBar').style.width = `50%`;
     const results = await Promise.allSettled(fetchPromises);
@@ -550,11 +585,16 @@ async function recolour() {
         setTimeout(() => {
             document.getElementById('progressBar').style.width = '0%';
             console.log('Progress bar reset to 0%');
+            // Nesting the timeout for hiding the progress container inside the first timeout
+            setTimeout(() => {
+                document.getElementById('progressContainer').style.display = 'none';
+            }, 2000);  // Additional delay to ensure the progress bar shrinking is seen
         }, 2000);
     });
 }
 
-function resetbitches() {
+function resetCol() {
+    document.getElementById('progressContainer').style.display = 'block'
     console.log("station resetting");
     document.getElementById('progressBar').style.width = '20%'
     return fetch('/stations')
@@ -592,6 +632,10 @@ function resetbitches() {
             setTimeout(() => {
                 document.getElementById('progressBar').style.width = '0%';
                 console.log('Progress bar reset to 0%');
+                // Nesting the timeout for hiding the progress container inside the first timeout
+                setTimeout(() => {
+                    document.getElementById('progressContainer').style.display = 'none';
+                }, 2000);  // Additional delay to ensure the progress bar shrinking is seen
             }, 2000);
         })
         .catch(error => console.error('Error fetching stations:', error));  // Error handling
@@ -610,22 +654,36 @@ function daylightSavings(){
 
     return currentDate >= startDate && currentDate <= endDate;
 }
-function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
-    directionsService.route(
-        {
-            origin: start,
-            destination: end,
-            travelMode: google.maps.TravelMode.WALKING 
-        },
-        (response, status) => {
-            if (status === google.maps.DirectionsStatus.OK) {
-                directionsRenderer.setDirections(response);
-            } else {
-                window.alert('Directions request failed due to ' + status);
-            }
+function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end, extraEndPoint) {
+    // Define the waypoints array
+    let waypoints = [];
+    
+    // If there is an extra end point, add it to the waypoints array
+    // Ensure extraEndPoint is either a string or a LatLng/LatLngLiteral object
+    if (extraEndPoint) {
+        waypoints.push({
+            location: extraEndPoint,  // Make sure this is a valid string, LatLng, or LatLngLiteral
+            stopover: true  // `stopover` is true if you want the route to stop at this waypoint
+        });
+    }
+
+    // Configure the route with waypoints
+    directionsService.route({
+        origin: start,
+        destination: end,
+        waypoints: waypoints, // Include the waypoints in the route
+        optimizeWaypoints: true, // Optionally optimize the order of the waypoints
+        travelMode: google.maps.TravelMode.WALKING
+    },
+    (response, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+            directionsRenderer.setDirections(response);
+        } else {
+            window.alert('Directions request failed due to ' + status);
         }
-    );
+    });
 }
+
 async function openNav(stationNumber) {
     // Use Anime.js to animate opening the sidebar
     anime({
