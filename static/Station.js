@@ -1,6 +1,7 @@
 let start = {}
 let end = {}
 let markers = {};
+let daylight = true;
 function initMap() {
    
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -410,17 +411,38 @@ function fetchNearestStations(lat, lng) {
                     fetch(`/availability/${station.number}`)
                         .then(response => response.json())
                         .then(availability => {
-                            let content = `
+                            const lastUpdateDate = new Date(availability.last_update);
+
+                            let content =''
+                            if(!daylight){
+                             content = `
                            
        
                             <h3>Additioinal Info</h3>
                             <p>Availible Stands: ${availability.available_bike_stands}</p>
                             <p>Status: ${availability.status}</p>
-                            <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                            
+                            <p>Last Update: ${lastUpdateDate.toLocaleString()}</p>
                         
                     
 
-                            `;
+                            `;}
+                            else{
+                                lastUpdateDate.setHours(lastUpdateDate.getHours() + 1); // Adding one hour
+
+                                content = `
+                           
+       
+                                <h3>Additioinal Info</h3>
+                                <p>Availible Stands: ${availability.available_bike_stands}</p>
+                                <p>Status: ${availability.status}</p>
+                                
+                                <p>Last Update: ${lastUpdateDate.toLocaleString()}</p>
+                            
+                        
+    
+                                `;  
+                            }
                             infoElement.innerHTML = content;
                             if (infoElement.style.display=='block'){
                                 infoElement.style.display = 'None';
@@ -576,7 +598,18 @@ function resetbitches() {
 }
 
 
+function daylightSavings(){
+    const startDate = new Date('2024-03-31');
+    const endDate = new Date('2024-10-27');
+    const currentDate = new Date();
 
+    // Clear time components to focus only on the date part
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+
+    return currentDate >= startDate && currentDate <= endDate;
+}
 function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
     directionsService.route(
         {
