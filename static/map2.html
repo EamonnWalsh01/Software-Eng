@@ -3,14 +3,21 @@
 <head>
     <link rel="stylesheet" href="mapStyles.css" >
     <title>Bikes that look like how dublin bikes feel</title>
-    <link rel="icon" type="image/x-icon" href="wolfripcover.jpg">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.0.0"></script>
+
 <script src="Station.js"></script>
+
 <script>
     
     window.onload = initMap;
     
+;
+
 </script>
 </head>
 <body>
@@ -34,106 +41,42 @@
     <div id = "weatherInfo"></div>
     <div id="temperature">CUM</div>
 </div>
-    <div id  = "settingsWheel">
-        <img src="settingCog.png" id="settingIMG" alt="">
-        <div id = "settingBox">
-        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+    <div id ="settingsWheel">
+        <div id="timeBox">Live</div>
+        
+        <form id="timeSet">
+            <div id = 'dateInput'><label for="dateInput">Date:</label>
+                <input type="date" id="predDate" name="dateInput"></div>
+            <div id = timeInput><label for="timeInput">Time:</label>
+                <input type="time" id="predTime" name="timeInput"></div>
+            
+            <button type="button" onclick="recolour()">Submit</button>
+            <button type="button" id="reset" onclick="resetbitches()">Reset Date</button>
+            <button type="button" id="addDestination" onclick="recolour()">Add Destination</button>
+            <div id="progressContainer">
+                <div id="progressBar"></div>
+            </div>
+        </form>
+        
+        <!-- <div id="timeSet"></div> -->
     </div>
-    </div>
-    <section id="section">
-      <div class="container">
-        <div class="clock">
-          <div class="hour">
-            <div class="t">
-              <ul class="nums">
-                <li>0</li>
-                <li>1</li>
-                <li>2</li>
-              </ul>
-            </div>
-            <div class="t">
-              <ul class="nums">
-                <li>0</li>
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-                <li>5</li>
-                <li>6</li>
-                <li>7</li>
-                <li>8</li>
-                <li>9</li>
-              </ul>
-            </div>
-          </div>
-          <div class="minute">
-            <div class="t">
-              <ul class="nums">
-                <li>0</li>
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-                <li>5</li>
-              </ul>
-            </div>
-            <div class="t">
-              <ul class="nums">
-                <li>0</li>
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-                <li>5</li>
-                <li>6</li>
-                <li>7</li>
-                <li>8</li>
-                <li>9</li>
-              </ul>
-            </div>
-          </div>
-          <div class="second">
-            <div class="t">
-              <ul class="nums">
-                <li>0</li>
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-                <li>5</li>
-              </ul>
-            </div>
-            <div class="t">
-              <ul class="nums">
-                <li>0</li>
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-                <li>5</li>
-                <li>6</li>
-                <li>7</li>
-                <li>8</li>
-                <li>9</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    
   <script src="clock.js"></script>
-    <input type="range" min="-99999999" max="99999999" value="0" class="slider" id="myRange">    
-    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+  <input type="range" id="myRange" min="0" max="1440" value="40" step="1">
+  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
    
     <div id = "mapbox">
-    <div id = "openClose">>></div>
+    <div id = "openClose"><img src="arrow.png" id="settingIMG" alt=""></div>
     <div id="sidebar"><span id="close">&times;</span></div>
     <div id="map" ></div>
     <div id="graphArea" class="graphArea">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+      
+      <div id="station-container"></div>
+      <div class="button-container">
+        <button class="sidebar-btn" id="historicalDataBtn">Historical Data</button>
+        <button class="sidebar-btn" id="predictiveDataBtn">Predictive Data</button>
+      </div>
+      <div id="dataContainer"></div>
     </div>
 </div>
 
