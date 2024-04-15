@@ -561,6 +561,7 @@ html, body {
   font-family: 'Arial', sans-serif;
   max-width: 600px;
   margin: 0 auto;
+  margin-bottom: 100px;
   padding: 20px;
   background-color: #f9f9f9;
   border-radius: 10px;
