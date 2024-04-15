@@ -243,7 +243,7 @@ secondSearchBox.addListener("places_changed", function() {
                     number:station.number,
                     icon: {
                         url: pinImageUrl, 
-                        scaledSize: new google.maps.Size(150, 150), 
+                        scaledSize: new google.maps.Size(50, 50), 
                     },
                     
                 } );
@@ -508,7 +508,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
             map: map,
             icon: {
                 url: pinImageUrl,
-                scaledSize: new google.maps.Size(150, 150) // Adjust size as needed
+                scaledSize: new google.maps.Size(90, 90) // Adjust size as needed
             }
         });
     }
