@@ -186,12 +186,21 @@ def predict(number,month,day):
     forecast = get_weather_forecast(lat,lon)
     day_forecast = filter_forecast_for_day(forecast, day, month)
     
+    current_year = datetime.now().year
+    date_object = datetime(current_year, month, day)
+    start_timestamp = date_object.timestamp()
+    end_timestamp  = start_timestamp  + 86400
+
+    if(start_timestamp  < int(time.time())):
+        start_timestamp  = int(time.time())
+
     predictions_list = []
-    for data in day_forecast:
+    for timestamp in range(int(start_timestamp), int(end_timestamp), 600):
+        closest_forecast = min(day_forecast, key=lambda x: abs(x['time'] - timestamp))
 
         input_data = {
             'number': [number],
-            'time_as_fraction': [int(data.get('time'))/86400],
+            'time_as_fraction': [timestamp/86400],
             'month': [month],
             'day': [day],
             'day_of_week_0': day_of_week[0],
@@ -201,11 +210,11 @@ def predict(number,month,day):
             'day_of_week_4': day_of_week[4],
             'day_of_week_5': day_of_week[5],
             'day_of_week_6': day_of_week[6],
-            'temp': [data.get('temp')],
-            'feels_like': [data.get('feels_like')],
-            'rain_1h': [data.get('rain_1h')], 
-            'wind_speed': [data.get('wind')],
-            'weatherid': [data.get('weatherid')]
+            'temp': [closest_forecast.get('temp')],
+            'feels_like': [closest_forecast.get('feels_like')],
+            'rain_1h': [closest_forecast.get('rain_1h')], 
+            'wind_speed': [closest_forecast.get('wind')],
+            'weatherid': [closest_forecast.get('weatherid')]
         }
         
 
@@ -213,7 +222,7 @@ def predict(number,month,day):
         df = pd.DataFrame.from_dict(input_data)
         predictions = model.predict(df)
         predictions_list.append({
-            'time': data.get('time'),
+            'time': timestamp,
             'availability': predictions.tolist()[0]
             })
 
