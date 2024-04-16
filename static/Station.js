@@ -243,7 +243,7 @@ secondSearchBox.addListener("places_changed", function() {
                     number:station.number,
                     icon: {
                         url: pinImageUrl, 
-                        scaledSize: new google.maps.Size(50, 50), 
+                        scaledSize: new google.maps.Size(100, 100), 
                     },
                     
                 } );
@@ -498,7 +498,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
         // Assuming markers[number] is a Google Maps Marker instance
         markers[number].setIcon({
             url: pinImageUrl,
-            scaledSize: new google.maps.Size(150, 150) // Adjust size as needed
+            scaledSize: new google.maps.Size(100, 100) // Adjust size as needed
         });
         // Optional: update title or other marker properties here
     } else {
@@ -508,7 +508,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
             map: map,
             icon: {
                 url: pinImageUrl,
-                scaledSize: new google.maps.Size(90, 90) // Adjust size as needed
+                scaledSize: new google.maps.Size(100, 100) // Adjust size as needed
             }
         });
     }
