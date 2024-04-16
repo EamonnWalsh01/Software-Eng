@@ -66,29 +66,17 @@ html, body {
     text-overflow: ellipses;
     border-radius: 5px;
 }
-#pac-input2 {
-  display: none;
-  width: calc(100%); /* Full width minus label width */
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  
-  box-shadow: 0 2px 6px rgba(0,0,0,.3);
-  border: 1px solid transparent;
-  width: 100%;
-  
-  font-family:"Orbitron", sans-serif;
-  font-size: 14px;
-  line-height: 40px;
-  
-  outline: none;
-  text-overflow: ellipses;
-  border-radius: 5px;
-}
+
+  #pac-input2 {
+    display: block;  /* Ensure it is not inline as default for inputs */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;  /* Takes the full width */
+    box-sizing: border-box;  /* Includes padding and border in the width */
+  }
+
 .controls:focus {
     border-color: #defe4d;
 }
