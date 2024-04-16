@@ -743,7 +743,7 @@ async function openNav(stationNumber) {
     // Append the address and bike stands wrapper to the info wrapper for side-by-side layout
     infoWrapper.appendChild(addressStandsWrapper);
 
-
+    document.getElementById('dataContainer').innerHTML = '';
 
     // Create Historical Data button
     const historicalDataBtn = document.getElementById('historicalDataBtn');
