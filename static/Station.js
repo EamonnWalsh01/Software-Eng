@@ -1,8 +1,6 @@
-/*eslint-env es6*/
-
-let start = {};
-let end = {};
-let extraend ={};
+let start = {}
+let end = {}
+let extraend ={}
 let markers = {};
 let daylight = true;
 function initMap() {
@@ -32,24 +30,27 @@ function initMap() {
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
 
-    let secondInput = document.getElementById('pac-input2');
+    let secondInput = document.getElementById('pac-input2')
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
     let settingFlag = 0;
     let opencloseFlag = 0;
     let currentInfowindow = null;
+    let settingBox = document.getElementById('settingBox');
     let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
+    let settingsIMG = document.getElementById("settingIMG");
     let secondSearchBox = new google.maps.places.SearchBox(secondInput);
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
-    let clock = document.getElementById("section");
+        let clock = document.getElementById("section");
     let timeSetting=document.getElementById("timeSet");
+    let timeBoc=document.getElementById("timeBox");
     let updateTime = document.getElementById("updateTime");
-    let predTime = document.getElementById("predTime");
-    let predDate = document.getElementById("predDate");
+    let predTime = document.getElementById("predTime")
+    let predDate = document.getElementById("predDate")
     
     //Limit Dates to range of weather predictions
     //Set Minimum Date as today
@@ -62,48 +63,8 @@ function initMap() {
     enddate.setDate(enddate.getDate()+5);
     var maxDate = enddate.toISOString().split('T')[0];
     document.getElementById("predDate").setAttribute("max", maxDate);
-
     
-    //Limit Maps Scrolling Start
-    const dublinLonLat={
-        maxlat:53.360,
-        minlat:53.330,
-        maxlon:-6.231,
-        minlon:-6.310
-    };
-
-    const mapLimits=new google.maps.LatLngBounds(
-        new google.maps.LatLng(dublinLonLat.minlat,dublinLonLat.minlon),
-        new google.maps.LatLng(dublinLonLat.maxlat,dublinLonLat.maxlon)
-    );
-
-    google.maps.event.addListener(map, 'drag', function() {
-        if (mapLimits.contains(map.getCenter())) return;
-
-        var c = map.getCenter(),
-        x = c.lng(),
-        y = c.lat(),
-        maxX = mapLimits.getNorthEast().lng(),
-        maxY = mapLimits.getNorthEast().lat(),
-        minX = mapLimits.getSouthWest().lng(),
-        minY = mapLimits.getSouthWest().lat();
-
-        if (x < minX) x = minX;
-        if (x > maxX) x = maxX;
-        if (y < minY) y = minY;
-        if (y > maxY) y = maxY;
-
-    map.setCenter(new google.maps.LatLng(y, x));
-});
-
-    google.maps.event.addListener(map, 'zoom_changed', function() {
-        if (map.getZoom() < 14) {
-            map.setZoom(14);
-        }
-    });
-
-    //Limit Maps Scrolling End
-
+    
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
@@ -121,23 +82,23 @@ function initMap() {
         let contentWeather = `
        
             <h3>Weather Info</h3>
-            <p>Temperature: ${data[0].temp}</p>
-            <p>Weather description: ${data[0].weather_desc}</p>
+            <p>Temperature: ${data[0]['temp']}</p>
+            <p>Weather description: ${data[0]['weather_desc']}</p>
             
         
     `;  
        document.getElementById('weatherInfo').innerHTML = contentWeather;
-       daylight=true;
-       let temp=(Math.round(data[0].temp-273.15)).toString()+"&deg;C";
+       let daylight=true;
+       let containers=document.getElementById('weatherbox');
+       let temp=(Math.round(data[0]['temp']-273.15)).toString()+"&deg;C";
        document.getElementById('temperature').innerHTML=temp;
-       let currentWeather=data[0].weatherid;
-       let sunset =data[0].sunset/60;
-       let sunrise =data[0].sunrise/60;
-
+       let currentWeather=data[0]['weatherid'];
+       let sunset =data[0]['sunset']/60;
+       let sunrise =data[0]['sunrise']/60;
        weathercolour(minutes,sunrise,sunset);
        
 
-       const image=document.getElementById('weatherimg');
+       const image=document.getElementById('weatherimg')
        if (currentWeather>=800){
         if(currentWeather==800){
             if (daylight==true){
@@ -272,7 +233,8 @@ secondSearchBox.addListener("places_changed", function() {
 
                 // Creating a colored pin
                 let pinColor = color;
-                
+                let pinImage = new google.maps.MarkerImage("http://maps.google.com/mapfiles/ms/icons/" + pinColor + "-dot.png");
+
                 
                 const marker = new google.maps.Marker({
                     position: { lat: station.position_lat, lng: station.position_lng },
@@ -304,6 +266,7 @@ secondSearchBox.addListener("places_changed", function() {
                                 </div>
                             `;
                            if (currentInfowindow) {
+                                console.log("hello");
                                 currentInfowindow.close();
                             }
                             let infowindow = new google.maps.InfoWindow({
@@ -322,6 +285,7 @@ secondSearchBox.addListener("places_changed", function() {
        
        
         timeBox.addEventListener('click',function(){
+            console.log('ass');
             if (settingFlag == 0){
                 settingFlag = 1;
                 timeSetting.style.display='flex';
@@ -387,46 +351,7 @@ secondSearchBox.addListener("places_changed", function() {
                 });
             }
         })
-        updateTime.addEventListener('click',function(){  // Assuming stationNumbers is an array of station IDs/numbers you want predictions for
-            
-            const stationNumbers = Array.from({length: 117}, (x, i) => i); // Example station numbers, replace with your actual data source
-            
-            let predTimeValue = predTime.value;
-            let predDateValue = predDate.value;
-            const today = predTimeValue;
-            const month = today.getMonth() + 1; // JavaScript months are 0-based
-            const day = today.getDate();
-            const seconds = predTimeValue.getHours() * 3600 + predTimeValue.getMinutes() * 60 + predTimeValue.getSeconds();
-            
-            for (let number of stationNumbers) {
-                const url = `/data/predictivetime/${number}/${month}/${day}/${seconds}`;
-                
-                try {
-                    const response =  fetch(url);
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    const predictions = response.json();
-                    // Assuming predictions is an array with a single item for the predicted number of bikes
-                    const available_bikes = predictions[0];
         
-                    let pinImageUrl;
-                    if (available_bikes === 0) {
-                        pinImageUrl = "red_bike.png";
-                    } else if (available_bikes > 0 && available_bikes <= 5) {
-                        pinImageUrl = "yellow_bike.png";
-                    } else {
-                        pinImageUrl = "green_bike.png";
-                    }
-        
-                    // Assuming you have a function to update or create a marker for a station
-                    updateMarker(number, available_bikes, pinImageUrl);
-                } catch (error) {
-                    console.error('Failed to fetch prediction:', error);
-                }
-            }})
-            var date = document.getElementById('dateInput').value;
-    
             
 }
 function endDest(){
@@ -446,6 +371,7 @@ function fetchNearestStations(lat, lng) {
             stations.forEach(station => {
                 const element = document.createElement("div");
                 element.className = 'station-info';
+                console.log(station)
                 const nameElement = document.createElement("div");
                 nameElement.className = 'station-name';
                 nameElement.textContent = `Name: ${station.name}`;
@@ -513,8 +439,10 @@ function fetchNearestStations(lat, lng) {
                             infoElement.innerHTML = content;
                             if (infoElement.style.display=='block'){
                                 infoElement.style.display = 'None';
+                                console.log("hello5");
                             }else{
                                 infoElement.style.display = 'block';
+                                console.log("hello1");
                             }
                             
 
@@ -549,7 +477,9 @@ function updateMarker(number, available_bikes, pinImageUrl) {
 
 async function recolour() {
     document.getElementById('progressContainer').style.display = 'block'
+    console.log('Starting recolour process...');
     const stationNumbers = Array.from({length: 117}, (_, i) => i); 
+    console.log(stationNumbers);
     document.getElementById('progressBar').style.width = '20%'
     // Example fixed date and time, replace with your actual values
     var x = 0;
@@ -560,6 +490,7 @@ async function recolour() {
     const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
     const day = fullDateTime.getDate();
     const epochTime = fullDateTime.getTime();
+    console.log(fullDateTime)
     const threeHoursInMilliseconds = 10800000;
     const roundedEpochTime = Math.round(epochTime / threeHoursInMilliseconds) * threeHoursInMilliseconds;
     const fetchPromises = stationNumbers.map(number => {
@@ -577,6 +508,7 @@ async function recolour() {
                 const closestPrediction = data.reduce((prev, curr) => {
                     return (Math.abs(curr.time * 1000 - roundedEpochTime) < Math.abs(prev.time * 1000 - roundedEpochTime) ? curr : prev);
                 });
+                console.log(closestPrediction)
                 return {
                     number,
                     predictions: closestPrediction
@@ -596,6 +528,7 @@ async function recolour() {
     
     results.forEach(result => {
         if (result.status === 'fulfilled' && !result.value.error) {
+            console.log('success')
             
             const { number, predictions } = result.value;
             const available_bikes = Math.round(predictions.availability);
@@ -607,10 +540,11 @@ async function recolour() {
         } else {
             console.error(`Failed to fetch prediction for station ${result.value.number}:`, result.value.error);
         }
+        console.log('finished function')
         document.getElementById('progressBar').style.width = '100%';
         setTimeout(() => {
             document.getElementById('progressBar').style.width = '0%';
-            
+            console.log('Progress bar reset to 0%');
             // Nesting the timeout for hiding the progress container inside the first timeout
             setTimeout(() => {
                 document.getElementById('progressContainer').style.display = 'none';
@@ -620,8 +554,9 @@ async function recolour() {
 }
 
 function resetCol() {
-    document.getElementById('progressContainer').style.display = 'block';
-    document.getElementById('progressBar').style.width = '20%';
+    document.getElementById('progressContainer').style.display = 'block'
+    console.log("station resetting");
+    document.getElementById('progressBar').style.width = '20%'
     return fetch('/stations')
     .then(response => {
         document.getElementById('progressBar').style.width = '50%';
@@ -631,6 +566,7 @@ function resetCol() {
             data.forEach(station => {
                 let color;
                 let pinImageUrl; // Correctly scoped variable
+                console.log(station.number);
                 if (station.available_bikes === 0) {
                     color = "red";
                     pinImageUrl = "red_bike.png";
@@ -655,6 +591,7 @@ function resetCol() {
             });document.getElementById('progressBar').style.width = '100%';
             setTimeout(() => {
                 document.getElementById('progressBar').style.width = '0%';
+                console.log('Progress bar reset to 0%');
                 // Nesting the timeout for hiding the progress container inside the first timeout
                 setTimeout(() => {
                     document.getElementById('progressContainer').style.display = 'none';
@@ -766,7 +703,7 @@ async function openNav(stationNumber) {
     // Append the address and bike stands wrapper to the info wrapper for side-by-side layout
     infoWrapper.appendChild(addressStandsWrapper);
 
-    document.getElementById('dataContainer').innerHTML = '';
+
 
     // Create Historical Data button
     const historicalDataBtn = document.getElementById('historicalDataBtn');
@@ -781,6 +718,7 @@ async function openNav(stationNumber) {
     const predictiveDataBtn = document.getElementById('predictiveDataBtn');
     predictiveDataBtn.addEventListener('click', function() {
         showPredictiveArea(stationNumber);
+        console.log('Predictive data function to be implemented');
     });
 
     
@@ -1008,7 +946,8 @@ async function fetchAndPlotData(stationNumber, type, date) {
 
 
 async function predictByDateTime(stationNumber, dateTime) {
-    
+    console.log(stationNumber);
+    console.log(dateTime);
     try{
         
         dateTime = new Date(dateTime);
@@ -1018,6 +957,7 @@ async function predictByDateTime(stationNumber, dateTime) {
         var epochTimeInSeconds = Math.floor(dateTime.getTime() / 1000);
         const response = await fetch(`/data/predictivetime/${stationNumber}/${month}/${date}/${epochTimeInSeconds}`);
         const json_data = await response.json();
+        console.log(json_data);
         document.getElementById('prediction-answer').textContent = `Predicted Availability: ${json_data[0]}`;
     }catch (error) {
         console.error('Failed to predict by date time:', error);
@@ -1029,6 +969,9 @@ async function predictByDateTime(stationNumber, dateTime) {
  function weathercolour(time,sunrise,sunset) {
     
     let weatherBox = document.getElementById("weatherbox");
+    console.log(time)
+    console.log(sunrise)
+    console.log(sunset)
     let minutes = time;
     let angle;
 
@@ -1043,11 +986,12 @@ async function predictByDateTime(stationNumber, dateTime) {
 
     // Set the gradient style based on time of day, choosing different colors if needed
     let gradientStyle;
-    if (minutes <= sunset) {
+    if (minutes <= 720) {
         gradientStyle = `linear-gradient(${angle}deg, #f9d71c 0%, #00bfff 40%, #00bfff 60%)`;
     } else {
         gradientStyle = `linear-gradient(${angle}deg, #adadad 0%, #084080 40%, #084080 60%)`;
     }
 
     weatherBox.style.background = gradientStyle;
+    console.log('Angle set to: ' + angle + ' degrees; Minutes: ' + minutes);
 };
