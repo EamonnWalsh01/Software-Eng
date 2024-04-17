@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <link rel="stylesheet" href="mapStyles.css" >
     <title>Bikes that look like how dublin bikes feel</title>
@@ -21,23 +21,10 @@
 </script>
 </head>
 <body>
-    <!-- <div id = "outerDiv">
-    <div id = "landingDiv">
-        <img id="bikeimg" src="output-onlinepngtools.png" alt="Bike Image">
-        <input type="text" id="inputbar" placeholder="Search Location">
-        <div id = "Dropdowns"></div> -->
-        
-
-
-
-<!-- Time Dropdown -->
-
-
-
 
 <div id  = "weatherbox">
     
-    <img id  = "weatherimg" src="static\weathericons\ash.png" alt="">
+    <img id="weatherimg" src="static/weathericons/ash.png" alt="">
     <div id = "weatherInfo"></div>
     <div id="temperature"></div>
 </div>
@@ -45,9 +32,9 @@
         <div id="timeBox">Live</div>
         
         <form id="timeSet">
-            <div id = 'dateInput'><label for="dateInput">Date:</label>
+            <div id = 'dateInput'><label for="predDate">Date:</label>
                 <input type="date" id="predDate" name="dateInput"></div>
-            <div id = timeInput><label for="timeInput">Time:</label>
+            <div id = timeInput><label for="predTime">Time:</label>
                 <input type="time" id="predTime" name="timeInput"></div>
             
             <button type="button" onclick="recolour()">Submit</button>
@@ -58,12 +45,9 @@
                 <div id="progressBar"></div>
             </div>
         </form>
-        
-        <!-- <div id="timeSet"></div> -->
     </div>
     
   <script src="clock.js"></script>
-  <!-- <input type="range" id="myRange" min="0" max="1440" value="40" step="1"> -->
   <input id="pac-input" class="controls" type="text" placeholder="Search Box">
    
     <div id = "mapbox">
