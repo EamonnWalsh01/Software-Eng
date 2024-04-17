@@ -966,27 +966,24 @@ async function predictByDateTime(stationNumber, dateTime) {
 
 
 
- function weathercolour(time,sunrise,sunset) {
-    
+function weathercolour(time, sunrise, sunset) {
     let weatherBox = document.getElementById("weatherbox");
-    console.log(time)
-    console.log(sunrise)
-    console.log(sunset)
+    console.log(time);
+    console.log(sunrise);
+    console.log(sunset);
     let minutes = time;
     let angle;
 
-    // Determine the angle based on whether the time is in the first or second half of the day
-    if (minutes <= sunset&&minutes>=sunrise) {
-        // Map 0-720 minutes to 135-45 degrees
-        angle = 135 + (90 * (minutes / 720));
+    if (minutes >= sunrise && minutes <= sunset) {
+        angle = 135 + (90 * ((minutes - sunrise) / (sunset - sunrise)));
+    } else if (minutes > sunset && minutes <= 1440) {
+        angle = 135 + (90 * ((minutes - sunset) / (1440 - sunset)));
     } else {
-        // Reset at 720 minutes and map 721-1440 minutes back from 135 to 45 degrees
-        angle = 135 + (90 * ((minutes - 720) / 720));
+        angle = 225 - (90 * (minutes / sunrise));
     }
 
-    // Set the gradient style based on time of day, choosing different colors if needed
     let gradientStyle;
-    if (minutes <= 720) {
+    if (minutes >= sunrise && minutes <= sunset) {
         gradientStyle = `linear-gradient(${angle}deg, #f9d71c 0%, #00bfff 40%, #00bfff 60%)`;
     } else {
         gradientStyle = `linear-gradient(${angle}deg, #adadad 0%, #084080 40%, #084080 60%)`;
@@ -994,4 +991,4 @@ async function predictByDateTime(stationNumber, dateTime) {
 
     weatherBox.style.background = gradientStyle;
     console.log('Angle set to: ' + angle + ' degrees; Minutes: ' + minutes);
-};
+}
