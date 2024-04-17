@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="mapStyles.css" >
+    <!-- <link rel="stylesheet" href="mapStyles.css" > -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='mapStyles.css') }}"
+    />
     <title>Bikes that look like how dublin bikes feel</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap"></script>
@@ -10,7 +14,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.0.0"></script>
 
-<script src="Station.js"></script>
+<!-- <script src="Station.js"></script> -->
+<script src="{{ url_for('static', filename='Station.js') }}" defer></script>
 
 <script>
     
