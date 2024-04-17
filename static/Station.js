@@ -140,6 +140,8 @@ function initMap() {
        let currentWeather=data[0]['weatherid'];
        let sunset =data[0]['sunset']/60;
        let sunrise =data[0]['sunrise']/60;
+       console.log("8=====D",minutes,sunset,sunrise)
+
        weathercolour(minutes,sunrise,sunset);
        
 
@@ -1071,7 +1073,7 @@ async function predictByDateTime(stationNumber, dateTime) {
 
     // Set the gradient style based on time of day, choosing different colors if needed
     let gradientStyle;
-    if (minutes <= 720) {
+    if (minutes <= sunset) {
         gradientStyle = `linear-gradient(${angle}deg, #f9d71c 0%, #00bfff 40%, #00bfff 60%)`;
     } else {
         gradientStyle = `linear-gradient(${angle}deg, #adadad 0%, #084080 40%, #084080 60%)`;
