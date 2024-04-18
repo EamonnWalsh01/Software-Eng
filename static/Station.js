@@ -102,47 +102,48 @@ function initMap() {
        if (currentWeather>=800){
         if(currentWeather==800){
             if (daylight==true){
-                image.src="weathericons/Sunny.png";
+                image.src="../static/weathericons/Sunny.png";
             }else{
-                image.src="weathericons/clearnight.png";
+                image.src="../static/weathericons/clearnight.png";
             }
         }else if (currentWeather==801){
             if (daylight==true){
-                image.src="weathericons/few_clouds.png";
+                image.src="../static/weathericons/few_clouds.png";
             }else{
-                image.src="weathericons/few_clouds_night.png";
+                image.src="../static/weathericons/few_clouds_night.png";
             }
         }else if(currentWeather==802){
-            image.src="weathericons/scattered_clouds.png";
+            image.src="../static/weathericons/scattered_clouds.png";
         }else if(currentWeather==803 || currentWeather==804){
-            image.src="weathericons/broken_clouds.png";
+            image.src="../static/weathericons/broken_clouds.png";
         }
     }else if(currentWeather>=700){
         if(currentWeather<=761||currentWeather==771){
-            image.src="weathericons/mist.png";
+            image.src="../static/weathericons/mist.png";
         }else if(currentWeather==762){
-            image.src="weathericons/ash.png";
+            image.src="../static/weathericons/ash.png";
         }else{
-            image.src="weathericons/tornado.png";
+            image.src="../static/weathericons/tornado.png";
         }
     }else if(currentWeather>=600){
-        image.src="weathericons/snow.png";
+        image.src="../static/weathericons/snow.png";
     }else if(currentWeather>=500){
         if(currentWeather<=506){
             if (daylight==true){
-                image.src="weathericons/rain.png";
+                image.src="../static/weathericons/rain.png";
             }else{
-                image.src="weathericons/rain_night.png";
+                image.src="../static/weathericons/rain_night.png";
             } 
         }else if(currentWeather==511){
-            image.src="weathericons/snow.png";
+            image.src="../static/weathericons/snow.png";
         }else{
-            image.src="weathericons/shower_rain.png";
+            // image.src="weathericons/shower_rain.png";
+            image.src="../static/weathericons/shower_rain.png"
         }
     }else if(currentWeather>=300){
-        image.src="weathericons/shower_rain.png";
+        image.src="../static/weathericons/shower_rain.png";
     }else if(currentWeather>=200){
-        image.src="weathericons/thunderstorm.png";
+        image.src="../static/weathericons/thunderstorm.png";
     }
 }
 );
@@ -222,13 +223,13 @@ secondSearchBox.addListener("places_changed", function() {
                 let color;
                 if (station.available_bikes === 0) {
                     color = "red";
-                    pinImageUrl = "red_bike.png"
+                    pinImageUrl = "../static/red_bike.png"
                 } else if (station.available_bikes > 0 && station.available_bikes <= 5) {
                     color = "yellow";
-                    pinImageUrl = "yellow_bike.png"
+                    pinImageUrl = "../static/yellow_bike.png"
                 } else {
                     color = "green";
-                    pinImageUrl = "green_bike.png"
+                    pinImageUrl = "../static/green_bike.png"
                 }
 
                 // Creating a colored pin
@@ -411,7 +412,7 @@ function fetchNearestStations(lat, lng) {
                              content = `
                            
        
-                            <h3>Additioinal Info</h3>
+                            <h3>Additional Info</h3>
                             <p>Availible Stands: ${availability.available_bike_stands}</p>
                             <p>Status: ${availability.status}</p>
                             
@@ -426,7 +427,7 @@ function fetchNearestStations(lat, lng) {
                                 content = `
                            
        
-                                <h3>Additioinal Info</h3>
+                                <h3>Additional Info</h3>
                                 <p>Availible Stands: ${availability.available_bike_stands}</p>
                                 <p>Status: ${availability.status}</p>
                                 
@@ -673,14 +674,14 @@ async function openNav(stationNumber) {
     // Create available bikes container
     const bikeContainer = document.createElement('div');
     bikeContainer.classList.add('info-container');
-    bikeContainer.innerHTML = `<img src="bike.png" alt="Bike Icon"> <p>Available Bikes: ${stationData.available_bikes}</p>`;
+    bikeContainer.innerHTML = `<img src="../static/bike.png" alt="Bike Icon"> <p>Available Bikes: ${stationData.available_bikes}</p>`;
     infoWrapper.appendChild(bikeContainer);
 
     // Create banking info container
     const bankingContainer = document.createElement('div');
     bankingContainer.classList.add('info-container');
     const bankingInfo = stationData.banking ? 'Banking Available' : 'No Banking';
-    bankingContainer.innerHTML = `<img src="card.png" alt="Card Icon"> <p>${bankingInfo}</p>`;
+    bankingContainer.innerHTML = `<img src="../static/card.png" alt="Card Icon"> <p>${bankingInfo}</p>`;
     infoWrapper.appendChild(bankingContainer);
 
     // Append the info wrapper to the main container
