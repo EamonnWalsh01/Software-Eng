@@ -3,6 +3,7 @@ let end = {}
 let extraend ={}
 let markers = {};
 let daylight = true;
+//initiaises map from google maps api and pushes elements onto map 
 function initMap() {
    
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -330,13 +331,7 @@ function initMap() {
         
             
 }
-function endDest(){
-    if (document.getElementById('pac-input2').style.display == 'none'){
-    document.getElementById('pac-input2').style.display = 'block';
-}else{
-    document.getElementById('pac-input2').style.display = 'none'
-}
-}
+
 //gets the nearest 5 stations to the seach query
 function fetchNearestStations(lat, lng) {
     const sidebar = document.getElementById("sidebar");
@@ -436,6 +431,7 @@ function fetchNearestStations(lat, lng) {
             });
         ;
 }
+// used to update the markers outside init map function 
 function updateMarker(number, available_bikes, pinImageUrl) {
     if (markers[number]) {
         // Assuming markers[number] is a Google Maps Marker instance
@@ -456,7 +452,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
         });
     }
 }
-
+//takes the input and then changes the images of the stations according to the predicted availible bikes for that time
 
 async function recolour() {
     document.getElementById('progressContainer').style.display = 'block';
@@ -529,7 +525,7 @@ async function recolour() {
         }, 2000);
     });
 }
-
+//resets the bike images to last updated time and changes the progress bar
 function resetCol() {
     document.getElementById('progressContainer').style.display = 'block';
     document.getElementById('progressBar').style.width = '20%'
@@ -575,7 +571,7 @@ function resetCol() {
         .catch(error => console.error('Error fetching stations:', error));  // Error handling
 }
 
-
+//allows the website to take into account daylight savings time 
 function daylightSavings(){
     const startDate = new Date('2024-03-31');
     const endDate = new Date('2024-10-27');
@@ -928,7 +924,7 @@ async function predictByDateTime(stationNumber, dateTime) {
     }
 }
 
-
+//recolours the website weather box when called
 
 function weathercolour(time, sunrise, sunset) {
     let weatherBox = document.getElementById("weatherbox");
