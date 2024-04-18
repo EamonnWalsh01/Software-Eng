@@ -30,21 +30,24 @@ function initMap() {
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
 
-    let secondInput = document.getElementById('pac-input2')
+
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
     let settingFlag = 0;
     let opencloseFlag = 0;
     let currentInfowindow = null;
+
     let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
-    let secondSearchBox = new google.maps.places.SearchBox(secondInput);
+
+   
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
     let slider = document.getElementById("myRange");
-    let clock = document.getElementById("section");
+      
     let timeSetting=document.getElementById("timeSet");
+
     
     //Limit Dates to range of weather predictions
     //Set Minimum Date as today
@@ -64,7 +67,7 @@ function initMap() {
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(clock);
+
     const now = new Date();
     const minutes = now.getMinutes()+now.getHours()*60;
     
@@ -83,6 +86,7 @@ function initMap() {
     `;  
        document.getElementById('weatherInfo').innerHTML = contentWeather;
        let daylight=true;
+       let containers=document.getElementById('weatherbox');
        let temp=(Math.round(data[0]['temp']-273.15)).toString()+"&deg;C";
        document.getElementById('temperature').innerHTML=temp;
        let currentWeather=data[0]['weatherid'];
@@ -110,14 +114,14 @@ function initMap() {
         }else if(currentWeather==803 || currentWeather==804){
             image.src="../static/weathericons/broken_clouds.png";
         }
-        }else if(currentWeather>=700){
-            if(currentWeather<=761||currentWeather==771){
+    }else if(currentWeather>=700){
+        if(currentWeather<=761||currentWeather==771){
                 image.src="../static/weathericons/mist.png";
-            }else if(currentWeather==762){
+        }else if(currentWeather==762){
                 image.src="../static/weathericons/ash.png";
-            }else{
+        }else{
                 image.src="../static/weathericons/tornado.png";
-            }
+        }
     }else if(currentWeather>=600){
         image.src="../static/weathericons/snow.png";
     }else if(currentWeather>=500){
@@ -145,37 +149,16 @@ function initMap() {
         searchBox.setBounds(map.getBounds());
     });
     
-secondSearchBox.addListener("places_changed", function() {
-        const places = secondSearchBox.getPlaces();
-        if (places.length == 0) return;
-        const place = places[0];
-        if (!place.geometry) return;
 
-        extraend = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
-        calculateAndDisplayRoute(directionsService, directionsRenderer, start,end, extraend);
-        const bounds = new google.maps.LatLngBounds();
-        
-        bounds.union(place.geometry.viewport);
-        map.fitBounds(bounds);
-        places.forEach(place => {
-            if (!place.geometry) return;
-            if (place.geometry.viewport) {
-                bounds.union(place.geometry.viewport);
-            } else {
-                bounds.extend(place.geometry.location);
-            }
-            
-           
-            fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
-        });
-       
-    });
     searchBox.addListener("places_changed", function() {
         const places = searchBox.getPlaces();
         const place = places[0];
         if (!place.geometry) return;
         start = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
-        calculateAndDisplayRoute(directionsService, directionsRenderer, start, end,extraend);
+        if(end){
+            calculateAndDisplayRoute(directionsService, directionsRenderer, start, end);
+        }
+       
         if (places.length === 0) return;
 
         const bounds = new google.maps.LatLngBounds();
@@ -269,7 +252,8 @@ secondSearchBox.addListener("places_changed", function() {
                             infowindow.open(map, marker);
                             currentInfowindow = infowindow;
                              end = { lat: station.position_lat, lng:station.position_lng };
-                            calculateAndDisplayRoute(directionsService, directionsRenderer, start, end);
+                             if (start){ calculateAndDisplayRoute(directionsService, directionsRenderer, start, end);}
+                         
                         });
                 });
                 
@@ -353,16 +337,24 @@ function endDest(){
     document.getElementById('pac-input2').style.display = 'none'
 }
 }
+//gets the nearest 5 stations to the seach query
 function fetchNearestStations(lat, lng) {
+    const sidebar = document.getElementById("sidebar");
+    //removing siderbar child elements before adding the next on search 
+
+    while (sidebar.firstChild) {
+        sidebar.removeChild(sidebar.firstChild);
+    }
     fetch(`/nearest-stations?lat=${lat}&lng=${lng}`)
         .then(response => response.json())
         .then(stations => {
-            const sidebar = document.getElementById("sidebar");
+          
             
             
             stations.forEach(station => {
                 const element = document.createElement("div");
                 element.className = 'station-info';
+                console.log(station)
                 const nameElement = document.createElement("div");
                 nameElement.className = 'station-name';
                 nameElement.textContent = `Name: ${station.name}`;
@@ -430,8 +422,10 @@ function fetchNearestStations(lat, lng) {
                             infoElement.innerHTML = content;
                             if (infoElement.style.display=='block'){
                                 infoElement.style.display = 'None';
+                                console.log("hello5");
                             }else{
                                 infoElement.style.display = 'block';
+                                console.log("hello1");
                             }
                             
 
@@ -594,24 +588,18 @@ function daylightSavings(){
 
     return currentDate >= startDate && currentDate <= endDate;
 }
-function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end, extraEndPoint) {
+function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
     // Define the waypoints array
-    let waypoints = [];
+
     
     // If there is an extra end point, add it to the waypoints array
     // Ensure extraEndPoint is either a string or a LatLng/LatLngLiteral object
-    if (extraEndPoint) {
-        waypoints.push({
-            location: extraEndPoint,  // Make sure this is a valid string, LatLng, or LatLngLiteral
-            stopover: true  // `stopover` is true if you want the route to stop at this waypoint
-        });
-    }
-
+  
     // Configure the route with waypoints
     directionsService.route({
         origin: start,
         destination: end,
-        waypoints: waypoints, // Include the waypoints in the route
+        // Include the waypoints in the route
         optimizeWaypoints: true, // Optionally optimize the order of the waypoints
         travelMode: google.maps.TravelMode.WALKING
     },
