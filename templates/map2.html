@@ -1,78 +1,61 @@
 <!DOCTYPE html>
 <html lang ="en">
-<head>
-    <!-- <link rel="stylesheet" href="mapStyles.css" > -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='mapStyles.css') }}"
-    />
-    <title>Bike?</title>
-    <!-- <link rel="icon" type="image/x-icon" href="favicon.png"> -->
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='mapStyles.css') }}">
+        <title>Bike?</title>
+        <meta charset="UTF-8">
+        <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='green_bike.png') }}">
 
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="{{ url_for('static', filename='green_bike.png') }}"
-    />
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.0.0"></script>
+        <script src="{{ url_for('static', filename='Station.js') }}"></script>
+        <script> 
+            window.onload = initMap;
+        </script> 
+    </head>
+    <body>
+        <div id  = "weatherbox">
+            <img id  = "weatherimg" href="{{ url_for('static', filename='green_bike.png') }}" alt="">
+            <div id = "weatherInfo"></div>
+            <div id="temperature"></div>
+        </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places"></script>
-   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.0.0"></script>
+        <div id ="settingsWheel">
+            <div id="timeBox">Live</div>
+            <form id="timeSet">
+                <div id = 'dateInput'>
+                    <label for="predDate">Date:</label>
+                    <input type="date" id="predDate" name="dateInput">
+                </div>
+                <div id = timeInput>
+                    <label for="predTime">Time:</label>
+                    <input type="time" id="predTime" name="timeInput">
+                </div>
+                <button type="button" onclick="recolour()">Submit</button>
+                <button type="button" id="reset" onclick="resetCol()">Reset Date</button>
+                <button type="button" id="addDestination" onclick="endDest()">Add Destination</button>
+                <div id="progressContainer">
+                    <div id="progressBar"></div>
+                </div>
+            </form>
+        </div>
 
-<!-- <script src="Station.js"></script> -->
-<script src="{{ url_for('static', filename='Station.js') }}"></script>
-<script> 
-    window.onload = initMap;
-</script> 
-
-</head>
-<body>
-
-
-<div id  = "weatherbox">
-    
-    <img id  = "weatherimg" href="{{ url_for('static', filename='green_bike.png') }}" alt="">
-    <div id = "weatherInfo"></div>
-    <div id="temperature"></div>
-</div>
-    <div id ="settingsWheel">
-        <div id="timeBox">Live</div>
-        
-        <form id="timeSet">
-            <div id = 'dateInput'><label for="predDate">Date:</label>
-                <input type="date" id="predDate" name="dateInput"></div>
-            <div id = timeInput><label for="predTime">Time:</label>
-                <input type="time" id="predTime" name="timeInput"></div>
-            
-            <button type="button" onclick="recolour()">Submit</button>
-            <button type="button" id="reset" onclick="resetCol()">Reset Date</button>
-            <button type="button" id="addDestination" onclick="endDest()">Add Destination</button>
-            <div id="progressContainer">
-                <div id="progressBar"></div>
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+        <div id = "mapbox">
+            <div id = "openClose"><img href="{{ url_for('static', filename='weathericons/ash.png') }}" id="settingIMG" alt=""></div>
+            <div id="sidebar"><span id="close">&times;</span></div>
+            <div id="map" ></div>
+            <div id="graphArea" class="graphArea">
+                <div id="station-container"></div>
+                <div class="button-container">
+                    <button class="sidebar-btn" id="historicalDataBtn">Historical Data</button>
+                    <button class="sidebar-btn" id="predictiveDataBtn">Predictive Data</button>
+                </div>
+                <div id="dataContainer"></div>
             </div>
-        </form>
-        
-    </div>
-
-  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-   
-    <div id = "mapbox">
-    <div id = "openClose"><img href="{{ url_for('static', filename='weathericons/ash.png') }}" id="settingIMG" alt=""></div>
-    <div id="sidebar"><span id="close">&times;</span></div>
-    <div id="map" ></div>
-    <div id="graphArea" class="graphArea">
-      
-      <div id="station-container"></div>
-      <div class="button-container">
-        <button class="sidebar-btn" id="historicalDataBtn">Historical Data</button>
-        <button class="sidebar-btn" id="predictiveDataBtn">Predictive Data</button>
-      </div>
-      <div id="dataContainer"></div>
-    </div>
-</div>
-
-</body>
+        </div>
+    </body>
 </html>
