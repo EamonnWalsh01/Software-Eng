@@ -6,17 +6,14 @@ import requests
 import datetime
 import configparser
 import time
-import json
 
 #Connection credentials
 Base = declarative_base()
 config = configparser.ConfigParser()
-config.read('configbc.ini')
+config.read('config.ini')
 db_config = config['database']
 api_config=config['weather_api']
 
-# API key 
-api_key = 'ca224502e7a2a285e6b4bf2e73ddf465'
 
 class Weather(Base):
     __tablename__ = 'weather'
@@ -49,7 +46,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 def get_weather_data(longitude, latitude):
-    url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}'
+    url = f'http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_config["api_key"]}'
 
     # Make the GET request to the OpenWeatherMap API
     response = requests.get(url)

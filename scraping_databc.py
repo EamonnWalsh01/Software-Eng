@@ -6,11 +6,10 @@ import requests
 import datetime
 import configparser
 import time
-import json
 
 Base = declarative_base()
 config = configparser.ConfigParser()
-config.read('configbc.ini')
+config.read('config.ini')
 db_config = config['database']
 api_config = config['api']
 

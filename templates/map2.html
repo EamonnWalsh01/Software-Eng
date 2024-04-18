@@ -14,23 +14,17 @@
       type="image/x-icon"
       href="{{ url_for('static', filename='green_bike.png') }}"
     />
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap"></script>
+<script src="{{ url_for('static', filename='Station.js') }}"></script>
+    
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.0.0"></script>
 
 <!-- <script src="Station.js"></script> -->
-<script src="{{ url_for('static', filename='Station.js') }}"></script>
 
-<script>
-    
-    window.onload = initMap;
-    
-;
 
-</script>
+
 </head>
 <body>
 
@@ -76,6 +70,9 @@
       <div id="dataContainer"></div>
     </div>
 </div>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGt7MdElvTciHNpTRVsfFDJxROeldPayU&libraries=places&callback=initMap"></script>
+<script> 
+    window.onload = initMap;
+</script>
 </body>
 </html>

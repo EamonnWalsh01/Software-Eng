@@ -13,7 +13,7 @@ import time
 app = Flask("__name__", template_folder="templates", static_folder="static")
 
 config = configparser.ConfigParser()
-config.read('configbc.ini')
+config.read('config.ini')
 db_config = config['database']
 
 weather_api = config['weather_api']['api_key']
