@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from sqlalchemy import create_engine, text
 import configparser
 import json
@@ -10,7 +10,7 @@ import numpy as np
 import requests
 import time
 
-app = Flask(__name__, static_url_path='')
+app = Flask("__name__", template_folder="templates", static_folder="static")
 
 config = configparser.ConfigParser()
 config.read('configbc.ini')
@@ -315,7 +315,7 @@ def get_day_of_week(month, day):
 
 @app.route('/')
 def index():
-    return app.send_static_file('map2.html')
+    return render_template('map2.html')
 
 if __name__=="__main__":
     app.run(debug=True, host="0.0.0.0",port=8080)
