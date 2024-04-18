@@ -146,7 +146,6 @@ def current_weather():
 
         result = connection.execute(query, params)  # Pass parameters dictionary as the second argument
         nearest_weather = [dict(row) for row in result.mappings()]
-        print(nearest_weather)
         return jsonify(nearest_weather)
     
 
@@ -175,7 +174,6 @@ def get_station(station_number):
 
 @app.route('/data/predictive/<int:number>/<int:month>/<int:day>')
 def predict(number,month,day):
-    print('station',month,day)
     # Get input data from the request
     model_path = 'models/model'+str(number)+'.pkl'
     with open(model_path, 'rb') as file:
@@ -188,12 +186,21 @@ def predict(number,month,day):
     forecast = get_weather_forecast(lat,lon)
     day_forecast = filter_forecast_for_day(forecast, day, month)
     
+    current_year = datetime.now().year
+    date_object = datetime(current_year, month, day)
+    start_timestamp = date_object.timestamp()
+    end_timestamp  = start_timestamp  + 86400
+
+    if(start_timestamp  < int(time.time())):
+        start_timestamp  = int(time.time())
+
     predictions_list = []
-    for data in day_forecast:
+    for timestamp in range(int(start_timestamp), int(end_timestamp), 600):
+        closest_forecast = min(day_forecast, key=lambda x: abs(x['time'] - timestamp))
 
         input_data = {
             'number': [number],
-            'time_as_fraction': [int(data.get('time'))/86400],
+            'time_as_fraction': [timestamp/86400],
             'month': [month],
             'day': [day],
             'day_of_week_0': day_of_week[0],
@@ -203,26 +210,29 @@ def predict(number,month,day):
             'day_of_week_4': day_of_week[4],
             'day_of_week_5': day_of_week[5],
             'day_of_week_6': day_of_week[6],
-            'temp': [data.get('temp')],
-            'feels_like': [data.get('feels_like')] 
+            'temp': [closest_forecast.get('temp')],
+            'feels_like': [closest_forecast.get('feels_like')],
+            'rain_1h': [closest_forecast.get('rain_1h')], 
+            'wind_speed': [closest_forecast.get('wind')],
+            'weatherid': [closest_forecast.get('weatherid')]
         }
+        
 
         # Convert the input data into a pandas DataFrame
         df = pd.DataFrame.from_dict(input_data)
         predictions = model.predict(df)
         predictions_list.append({
-            'time': data.get('time'),
+            'time': timestamp,
             'availability': predictions.tolist()[0]
             })
 
-    # Print the prediction
-    print(predictions_list)
+    
     return jsonify(predictions_list)
 
 
 @app.route('/data/predictivetime/<int:number>/<int:month>/<int:day>/<int:seconds>')
 def predict_by_time(number,month,day,seconds):
-    print('station',month,day)
+    
     # Get input data from the request
     model_path = 'models/model'+str(number)+'.pkl'
     with open(model_path, 'rb') as file:
@@ -234,8 +244,13 @@ def predict_by_time(number,month,day,seconds):
     day_of_week = get_day_of_week(month, day)
     forecast = get_weather_forecast(lat,lon)
     closest_data = min(forecast['list'], key=lambda x: abs(int(x['dt']) - seconds), default=None)
+    
     temp = closest_data['main']['temp']
     feels_like = closest_data['main']['feels_like']
+
+    rain_1h = closest_data.get('rain', {}).get('3h', 0)/3
+    wind_speed = closest_data.get('wind', {}).get('speed', 0)
+    weatherid = closest_data.get('weather', [{}])[0].get('id', None)
     
     
 
@@ -252,7 +267,10 @@ def predict_by_time(number,month,day,seconds):
         'day_of_week_5': day_of_week[5],
         'day_of_week_6': day_of_week[6],
         'temp': [temp],
-        'feels_like': [feels_like] 
+        'feels_like': [feels_like],
+        'rain_1h': [rain_1h], 
+        'wind_speed': [wind_speed],
+        'weatherid': [weatherid] 
     }
 
     # Convert the input data into a pandas DataFrame
@@ -261,7 +279,6 @@ def predict_by_time(number,month,day,seconds):
     
     predictions = predictions.tolist()
     predictions[0] = int(predictions[0])
-    # 
     return jsonify(predictions)
 
 def get_weather_forecast(lat,lon):
@@ -295,12 +312,18 @@ def filter_forecast_for_day(data, day, month):
             forecast_time = forecast['dt']
             temp = forecast['main']['temp']
             feels_like = forecast['main']['feels_like']
+            rain_1h = forecast.get('rain', {}).get('3h', 0)/3
+            wind_speed = forecast.get('wind', {}).get('speed', 0)
+            weatherid = forecast.get('weather', [{}])[0].get('id', None)
             
             # Append to the results list
             filtered_forecasts.append({
                 'time': forecast_time,
                 'temp': temp,
-                'feels_like': feels_like
+                'feels_like': feels_like,
+                'rain_1h': rain_1h,
+                'wind': wind_speed,
+                'weatherid': weatherid
             })
 
     return filtered_forecasts

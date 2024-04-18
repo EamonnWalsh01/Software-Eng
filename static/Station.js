@@ -1,6 +1,8 @@
 let start = {}
 let end = {}
+let extraend ={}
 let markers = {};
+let daylight = true;
 function initMap() {
    
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -28,7 +30,7 @@ function initMap() {
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
 
-   
+    let secondInput = document.getElementById('pac-input2')
     // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
     // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
     let settingFlag = 0;
@@ -38,7 +40,7 @@ function initMap() {
     let openClose = document.getElementById("openClose");
     let input = document.getElementById("pac-input");
     let settingsIMG = document.getElementById("settingIMG");
-    
+    let secondSearchBox = new google.maps.places.SearchBox(secondInput);
     let searchBox = new google.maps.places.SearchBox(input);
     let weatherBox = document.getElementById("weatherbox");
     let settingsCog = document.getElementById("settingsWheel");
@@ -149,12 +151,37 @@ function initMap() {
         searchBox.setBounds(map.getBounds());
     });
     
+secondSearchBox.addListener("places_changed", function() {
+        const places = secondSearchBox.getPlaces();
+        if (places.length == 0) return;
+        const place = places[0];
+        if (!place.geometry) return;
+
+        extraend = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+        calculateAndDisplayRoute(directionsService, directionsRenderer, start,end, extraend);
+        const bounds = new google.maps.LatLngBounds();
+        
+        bounds.union(place.geometry.viewport);
+        map.fitBounds(bounds);
+        places.forEach(place => {
+            if (!place.geometry) return;
+            if (place.geometry.viewport) {
+                bounds.union(place.geometry.viewport);
+            } else {
+                bounds.extend(place.geometry.location);
+            }
+            
+           
+            fetchNearestStations(place.geometry.location.lat(), place.geometry.location.lng());
+        });
+       
+    });
     searchBox.addListener("places_changed", function() {
         const places = searchBox.getPlaces();
         const place = places[0];
         if (!place.geometry) return;
         start = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
-        calculateAndDisplayRoute(directionsService, directionsRenderer, start, end);
+        calculateAndDisplayRoute(directionsService, directionsRenderer, start, end,extraend);
         if (places.length === 0) return;
 
         const bounds = new google.maps.LatLngBounds();
@@ -185,7 +212,7 @@ function initMap() {
         duration: 500 
     });opencloseFlag = 1;
     });
-
+   
     fetch('/stations')
         .then(response => response.json())
         
@@ -216,7 +243,7 @@ function initMap() {
                     number:station.number,
                     icon: {
                         url: pinImageUrl, 
-                        scaledSize: new google.maps.Size(150, 150), 
+                        scaledSize: new google.maps.Size(100, 100), 
                     },
                     
                 } );
@@ -258,6 +285,7 @@ function initMap() {
        
        
         timeBox.addEventListener('click',function(){
+            console.log('ass');
             if (settingFlag == 0){
                 settingFlag = 1;
                 timeSetting.style.display='flex';
@@ -323,50 +351,16 @@ function initMap() {
                 });
             }
         })
-        updateTime.addEventListener('click',function(){  // Assuming stationNumbers is an array of station IDs/numbers you want predictions for
-            console.log(predTime);
-            const stationNumbers = Array.from({length: 117}, (x, i) => i); // Example station numbers, replace with your actual data source
-            
-            let predTimeValue = predTime.value;
-            console.log(predTimeValue);
-            let predDateValue = predDate.value;
-            const today = predTimeValue;
-            const month = today.getMonth() + 1; // JavaScript months are 0-based
-            const day = today.getDate();
-            const seconds = predTimeValue.getHours() * 3600 + predTimeValue.getMinutes() * 60 + predTimeValue.getSeconds();
-            console.log(today,seconds);
-            for (let number of stationNumbers) {
-                const url = `/data/predictivetime/${number}/${month}/${day}/${seconds}`;
-                
-                try {
-                    const response =  fetch(url);
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    const predictions = response.json();
-                    // Assuming predictions is an array with a single item for the predicted number of bikes
-                    const available_bikes = predictions[0];
         
-                    let pinImageUrl;
-                    if (available_bikes === 0) {
-                        pinImageUrl = "red_bike.png";
-                    } else if (available_bikes > 0 && available_bikes <= 5) {
-                        pinImageUrl = "yellow_bike.png";
-                    } else {
-                        pinImageUrl = "green_bike.png";
-                    }
-        
-                    // Assuming you have a function to update or create a marker for a station
-                    updateMarker(number, available_bikes, pinImageUrl);
-                } catch (error) {
-                    console.error('Failed to fetch prediction:', error);
-                }
-            }})
-            var date = document.getElementById('dateInput').value;
-    
             
 }
-
+function endDest(){
+    if (document.getElementById('pac-input2').style.display == 'none'){
+    document.getElementById('pac-input2').style.display = 'block';
+}else{
+    document.getElementById('pac-input2').style.display = 'none'
+}
+}
 function fetchNearestStations(lat, lng) {
     fetch(`/nearest-stations?lat=${lat}&lng=${lng}`)
         .then(response => response.json())
@@ -410,17 +404,38 @@ function fetchNearestStations(lat, lng) {
                     fetch(`/availability/${station.number}`)
                         .then(response => response.json())
                         .then(availability => {
-                            let content = `
+                            const lastUpdateDate = new Date(availability.last_update);
+
+                            let content =''
+                            if(!daylight){
+                             content = `
                            
        
                             <h3>Additioinal Info</h3>
                             <p>Availible Stands: ${availability.available_bike_stands}</p>
                             <p>Status: ${availability.status}</p>
-                            <p>Last Update: ${new Date(availability.last_update).toLocaleString()}</p>
+                            
+                            <p>Last Update: ${lastUpdateDate.toLocaleString()}</p>
                         
                     
 
-                            `;
+                            `;}
+                            else{
+                                lastUpdateDate.setHours(lastUpdateDate.getHours() + 1); // Adding one hour
+
+                                content = `
+                           
+       
+                                <h3>Additioinal Info</h3>
+                                <p>Availible Stands: ${availability.available_bike_stands}</p>
+                                <p>Status: ${availability.status}</p>
+                                
+                                <p>Last Update: ${lastUpdateDate.toLocaleString()}</p>
+                            
+                        
+    
+                                `;  
+                            }
                             infoElement.innerHTML = content;
                             if (infoElement.style.display=='block'){
                                 infoElement.style.display = 'None';
@@ -443,7 +458,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
         // Assuming markers[number] is a Google Maps Marker instance
         markers[number].setIcon({
             url: pinImageUrl,
-            scaledSize: new google.maps.Size(150, 150) // Adjust size as needed
+            scaledSize: new google.maps.Size(100, 100) // Adjust size as needed
         });
         // Optional: update title or other marker properties here
     } else {
@@ -453,7 +468,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
             map: map,
             icon: {
                 url: pinImageUrl,
-                scaledSize: new google.maps.Size(150, 150) // Adjust size as needed
+                scaledSize: new google.maps.Size(100, 100) // Adjust size as needed
             }
         });
     }
@@ -461,6 +476,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
 
 
 async function recolour() {
+    document.getElementById('progressContainer').style.display = 'block'
     console.log('Starting recolour process...');
     const stationNumbers = Array.from({length: 117}, (_, i) => i); 
     console.log(stationNumbers);
@@ -505,6 +521,7 @@ async function recolour() {
                     error: `Fetch failed: ${error.message || error}`
                 };
             });;
+            
     });
     document.getElementById('progressBar').style.width = `50%`;
     const results = await Promise.allSettled(fetchPromises);
@@ -528,11 +545,16 @@ async function recolour() {
         setTimeout(() => {
             document.getElementById('progressBar').style.width = '0%';
             console.log('Progress bar reset to 0%');
+            // Nesting the timeout for hiding the progress container inside the first timeout
+            setTimeout(() => {
+                document.getElementById('progressContainer').style.display = 'none';
+            }, 2000);  // Additional delay to ensure the progress bar shrinking is seen
         }, 2000);
     });
 }
 
-function resetbitches() {
+function resetCol() {
+    document.getElementById('progressContainer').style.display = 'block'
     console.log("station resetting");
     document.getElementById('progressBar').style.width = '20%'
     return fetch('/stations')
@@ -570,29 +592,58 @@ function resetbitches() {
             setTimeout(() => {
                 document.getElementById('progressBar').style.width = '0%';
                 console.log('Progress bar reset to 0%');
+                // Nesting the timeout for hiding the progress container inside the first timeout
+                setTimeout(() => {
+                    document.getElementById('progressContainer').style.display = 'none';
+                }, 2000);  // Additional delay to ensure the progress bar shrinking is seen
             }, 2000);
         })
         .catch(error => console.error('Error fetching stations:', error));  // Error handling
 }
 
 
+function daylightSavings(){
+    const startDate = new Date('2024-03-31');
+    const endDate = new Date('2024-10-27');
+    const currentDate = new Date();
 
-function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
-    directionsService.route(
-        {
-            origin: start,
-            destination: end,
-            travelMode: google.maps.TravelMode.WALKING 
-        },
-        (response, status) => {
-            if (status === google.maps.DirectionsStatus.OK) {
-                directionsRenderer.setDirections(response);
-            } else {
-                window.alert('Directions request failed due to ' + status);
-            }
-        }
-    );
+    // Clear time components to focus only on the date part
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+
+    return currentDate >= startDate && currentDate <= endDate;
 }
+function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end, extraEndPoint) {
+    // Define the waypoints array
+    let waypoints = [];
+    
+    // If there is an extra end point, add it to the waypoints array
+    // Ensure extraEndPoint is either a string or a LatLng/LatLngLiteral object
+    if (extraEndPoint) {
+        waypoints.push({
+            location: extraEndPoint,  // Make sure this is a valid string, LatLng, or LatLngLiteral
+            stopover: true  // `stopover` is true if you want the route to stop at this waypoint
+        });
+    }
+
+    // Configure the route with waypoints
+    directionsService.route({
+        origin: start,
+        destination: end,
+        waypoints: waypoints, // Include the waypoints in the route
+        optimizeWaypoints: true, // Optionally optimize the order of the waypoints
+        travelMode: google.maps.TravelMode.WALKING
+    },
+    (response, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+            directionsRenderer.setDirections(response);
+        } else {
+            window.alert('Directions request failed due to ' + status);
+        }
+    });
+}
+
 async function openNav(stationNumber) {
     // Use Anime.js to animate opening the sidebar
     anime({
@@ -915,27 +966,24 @@ async function predictByDateTime(stationNumber, dateTime) {
 
 
 
- function weathercolour(time,sunrise,sunset) {
-    
+function weathercolour(time, sunrise, sunset) {
     let weatherBox = document.getElementById("weatherbox");
-    console.log(time)
-    console.log(sunrise)
-    console.log(sunset)
+    console.log(time);
+    console.log(sunrise);
+    console.log(sunset);
     let minutes = time;
     let angle;
 
-    // Determine the angle based on whether the time is in the first or second half of the day
-    if (minutes <= sunset&&minutes>=sunrise) {
-        // Map 0-720 minutes to 135-45 degrees
-        angle = 135 + (90 * (minutes / 720));
+    if (minutes >= sunrise && minutes <= sunset) {
+        angle = 135 + (90 * ((minutes - sunrise) / (sunset - sunrise)));
+    } else if (minutes > sunset && minutes <= 1440) {
+        angle = 135 + (90 * ((minutes - sunset) / (1440 - sunset)));
     } else {
-        // Reset at 720 minutes and map 721-1440 minutes back from 135 to 45 degrees
-        angle = 135 + (90 * ((minutes - 720) / 720));
+        angle = 225 - (90 * (minutes / sunrise));
     }
 
-    // Set the gradient style based on time of day, choosing different colors if needed
     let gradientStyle;
-    if (minutes <= 720) {
+    if (minutes >= sunrise && minutes <= sunset) {
         gradientStyle = `linear-gradient(${angle}deg, #f9d71c 0%, #00bfff 40%, #00bfff 60%)`;
     } else {
         gradientStyle = `linear-gradient(${angle}deg, #adadad 0%, #084080 40%, #084080 60%)`;
@@ -943,4 +991,4 @@ async function predictByDateTime(stationNumber, dateTime) {
 
     weatherBox.style.background = gradientStyle;
     console.log('Angle set to: ' + angle + ' degrees; Minutes: ' + minutes);
-};
+}
