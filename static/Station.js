@@ -135,7 +135,7 @@ function initMap() {
         }else if(currentWeather==511){
             image.src="../static/weathericons/snow.png";
         }else{
-            // image.src="weathericons/shower_rain.png";
+        
             image.src="../static/weathericons/shower_rain.png"
         }
     }else if(currentWeather>=300){
