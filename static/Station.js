@@ -622,13 +622,13 @@ function resetCol() {
                 let pinImageUrl; // Correctly scoped variable
                 if (station.available_bikes === 0) {
                     color = "red";
-                    pinImageUrl = "red_bike.png";
+                    pinImageUrl = "../static/red_bike.png";
                 } else if (station.available_bikes > 0 && station.available_bikes <= 5) {
                     color = "yellow";
-                    pinImageUrl = "yellow_bike.png";
+                    pinImageUrl = "../static/yellow_bike.png";
                 } else {
                     color = "green";
-                    pinImageUrl = "green_bike.png";
+                    pinImageUrl = "../static/green_bike.png";
                 }
 
                 // Here, you're correctly calling updateMarker but need to pass station.number
