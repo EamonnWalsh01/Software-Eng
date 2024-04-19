@@ -31,9 +31,6 @@ function initMap() {
     const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map); 
 
-
-    // const start = { lat: 53.3498, lng: -6.2603 }; // Example starting point
-    // const end = { lat: 53.342886, lng: -6.256853 }; // Example ending point
     let settingFlag = 0;
     let opencloseFlag = 0;
     let currentInfowindow = null;
@@ -64,7 +61,7 @@ function initMap() {
     
     
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(openClose);
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); // weatherBox is used before it's defined
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherBox); 
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(slider);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(settingsCog);
@@ -75,7 +72,7 @@ function initMap() {
     fetch(`/weather`)
     .then(response => response.json()) 
     .then(data => {
-        // Correctly accessing nested attributes
+       
        
         let contentWeather = `
        
@@ -474,20 +471,19 @@ function fetchNearestStations(lat, lng) {
 // used to update the markers outside init map function 
 function updateMarker(number, available_bikes, pinImageUrl) {
     if (markers[number]) {
-        // Assuming markers[number] is a Google Maps Marker instance
+      
         markers[number].setIcon({
             url: pinImageUrl,
-            scaledSize: new google.maps.Size(100, 100) // Adjust size as needed
+            scaledSize: new google.maps.Size(100, 100) 
         });
-        // Optional: update title or other marker properties here
-    } else {
-        // If marker doesn't exist, create it (assuming you have the position)
+        
+    } else { 
         markers[number] = new google.maps.Marker({
-            position: { /* position */ },
+            position: {},
             map: map,
             icon: {
                 url: pinImageUrl,
-                scaledSize: new google.maps.Size(100, 100) // Adjust size as needed
+                scaledSize: new google.maps.Size(100, 100) 
             }
         });
     }
@@ -503,7 +499,6 @@ async function recolour() {
     var predTimeValue = predTime.value;
     var predDateValue = predDate.value;
     var fullDateTime = new Date(predDateValue + 'T' + predTimeValue);
-    // Convert fixedDateTime to month, day, and seconds as needed for the URL
     const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
     const day = fullDateTime.getDate();
     const epochTime = fullDateTime.getTime();
@@ -518,7 +513,6 @@ async function recolour() {
             return response.json();
         })
             .then(data => {
-                // Assuming data is an array of predictions
                 // Find the prediction closest to the roundedEpochTime
                 
                 const closestPrediction = data.reduce((prev, curr) => {
@@ -558,7 +552,7 @@ async function recolour() {
         document.getElementById('progressBar').style.width = '100%';
         setTimeout(() => {
             document.getElementById('progressBar').style.width = '0%';
-            // Nesting the timeout for hiding the progress container inside the first timeout
+      
             setTimeout(() => {
                 document.getElementById('progressContainer').style.display = 'none';
             }, 2000);  // Additional delay to ensure the progress bar shrinking is seen
@@ -589,27 +583,18 @@ function resetCol() {
                     pinImageUrl = "green_bike.png";
                 }
 
-                // Here, you're correctly calling updateMarker but need to pass station.number
                 updateMarker(station.number, station.available_bikes, pinImageUrl);
                 
-                // Assuming 'markers' is a global array or object
-                // If updateMarker returns a marker, you should assign it here
-                // Example:
-                // markers[station.number] = updateMarker(station.number, station.available_bikes, pinImageUrl);
-
-                // If updateMarker doesn't return the marker and markers is handled elsewhere,
-                // ensure markers[station.number] assignment is correctly managed
+           
             });document.getElementById('progressBar').style.width = '100%';
             setTimeout(() => {
                 document.getElementById('progressBar').style.width = '0%';
-                // Nesting the timeout for hiding the progress container inside the first timeout
                 setTimeout(() => {
                     document.getElementById('progressContainer').style.display = 'none';
-                }, 2000);  // Additional delay to ensure the progress bar shrinking is seen
+                }, 2000);  
             }, 2000);
         })
-        .catch(error => console.error('Error fetching stations:', error));  // Error handling
-}
+        .catch(error => console.error('Error fetching stations:', error));  
 
 //allows the website to take into account daylight savings time 
 function daylightSavings(){
@@ -617,7 +602,6 @@ function daylightSavings(){
     const endDate = new Date('2024-10-27');
     const currentDate = new Date();
 
-    // Clear time components to focus only on the date part
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(0, 0, 0, 0);
     currentDate.setHours(0, 0, 0, 0);
@@ -625,17 +609,10 @@ function daylightSavings(){
     return currentDate >= startDate && currentDate <= endDate;
 }
 function calculateAndDisplayRoute(directionsService, directionsRenderer, start, end) {
-    // Define the waypoints array
 
-    
-    // If there is an extra end point, add it to the waypoints array
-    // Ensure extraEndPoint is either a string or a LatLng/LatLngLiteral object
-  
-    // Configure the route with waypoints
     directionsService.route({
         origin: start,
         destination: end,
-        // Include the waypoints in the route
         optimizeWaypoints: true, // Optionally optimize the order of the waypoints
         travelMode: google.maps.TravelMode.WALKING
     },
@@ -652,9 +629,9 @@ async function openNav(stationNumber) {
     // Use Anime.js to animate opening the sidebar
     anime({
         targets: '#graphArea',
-        width: '600px', // Sidebar width when open
-        easing: 'easeInOutQuad', // Animation easing function
-        duration: 500 // Duration of the animation in milliseconds
+        width: '600px', 
+        easing: 'easeInOutQuad', 
+        duration: 500 
     });
 
     
@@ -663,7 +640,7 @@ async function openNav(stationNumber) {
     const stationData = json_data[0];
 
     const container = document.getElementById('station-container');
-    container.innerHTML = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>'; // Clear the container before adding new content
+    container.innerHTML = '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>'; 
 
     // Create station name header
     const nameHeader = document.createElement('h1');
@@ -987,4 +964,5 @@ function weathercolour(time, sunrise, sunset) {
     }
 
     weatherBox.style.background = gradientStyle;
+}
 }
