@@ -481,7 +481,6 @@ function updateMarker(number, available_bikes, pinImageUrl) {
         });
         // Optional: update title or other marker properties here
     } else {
-        // If marker doesn't exist, create it (assuming you have the position)
         markers[number] = new google.maps.Marker({
             position: { /* position */ },
             map: map,
@@ -498,7 +497,7 @@ async function recolour() {
     document.getElementById('progressContainer').style.display = 'block';
     const stationNumbers = Array.from({length: 117}, (_, i) => i + 1);
     document.getElementById('progressBar').style.width = '20%';
-    // Example fixed date and time, replace with your actual values
+  
     var x = 0;
     var predTimeValue = predTime.value;
     var predDateValue = predDate.value;
@@ -589,16 +588,8 @@ function resetCol() {
                     pinImageUrl = "../static/green_bike.png";
                 }
 
-                // Here, you're correctly calling updateMarker but need to pass station.number
                 updateMarker(station.number, station.available_bikes, pinImageUrl);
                 
-                // Assuming 'markers' is a global array or object
-                // If updateMarker returns a marker, you should assign it here
-                // Example:
-                // markers[station.number] = updateMarker(station.number, station.available_bikes, pinImageUrl);
-
-                // If updateMarker doesn't return the marker and markers is handled elsewhere,
-                // ensure markers[station.number] assignment is correctly managed
             });document.getElementById('progressBar').style.width = '100%';
             setTimeout(() => {
                 document.getElementById('progressBar').style.width = '0%';
