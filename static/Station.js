@@ -491,7 +491,48 @@ function updateMarker(number, available_bikes, pinImageUrl) {
         });
     }
 }
-//takes the input and then changes the images of the stations according to the predicted availible bikes for that time
+
+
+async function recolourBikes() {
+    var predTimeValue = predTime.value;
+    var predDateValue = predDate.value;
+    var fullDateTime = new Date(predDateValue + 'T' + predTimeValue);
+    // Convert fixedDateTime to month, day, and seconds as needed for the URL
+    const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
+    const day = fullDateTime.getDate();
+    if(!month){
+        alert("Please enter a valid date and time within the next 5 days");
+        return;
+    }
+    if(!day){
+        alert("Please enter a valid date and time within the next 5 days");
+        return;
+    }
+    const epochTime = fullDateTime.getTime()/1000;
+
+    const currentTime = Date.now()/1000;
+
+    // Calculate the epoch time for 5 days from now
+    const fiveDaysFromNow = currentTime + (5 * 24 * 60 * 60)
+    if (epochTime >= fiveDaysFromNow || epochTime <= currentTime) {
+        alert('Please select a date and time within the next 5 days.');
+        return;
+    }
+
+    const response = await fetch(`/stations`);
+    const jsonData = await response.json();
+    let x = 0;
+    for (let station in jsonData) {
+        x+=1;
+        const stations_response = await fetch(`/data/predictivetime/${jsonData[station].number}/${month}/${day}/${epochTime}`);
+        const predictions = await stations_response.json();
+        const available_bikes = Math.round(predictions[0]);
+        let pinImageUrl = available_bikes === 0 ? "../static/red_bike.png" : available_bikes > 0 && available_bikes <= 5 ? "../static/yellow_bike.png" : "../static/green_bike.png";
+        updateMarker(jsonData[station].number, available_bikes, pinImageUrl);
+        document.getElementById('progressBar').style.width = `${x/ 117* 100}%`;
+    }
+
+}
 
 async function recolour() {
     document.getElementById('progressContainer').style.display = 'block';
@@ -501,6 +542,7 @@ async function recolour() {
     var x = 0;
     var predTimeValue = predTime.value;
     var predDateValue = predDate.value;
+    console.log(predTimeValue);
     var fullDateTime = new Date(predDateValue + 'T' + predTimeValue);
     // Convert fixedDateTime to month, day, and seconds as needed for the URL
     const month = fullDateTime.getMonth()+1; // JavaScript months are 0-based
@@ -579,7 +621,7 @@ function resetCol() {
                 let pinImageUrl; // Correctly scoped variable
                 if (station.available_bikes === 0) {
                     color = "red";
-                    pinImageUrl = "../static/red_bike";
+                    pinImageUrl = "../static/red_bike.png";
                 } else if (station.available_bikes > 0 && station.available_bikes <= 5) {
                     color = "yellow";
                     pinImageUrl = "../static/yellow_bike.png";
