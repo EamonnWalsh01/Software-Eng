@@ -496,7 +496,7 @@ function updateMarker(number, available_bikes, pinImageUrl) {
 
 async function recolour() {
     document.getElementById('progressContainer').style.display = 'block';
-    const stationNumbers = Array.from({length: 117}, (_, i) => i); 
+    const stationNumbers = Array.from({length: 117}, (_, i) => i + 1);
     document.getElementById('progressBar').style.width = '20%';
     // Example fixed date and time, replace with your actual values
     var x = 0;
